@@ -12,7 +12,7 @@ FOURTH_INDENT = 100
 INDENTS = [0, FIRST_INDENT, SECOND_INDENT, THIRD_INDENT, FOURTH_INDENT, None]
 
 pp = pprint.PrettyPrinter(indent=4)
-first_line_regex = re.compile("""\s+Variable Name:\s+(\w+)\s+Length: *(\d+\.\d+)\s+Position: *(\d)""")
+first_line_regex = re.compile("""\s+Variable Name:\s+(\w+)\s+Length: *(\d+\.\d+)\s+Position: *(\d+)""")
 
 def parse_element(content,row, indent_start, indent_end):
     if indent_end is None:
@@ -163,7 +163,7 @@ def run_test(test_file, encoding=None):
         #pp.pprint(var_def)
 
 def process_and_export(infile, outfile, encoding=None):
-    result = run_test(file, encoding)
+    result = run_test(infile, encoding)
     with open(outfile, 'w') as out:
         json.dump(result, out, sort_keys=True,indent=4, encoding='utf-8')
 
@@ -179,10 +179,11 @@ def test():
 
 import sys
 
-r4 = run_test(sys.argv[1], encoding="utf-16")
-
-with open(sys.argv[2], 'w') as outfile:
-    json.dump(r4, outfile, sort_keys=True,indent=4, encoding='utf-8')
+process_and_export("ITS/dd/PUMF_Canadians_E.txt","ITS/PUMF_Canadians_E.json", encoding="utf-16")
+process_and_export("ITS/dd/PUMF_Visitors_E.txt","ITS/PUMF_Visitors_E.json", encoding="utf-16")
+process_and_export("TSRC/dd/Person_TSRC.txt","TSRC/Person_TSRC.json", encoding="utf-16")
+process_and_export("TSRC/dd/Trip_TSRC.txt","TSRC/Trip_TSRC.json", encoding="utf-16")
+process_and_export("TSRC/dd/Visit_TSRC.txt","TSRC/Visit_TSRC.json", encoding="utf-16")
 
 
 
