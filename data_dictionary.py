@@ -3,6 +3,7 @@ import string
 import pprint
 import re
 import io, codecs
+import json
 
 FIRST_INDENT = 8
 SECOND_INDENT = 35
@@ -48,7 +49,9 @@ def parse_section_meta_data(content):
     end = "Source"
     vars_reg = [v+""":\s*(.*?)\s*""" for v in vars]
     reg = "".join(vars_reg) + end
+    #print reg
     m = re.match(reg,ss)
+
     return dict(zip(vars, m.groups()[1:]))
 
 def parse_section(content):
@@ -72,35 +75,14 @@ def parse_section(content):
         metadata["Answers"] = answers
     except:
         print "failed on: "
-        print "".join(content[1:])
+        print "".join(content)
         pp.pprint(content)
         raise
 
     return metadata
 
-def parse_answer2(line):
-    matches = re.match(r"(\D*)(\d+\s?-\s?\d+|\d+)\s+(\d+)\s+([\d+,?]+)\s+(\d+.\d+)", line)
-    d = {}
-    try:
-        #print line
-        #lines should start at "Source:"
-        end_of_cat_name = string.find(line, "  ", FIRST_INDENT)
-        category = line[0:end_of_cat_name].strip()
-        values = line[end_of_cat_name:].split()
-        d = {
-                    "Answer": category,
-                    "Code":parse_answer_code(values[0]),
-                    "Frequency":atoi(values[1]),
-                    "WeightedFrequency":atoi(values[2]),
-                    "Percent":atof(values[3])
-                }
-    except:
-        print line, values
-    return d
-
-
 def parse_answer(line):
-    matches = re.match(r"\s*(.*?)([\d.]+\s?-\s?[\d.]+|\d+)\s+([\d,]+)\s+([\d+,?]+)\s+(\d+.\d+)", line)
+    matches = re.match(r"\s*(.*?)([\d.]+\s?-\s?[\d.]+|\d+)\s+([\d,]+)\s+([\d+,?]+)\s+([]\d.]+)", line) #tweaked to accomodate 0%
     d = {}
     try:
         answer = matches.group(1).strip()
@@ -152,14 +134,16 @@ def segment(lines):
     segments = []
     current_seg = []
     for l in lines:
-        if l.startswith("        Variable Name:"):
+        if l.lstrip().startswith("Variable Name:"):
             current_seg = []
             segments.append(current_seg)
         if ( #skip page headers
                 "Totals may not add up due to rounding." not in l
                 and not re.search("""Page\d+ ?- ?\d+""", l)
                 and not re.search("""Data\s?Dictionary""", l)
-                and not l.strip() == "Trip"
+                and not "Visit" == l.strip()
+                and not "Person-Month" in l.strip()
+                and not "Trip" == l.strip()
                 and "AnswerCategories" not in l
         ):
             current_seg.append(l)
@@ -178,27 +162,29 @@ def run_test(test_file, encoding=None):
     return var_def
         #pp.pprint(var_def)
 
-r1 = run_test("data/test_1.txt")
+def process_and_export(infile, outfile, encoding=None):
+    result = run_test(file, encoding)
+    with open(outfile, 'w') as out:
+        json.dump(result, out, sort_keys=True,indent=4, encoding='utf-8')
 
-r2 = run_test("data/test_2_2page.txt")
+def test():
+    r1 = run_test("data/test_1.txt")
 
-r3 = run_test("data/test_3_2page.txt")
+    r2 = run_test("data/test_2_2page.txt")
 
-assert(r1 == r2)
-assert(r1 == r3)
+    r3 = run_test("data/test_3_2page.txt")
 
-r4 = run_test("data/output_ascii.txt", encoding="utf-16")
+    assert(r1 == r2)
+    assert(r1 == r3)
 
-import json
-with open('data/parsed_ITS.json', 'w') as outfile:
+import sys
+
+r4 = run_test(sys.argv[1], encoding="utf-16")
+
+with open(sys.argv[2], 'w') as outfile:
     json.dump(r4, outfile, sort_keys=True,indent=4, encoding='utf-8')
 
 
-r5 = run_test("data/output_TSRC.txt", encoding="utf-16")
-
-import json
-with open('data/parsed_TSRC.json', 'w') as outfile:
-    json.dump(r5, outfile, sort_keys=True,indent=4, encoding='utf-8')
 
 #Lines to delete:
 #    2015-05-28                                                                                  Page41-116
