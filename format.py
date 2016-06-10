@@ -19,16 +19,19 @@ def decode(answers, value):
         #just return the int value
         return value
 
-with open("data/TSRC/Visit_TSRC.json", 'r') as src:
+with open("data/ITS/PUMF_Canadians_E.json", 'r') as src:
     j = json.load(src)
+    num_variables = len(j)
 
 d = build_dd(j)
 
 #pp.pprint(d)
 
-with open("data/TSRC/data/2011/Visit_TSRC2011_pumf.txt", 'r') as src:
-    for line in list(src)[:10]:
-        print[decode(answers, line[pos-1:(pos-1)+length]) for (pos, length, answers) in d]
+with open("data/ITS/data/2013/ITS_CDN_2013_PUMF.txt", 'r') as src:
+    for line in list(src):
+        decoded_line = [decode(answers, line[pos-1:(pos-1)+length]) for (pos, length, answers) in d]
+        assert (len(decoded_line) == num_variables)
+        print decoded_line
 
 
 

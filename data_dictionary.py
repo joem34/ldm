@@ -66,8 +66,7 @@ def parse_section(content):
 
         metadata = {
             "Variable Name":matches.group(1), #Variable Name
-            "Format":matches.group(2),
-            "Length":sum(map(int,matches.group(2).split('.'))),
+            "Length":int(matches.group(2).split('.')[0]),
             "Position":int(matches.group(3)),
         }
         metadata.update(others)
