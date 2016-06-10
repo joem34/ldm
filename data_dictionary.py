@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import string
 import pprint
 import re
@@ -99,7 +100,7 @@ def parse_answer2(line):
 
 
 def parse_answer(line):
-    matches = re.match(r"\s+((\d\d)*\D*)([\d.]+\s?-\s?[\d.]+|\d+)\s+([\d,]+)\s+([\d+,?]+)\s+(\d+.\d+)", line)
+    matches = re.match(r"\s*(.*?)([\d.]+\s?-\s?[\d.]+|\d+)\s+([\d,]+)\s+([\d+,?]+)\s+(\d+.\d+)", line)
     d = {}
     try:
         answer = matches.group(1).strip()
@@ -111,12 +112,36 @@ def parse_answer(line):
         elif answer == "Directly from another country other than":
             answer = "Directly from another country other than the United States"
 
+        elif answer == "Reference month is January, February or":
+            answer = "Reference month is January, February or March"
+        elif answer == "Reference month is July, August or":
+            answer = "Reference month is July, August or September"
+        elif answer == "Reference month is October, November or":
+            answer = "Reference month is October, November or December"
+
+        elif answer == "Less than high school graduation":
+            answer = "Less than high school graduation Certificate"
+        elif answer == "Somepost-secondary/Post-secondary":
+            answer = "Some post-secondary/Post-secondary certificate or diploma"
+        elif answer == u"University degree (Bachelor’s, Master’s or":
+            answer = u"University degree (Bachelor’s, Master’s or PhD)"
+
+        elif answer == "Personal conference, convention or trade":
+            answer = "Personal conference, convention or trade show"
+
+        elif answer == "Attend a performance such as a play or":
+            answer = "Attend a performance such as a play or concert"
+        elif answer == "Attend an aboriginal event (pow wow, ":
+            answer = "Attend an aboriginal event (pow wow, performance, other)"
+        elif answer == "Attend a business/other":
+            answer = "Attend a business/other meeting/conference/seminar"
+
         d = {
                     "Answer": answer,
-                    "Code":matches.group(3),
-                    "Frequency":atoi(matches.group(4)),
-                    "WeightedFrequency":atoi(matches.group(5)),
-                    "Percent":atof(matches.group(6))
+                    "Code":matches.group(2),
+                    "Frequency":atoi(matches.group(3)),
+                    "WeightedFrequency":atoi(matches.group(4)),
+                    "Percent":atof(matches.group(5))
                 }
     except:
         if line.strip() not in ["Wales", "Saint Eustatius", "the United States"]: #these cases are handled above
@@ -133,7 +158,8 @@ def segment(lines):
         if ( #skip page headers
                 "Totals may not add up due to rounding." not in l
                 and not re.search("""Page\d+ ?- ?\d+""", l)
-                and not re.search("""ITS \d\d\d\d - Data Dictionary""", l)
+                and not re.search("""Data\s?Dictionary""", l)
+                and not l.strip() == "Trip"
                 and "AnswerCategories" not in l
         ):
             current_seg.append(l)
@@ -165,7 +191,14 @@ r4 = run_test("data/output_ascii.txt", encoding="utf-16")
 
 import json
 with open('data/parsed_ITS.json', 'w') as outfile:
-    json.dump(r4, outfile)
+    json.dump(r4, outfile, sort_keys=True,indent=4, encoding='utf-8')
+
+
+r5 = run_test("data/output_TSRC.txt", encoding="utf-16")
+
+import json
+with open('data/parsed_TSRC.json', 'w') as outfile:
+    json.dump(r5, outfile, sort_keys=True,indent=4, encoding='utf-8')
 
 #Lines to delete:
 #    2015-05-28                                                                                  Page41-116
