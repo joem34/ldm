@@ -83,7 +83,7 @@ def parse_section(content):
     return metadata
 
 def parse_answer(line):
-    matches = re.match(r"\s*(.*?)([\d.]+\s?-\s?[\d.]+|\d+)\s+([\d,]+)\s+([\d+,?]+)\s+([]\d.]+)", line) #tweaked to accomodate 0%
+    matches = re.match(r"\s*(.*?)\s{2,}([\d.]+\s?-\s?[\d.]+|\d+)\s+([\d,]+)\s+([\d+,?]+)\s+([]\d.]+)", line) #tweaked to accomodate 0%
     d = {}
     try:
         answer = matches.group(1).strip()
