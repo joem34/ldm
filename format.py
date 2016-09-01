@@ -9,6 +9,12 @@ a = {
         "answers":{"code":"Answer"}
     }
 
+def get_headers(js):
+    return [v["Variable Name"] for v in js]
+
+def get_headers_long(js):
+    return [v["Question Name"] for v in js]
+
 def build_dd(js):
     return [(v["Position"],v["Length"],{a["Code"]:a["Answer"] for a in v["Answers"] if "Answer" in a}) for v in js]
 
@@ -19,19 +25,35 @@ def decode(answers, value):
         #just return the int value
         return value
 
-with open("data/ITS/PUMF_Canadians_E.json", 'r') as src:
+
+#dd = "data/ITS/PUMF_Canadians_E.json"
+#data = "data/ITS/data/2013/ITS_CDN_2013_PUMF.txt"
+
+dd = "data/TSRC/Visit_TSRC.json"
+data = "data/TSRC/data/2014/Visit_TSRC2014_pumf.txt"
+output = "data/TSRC/data/2014/Visit_TSRC2014_out.txt"
+
+with open(dd, 'r') as src:
     j = json.load(src)
     num_variables = len(j)
+    headers =  get_headers_long(j)
+    print headers
 
 d = build_dd(j)
 
 #pp.pprint(d)
 
-with open("data/ITS/data/2013/ITS_CDN_2013_PUMF.txt", 'r') as src:
-    for line in list(src):
-        decoded_line = [decode(answers, line[pos-1:(pos-1)+length]) for (pos, length, answers) in d]
-        assert (len(decoded_line) == num_variables)
-        print decoded_line
+with open(data, 'r') as src:
+    with open(output, 'w') as out:
+        out.write("\t".join(headers).encode('utf8'))
+        out.write("\n".encode('utf8'))
+        for line in src:
+            #print line
+            decoded_line = [decode(answers, line[pos-1:(pos-1)+length]) for (pos, length, answers) in d]
+            assert (len(decoded_line) == num_variables)
+
+            out.write("\t".join(decoded_line).encode('utf8'))
+            out.write("\n".encode('utf8'))
 
 
 

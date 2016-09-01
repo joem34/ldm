@@ -4,6 +4,8 @@ import pprint
 import re
 import io, codecs
 import json
+import csv
+from unidecode import unidecode
 
 FIRST_INDENT = 8
 SECOND_INDENT = 35
@@ -54,7 +56,18 @@ def parse_section_meta_data(content):
 
     return dict(zip(vars, m.groups()[1:]))
 
-def parse_section(content):
+
+def output_answer_csv(survey, section, metadata):
+    with open('variable_codings.csv', 'a') as csvfile:
+        writer = csv.writer(csvfile)
+        variable = metadata["Variable Name"]
+        for a in metadata["Answers"]:
+            if len(a) > 0:
+                writer.writerow([survey, section, variable, a["Code"], unidecode(a["Answer"])])
+
+
+
+def parse_section(survey, section, content):
     try:
         matches = first_line_regex.match(content[0])
         others = parse_section_meta_data(content[1:])
@@ -73,6 +86,8 @@ def parse_section(content):
         answers = map(parse_answer, content[start_of_answers:-1])#lines should start at "Source:", plus two lines, skip total line
 
         metadata["Answers"] = answers
+        output_answer_csv(survey, section, metadata)
+
     except:
         print "failed on: "
         print "".join(content)
@@ -125,6 +140,7 @@ def parse_answer(line):
                     "WeightedFrequency":atoi(matches.group(4)),
                     "Percent":atof(matches.group(5))
                 }
+
     except:
         if line.strip() not in ["Wales", "Saint Eustatius", "the United States"]: #these cases are handled above
             print line
@@ -152,38 +168,45 @@ def segment(lines):
 
     return segments
 
-def run_test(test_file, encoding=None):
+def run_test(test_file, survey, section, encoding=None):
     print "running test: ", test_file
     with io.open(test_file, 'r', encoding=encoding) as input:
         content = input.readlines()
         sections = segment(content)
         #pp.pprint(sections)
-        var_def = map(parse_section, sections)
+        var_def = map(lambda s: parse_section(survey,section, s), sections)
     return var_def
         #pp.pprint(var_def)
 
-def process_and_export(infile, outfile, encoding=None):
-    result = run_test(infile, encoding)
+def process_and_export(infile, outfile, survey, section, encoding=None):
+    result = run_test(infile, survey, section, encoding)
+
     with open(outfile, 'w') as out:
         json.dump(result, out, sort_keys=True,indent=4, encoding='utf-8')
 
 def test():
-    r1 = run_test("data/test_1.txt")
+    r1 = run_test("data/test_1.txt", "test")
 
-    r2 = run_test("data/test_2_2page.txt")
+    r2 = run_test("data/test_2_2page.txt", "test")
 
-    r3 = run_test("data/test_3_2page.txt")
+    r3 = run_test("data/test_3_2page.txt", "test")
 
     assert(r1 == r2)
     assert(r1 == r3)
 
 import sys
 
-process_and_export("ITS/dd/PUMF_Canadians_E.txt","ITS/PUMF_Canadians_E.json", encoding="utf-16")
-process_and_export("ITS/dd/PUMF_Visitors_E.txt","ITS/PUMF_Visitors_E.json", encoding="utf-16")
-process_and_export("TSRC/dd/Person_TSRC.txt","TSRC/Person_TSRC.json", encoding="utf-16")
-process_and_export("TSRC/dd/Trip_TSRC.txt","TSRC/Trip_TSRC.json", encoding="utf-16")
-process_and_export("TSRC/dd/Visit_TSRC.txt","TSRC/Visit_TSRC.json", encoding="utf-16")
+with open('variable_codings.csv', 'w') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["survey", "section", "variable", "code", "answer"])
+
+
+
+process_and_export("ITS/dd/PUMF_Canadians_E.txt","ITS/PUMF_Canadians_E.json", "ITS", "Can", encoding="utf-16")
+process_and_export("ITS/dd/PUMF_Visitors_E.txt","ITS/PUMF_Visitors_E.json", "ITS", "OS", encoding="utf-16")
+process_and_export("TSRC/dd/Person_TSRC.txt","TSRC/Person_TSRC.json", "TSRC", "Person", encoding="utf-16")
+process_and_export("TSRC/dd/Trip_TSRC.txt","TSRC/Trip_TSRC.json", "TSRC", "Trip", encoding="utf-16")
+process_and_export("TSRC/dd/Visit_TSRC.txt","TSRC/Visit_TSRC.json","TSRC",  "Visit", encoding="utf-16")
 
 
 
