@@ -14,7 +14,7 @@ con <- dbConnect(drv, dbname = "canada",
 
 calculate.rel.error <- function(con, filter.exp){
 
-  sql <- "select * from gravity_model_errors"
+  sql <- "select x1 as x, rel_err1 as rel_err, abs_err1 as abs_err, od_type from gravity_model_errors"
   
   if (!is.null(filter.exp)) {
     sql <- paste(sql, paste("where",filter.exp))
@@ -28,45 +28,66 @@ calculate.rel.error <- function(con, filter.exp){
   
 }
 
-layout <- matrix(c(1,1,1,1,2,3,4,5), 4, 2, byrow=TRUE)
-
-res1 <- calculate.rel.error(con, NULL)
-g1 <- qplot(abs_err, rel_err, data = res1, main="All lvl2 zones", 
-     xlab="absolute error ", ylab="relative error", colour=od_type)  +
-  geom_point() +
-  scale_color_manual(values=c("II"="red", "IE"="blue", "EI"="green"))
-
-
-res <- calculate.rel.error(con, NULL)
-g2 <- qplot(abs_err, rel_err, data = res, main="All lvl2 zones", 
-     xlab="absolute error ", ylab="relative error", colour=od_type, xlim=c(0, 3000), ylim=c(0, 60))
-
-res <- calculate.rel.error(con, "orig=3506")
-g3 <-qplot(abs_err, rel_err, data = res, main="CD3506 - Ottawa", 
-     xlab="absolute error ", ylab="relative error", colour=od_type)
-
-res <- calculate.rel.error(con, "orig=3558")
-g4 <- qplot(abs_err, rel_err, data = res, main="CD3518 - Durham", 
-     xlab="absolute error ", ylab="relative error", colour=od_type)
-
-res <- calculate.rel.error(con, "orig=3518")
-g5 <- ggplot(res, aes(x = abs_err, y = rel_err, colour=od_type)) +
-  geom_point() +
-  scale_color_manual(values=c("II"="red", "IE"="blue", "EI"="green"))
-
 require(grid)
 grid.newpage()
 # Create layout : nrow = 2, ncol = 2
+layout <- matrix(c(1,1,1,1,2,3,4,5), 4, 2, byrow=TRUE)
+palette = 2
 pushViewport(viewport(layout = grid.layout(4, 2)))
 # A helper function to define a region on the layout
 define_region <- function(row, col){
   viewport(layout.pos.row = row, layout.pos.col = col)
-} 
-# Arrange the plots
-print(g1, vp = define_region(1:2, 1:2))
-print(g2, vp = define_region(3, 1))
-print(g3, vp = define_region(3, 2))
-print(g4, vp = define_region(4, 1))
-print(g5, vp = define_region(4, 2))
+}
 
+res1 <- calculate.rel.error(con, NULL)
+g1 <- qplot(abs_err, rel_err, data = res1, main="All lvl2 zones", 
+     xlab="absolute error ", ylab="relative error", colour=od_type)  +
+  geom_point() + labs(x="absolute error ", y="relative error") +
+  scale_colour_brewer(drop=FALSE, type = "qual", palette = palette)
+
+
+res <- calculate.rel.error(con, NULL)
+g2 <- ggplot(res, aes(x = abs_err, y = rel_err, colour=od_type))+
+  geom_point() +
+  xlim(0, 1000) + ylim(0, 20) + 
+  labs(title="All") + labs(x="absolute error ", y="relative error") +
+  scale_colour_brewer(drop=FALSE, type = "qual", palette = palette) + 
+  theme(legend.position="none")
+
+
+res <- calculate.rel.error(con, "orig=3506")
+g3 <- ggplot(res, aes(x = abs_err, y = rel_err, colour=od_type))+
+  geom_point() +
+  xlim(0, 3000) + ylim(0, 60) + 
+  labs(title="CD3506 - Ottawa") + labs(x="absolute error ", y="relative error") +
+  scale_colour_brewer(drop=FALSE, type = "qual", palette = palette) + 
+  theme(legend.position="none")
+
+
+res <- calculate.rel.error(con, "orig=3558")
+g4 <-  ggplot(res, aes(x = abs_err, y = rel_err, colour=od_type))+
+  geom_point() +
+  labs(title="CD3518 - Durham") + labs(x="absolute error ", y="relative error") +
+  scale_colour_brewer(drop=FALSE, type = "qual", palette = palette) + 
+  theme(legend.position="none")
+
+res <- calculate.rel.error(con, "orig=3518")
+g5 <- ggplot(res, aes(x = abs_err, y = rel_err, colour=od_type))+
+  geom_point() +
+  labs(title="??") + labs(x="absolute error ", y="relative error") +
+  scale_colour_brewer(drop=FALSE, type = "qual", palette = palette) + 
+  theme(legend.position="none")
+
+gg = list(g1,g2,g3,g4,g5)
+
+for ( g in gg) {
+  g <- g 
+}
+
+# Arrange the plots
+print(gg[[1]], vp = define_region(1:2, 1:2))
+print(gg[[2]], vp = define_region(3, 1))
+print(gg[[3]], vp = define_region(3, 2))
+print(gg[[4]], vp = define_region(4, 1))
+print(gg[[5]], vp = define_region(4, 2))
 
