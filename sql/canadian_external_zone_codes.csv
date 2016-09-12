@@ -1,0 +1,49 @@
+ID,Type,Province_or_cma,Label,Description
+9750,CMA,454,CMA 24454,Quebec -- CMA of Sorel-Tracy
+9751,CMA,640,CMA 46640,Manitoba -- CMA of Thompson
+9752,CMA,330,CMA 24330,Quebec -- CMA of Campbellton (QC part)
+9753,CMA,505,CMA 24505,Quebec -- CMA of Qttawa-Gatineau (QC part)
+9754,CMA,447,CMA 24447,Quebec -- CMA of Drummondville
+9755,CMA,456,CMA 24456,Quebec -- CMA of Joliette
+9756,CMA,430,CMA 24430,Quebec -- CMA of Thetford Mines
+9757,CMA,468,CMA 24468,Quebec -- CMA of Lachute
+9758,CMA,428,CMA 24428,Quebec -- CMA of Saint-Georges
+9759,CMA,465,CMA 24465,Quebec -- CMA of Salaberry-de-Valleyfield
+9760,CMA,450,CMA 24450,Quebec -- CMA of Granby
+9761,CMA,404,CMA 24404,Quebec -- CMA of Rimouski
+9762,CMA,440,CMA 24440,Quebec -- CMA of Victoriaville
+9763,CMA,480,CMA 24480,Quebec -- CMA of Val-d'Or
+9764,CMA,412,CMA 24412,Quebec -- CMA of Sept-Iles
+9765,CMA,607,CMA 46607,Manitoba -- CMA of Portage la Prairie
+9766,CMA,602,CMA 46602,Manitoba -- CMA of Winnipeg
+9767,CMA,433,CMA 24433,Quebec -- CMA of Sherbrooke
+9768,CMA,406,CMA 24406,Quebec -- CMA of Baie-Comeau
+9769,CMA,610,CMA 46610,Manitoba -- CMA of Brandon
+9770,CMA,459,CMA 24459,Quebec -- CMA of St. Jean-sur-Richelieu
+9771,CMA,462,CMA 24462,Quebec -- CMA of Montreal
+9772,CMA,605,CMA 46605,Manitoba -- CMA of Steinbach
+9773,CMA,410,CMA 24410,Quebec -- CMA of Alma
+9774,CMA,452,CMA 24452,Quebec -- CMA of Saint-Hyacinthe
+9775,CMA,421,CMA 24421,Quebec -- CMA of Quebec
+9776,CMA,408,CMA 24408,Quebec -- CMA of Saguenay
+9777,CMA,442,CMA 24442,Quebec -- CMA of Trois-Rivieres
+9778,CMA,403,CMA 24403,Quebec -- CMA of Matane
+9779,CMA,481,CMA 24481,Quebec -- CMA of Amos
+9780,CMA,437,CMA 24437,Quebec -- CMA of Cowansville
+9781,CMA,411,CMA 24411,Quebec -- CMA of Dolbeau-Mistassini
+9782,CMA,485,CMA 24485,Quebec -- CMA of Rouyn-Noranda
+9783,CMA,405,CMA 24405,Quebec -- CMA of Riviere-du-Loup
+9784,CMA,444,CMA 24444,Quebec -- CMA of Shawinigan
+9785,CMA,502,CMA 24502,Quebec -- CMA of Hawkesbury (QC part)
+9786,PR,46,PR 46,Province of Manitoba (remaining)
+9787,PR,12,PR 12,Province of Nova Scotia
+9788,PR,24,PR 24,Province of Quebec (remaining)
+9789,PR,11,PR 11,Province of Prince Edward Island
+9790,PR,10,PR 10,Province of Newfoundland & Labrador
+9791,PR,13,PR 13,Province of New Brunswick
+9792,PR,47,PR 47,Province of Saskatchewan
+9793,PR,48,PR 48,Province of Alberta
+9794,PR,59,PR 59,Province of British Columbia
+9795,PR,62,PR 62,Territory of Nunavut
+9796,PR,61,PR 61,Territory of Northwest Territories
+9797,PR,60,PR 60,Territory of Yukon
