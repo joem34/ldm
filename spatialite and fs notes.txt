@@ -1,0 +1,22 @@
+CREATE TABLE fs_venues (
+id VARCHAR(255) NOT NULL CONSTRAINT pk PRIMARY KEY,
+category VARCHAR(255) ,
+country CHAR(2));
+
+SELECT AddGeometryColumn('fs_venues', 'geom', 4269, 'POINT', 2);
+
+--need to use brew version of sqlite '/usr/local/Cellar/sqlite/3.14.1/bin/sqlite3' not local OS X version when working from terminal
+
+-- also need to static link the 3.14.1 version when building pysqlite, 
+--  make sure that when running make build_static, there is no previous build  directory
+
+--there was an old version of pysqlite2 lying around in
+--Library/Frameworks/SQLite2.framework/Versions/C/Python/2.7/
+
+
+
+notes on foursquare - large global checkin set only has ~35k records for Canada, and they are only in 6 major centres, missing many of the venues we want to look at.
+
+checkin stream is not historical, collecting from a real time stream only provides a sample, but the total visits is more useful.
+
+define destination categories
