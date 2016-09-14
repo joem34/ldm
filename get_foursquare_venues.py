@@ -61,15 +61,19 @@ with collection("data/internal_zones", "r") as zones:
             #if north < nl and east < el and south > sl and west > wl:
             if north > 44:
                 venues = client.venues.search(params=params)
-                print i, ":", (south, west), poly['properties']['id'], len(venues['venues']), sum([v['stats']['checkinsCount'] for v in venues['venues']])
-                all_venues[poly['properties']['id']] = venues['venues']
+                print i, ":", (south, west), int(poly['properties']['ID']), len(venues['venues']), sum([v['stats']['checkinsCount'] for v in venues['venues']])
+                all_venues[poly['properties']['ID']] = {
+                    "bbox": { "n": north, "s": south, "e":east, "w":west },
+                    "venues": venues['venues']
+                }
                 i += 1
     except (foursquare.ParamError, foursquare.EndpointError) as e:
         print e
         exit()
 
-    with open("output/venues_%s.json" % time.strftime("%Y%m%d-%H%M%S"), 'w') as out:
-        json.dump(all_venues, out)
+    finally:
+        with open("output/venues_%s.json" % time.strftime("%Y%m%d-%H%M%S"), 'w') as out:
+            json.dump(all_venues, out)
 
     #can use 111.32km/degree as rough estimate
 
