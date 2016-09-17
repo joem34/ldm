@@ -34,7 +34,7 @@ search_box = {"n":48.64,"e":-89.6, "s":48.18, "w": -88.755 }
 
 
 #load zones
-with collection("data/internal_zones", "r") as zones:
+with collection("input/internalZones", "r") as zones:
     zones_crs = Proj(to_string(zones.crs))
     fs_crs = Proj(init='epsg:4326')
 
@@ -60,8 +60,11 @@ with collection("data/internal_zones", "r") as zones:
             (nl, el, sl, wl) = (44.6, -80, 43.2, -81.8)
             #if north < nl and east < el and south > sl and west > wl:
             if north > 44:
+                zone_id = int(poly['properties']['ID'])
                 venues = client.venues.search(params=params)
-                print i, ":", (south, west), int(poly['properties']['ID']), len(venues['venues']), sum([v['stats']['checkinsCount'] for v in venues['venues']])
+                num_venues = len(venues['venues'])
+                num_checkins = sum([v['stats']['checkinsCount'] for v in venues['venues']])
+                print i, ":", (south, west), zone_id, num_venues, num_checkins
                 all_venues[poly['properties']['ID']] = {
                     "bbox": { "n": north, "s": south, "e":east, "w":west },
                     "venues": venues['venues']

@@ -19,4 +19,12 @@ notes on foursquare - large global checkin set only has ~35k records for Canada,
 
 checkin stream is not historical, collecting from a real time stream only provides a sample, but the total visits is more useful.
 
+
+
 define destination categories
+
+importing shapefiles to postgis:
+
+shp2pgsql -s26917:4269 QT_60000_937.5_D2500GPS1500/QT_60000_937.5_D2500GPS1500.shp public.internal_zones > internal_zones.sql
+
+psql -d canada -U postgres -f internal_zones.sql 
