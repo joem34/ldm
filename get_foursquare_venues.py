@@ -59,10 +59,11 @@ with collection("data/internal_zones", "r") as zones:
             #print params
             (nl, el, sl, wl) = (44.6, -80, 43.2, -81.8)
             #if north < nl and east < el and south > sl and west > wl:
+            shapefile_zone_id = 'id'
             if north > 44:
                 venues = client.venues.search(params=params)
-                print i, ":", (south, west), int(poly['properties']['ID']), len(venues['venues']), sum([v['stats']['checkinsCount'] for v in venues['venues']])
-                all_venues[poly['properties']['ID']] = {
+                print i, ":", (south, west), int(poly['properties'][shapefile_zone_id]), len(venues['venues']), sum([v['stats']['checkinsCount'] for v in venues['venues']])
+                all_venues[poly['properties'][shapefile_zone_id]] = {
                     "bbox": { "n": north, "s": south, "e":east, "w":west },
                     "venues": venues['venues']
                 }
