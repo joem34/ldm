@@ -8,11 +8,14 @@ conn = psycopg2.connect("dbname=canada user=postgres")
 
 
 cur = conn.cursor()
+#TODO: exclude non-stated from trips
 cur.execute("SELECT id, lvl2_orig, lvl2_dest, incomgr2, age_gr2, edlevgr, wttp from tsrc_trip where lvl2_orig < 4000 or lvl2_dest < 4000;")
 
 trips = cur.fetchall()
 
 dest_zones = "9793, 3557, 3531, 3507, 3540, 9753"
+dest_zones = ",".join(set([str(t[2]) for t in trips][:20]))
+print dest_zones
 #dest_zones = "3557, 3531"
 
 #get all destination alternatives
@@ -25,6 +28,7 @@ cur.execute("""SELECT zone_lvl2, sum(production) as production, sum(attraction) 
 alternatives = cur.fetchall()
 alternative_list = [a[0] for a in alternatives]
 print alternative_list
+
 
 cur.execute("""select a.zone_id, b.zone_id, ST_Distance(ST_Transform(ac, 26917), ST_Transform(bc, 26917))/1000 as dist from (
                 select CAST(cduid AS integer) as zone_id, ST_Centroid(geom) as ac from census_divisions where pruid = '35'
@@ -54,9 +58,10 @@ with open("C:/mto_longDistanceTravel/mlogit/mlogit_trip_input_small.csv", 'w') a
                 chosen = alt_dest == trip_dest
                 dist = od_matrix[(trip_origin, alt_dest)]
                 if chosen:
-                    row = [t[0], chosen, trip_origin, alt_dest, t[3], t[4], t[5], t[6], a[1], a[2], dist]
+                    weight = t[6]
                 else:
-                    row = [t[0], chosen, trip_origin, alt_dest, t[3], t[4], t[5], 0, a[1], a[2], dist]
+                    weight = t[6]
+                row = [t[0], chosen, trip_origin, alt_dest, t[3], t[4], t[5], weight, a[1], a[2], dist]
 
                 csvwriter.writerow(row)
 
