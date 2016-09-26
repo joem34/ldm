@@ -1,4 +1,16 @@
 ﻿--update trips with lvl2 origin and destination zones
+ALTER TABLE tsrc_trip ADD COLUMN lvl2_orig integer;
+ALTER TABLE tsrc_trip ADD COLUMN lvl2_dest integer;
+ALTER TABLE tsrc_trip ADD COLUMN orig_is_metro integer;
+ALTER TABLE tsrc_trip ADD COLUMN dest_is_metro integer;
+
+--set a metro or not metro flag. #TODO; this will need to be calculated differently for generated trips
+update tsrc_trip
+SET orig_is_metro = case when orccmat2 is not null then 1
+			else 0 end,
+    dest_is_metro = case when mdccma2 is not null then 1
+			else 0 end;
+			
 
 update tsrc_trip
 SET lvl2_orig = o.zone_lvl2
