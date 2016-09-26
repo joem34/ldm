@@ -1,32 +1,26 @@
 #m logit
-library("mlogit")
+library("mnlogit")
 
 #data("Fishing", package = "mlogit")
 #head(Fishing, 3)
 
-trip_dataset <- read.csv("C:/mto_longDistanceTravel/mlogit/mlogit_trip_input_small.csv",
+num.alternatives = 16
+
+trip_dataset <- read.csv("C:/mto_longDistanceTravel/mlogit/mlogit_trip_input_dummies_16.csv",
                          colClasses=c("choice"="logical"))
 
-trip_dataset$weight <- trip_dataset$weight / (sum(trip_dataset$weight) / 16)
+trip_dataset$weight <- trip_dataset$weight / (sum(trip_dataset$weight))
+weights <- trip_dataset$weight[seq(1, length(trip_dataset$weight), num.alternatives)]
 
-trip.long <- mlogit.data(trip_dataset, chid.var='trip_id', alt.var = "dest",
-                         choice = "choice", shape = "long", drop.index = TRUE)
-
-head(trip.long)
-f <- mFormula(choice ~ exp(-dist) + attraction + production | income + education - 1 )
-head(model.matrix(f, trip.long))
-ml.trip <- mlogit(f, data = trip.long, weights=weight)
+f <- formula(choice ~ exp(-dist) + employment | income + 0 )
+ml.trip <- mnlogit(f, data = trip_dataset, choiceVar = 'alt', weights=weights, ncores=4)
 summary(ml.trip)
 
+cor(trip_dataset$employment, trip_dataset$population)
 
-#data("Train", package = "mlogit")
-#Tr <- mlogit.data(Train, shape = "wide", choice = "choice", varying = 4:11,sep = "", alt.levels = c(1, 2), id = "id")
-#Tr$price <- Tr$price/100 * 2.20371
-#Tr$time <- Tr$time/60
-#ml.Train <- mlogit(choice ~ price + time + change + comfort | -1, Tr)
-#summary(ml.Train)
+library("mnlogit")
 
-data("Heating", package = "mlogit")
-
-cor(trip_dataset$age, trip_dataset$education)
-
+data(Fish, package = "mnlogit")
+fm <- formula(mode ~ price | income | catch)
+fit <- mnlogit(fm, Fish, ncores=4) 
+summary(fit)

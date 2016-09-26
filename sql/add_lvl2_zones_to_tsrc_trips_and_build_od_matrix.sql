@@ -31,18 +31,20 @@ CREATE OR REPLACE VIEW public.tsrc_cd_od_matrx_2014 AS
   ORDER BY t.lvl2_orig, t.lvl2_dest;
 
 --create table for gravity model results
+DROP VIEW IF EXISTS gravity_model_errors;
 DROP TABLE IF EXISTS gravity_model_results; 
 CREATE TABLE gravity_model_results(orig integer, dest integer, trips numeric);
 
-DROP VIEW IF EXISTS gravity_model_errors;
 CREATE OR REPLACE VIEW gravity_model_errors as
 	select 
-		orig, dest, round(x, 3) as x, round(ex, 3) as ex, 
+		orig, dest, round(x, 3) as x, round(ex, 3) as ex, scaling_factor,
 		case when orig < 4000 and dest < 4000 then 'II'
-                         when orig < 4000 and dest > 4000 then 'IE'
-                         when orig > 4000 and dest < 4000 then 'EI'
-                         else 'EE' end as od_type,
+			 when orig < 4000 and dest > 4000 then 'IE'
+			 when orig > 4000 and dest < 4000 then 'EI'
+			 else 'EE' end as od_type,
 		round(abs(x - ex), 3) as abs_err, round(COALESCE(abs(x - ex)/NULLIF(ex,0), 0), 3) as rel_err
+		, round(x*scaling_factor, 3) as x1
+		,round(abs(x*scaling_factor - ex), 3) as abs_err1, round(COALESCE(abs(x*scaling_factor - ex)/NULLIF(ex,0), 0), 3) as rel_err1
 	from (
 		select coalesce(orig, lvl2_orig) as orig, coalesce(dest, lvl2_dest) as dest, 
 		coalesce(g.trips, 0) as x, coalesce(t.trips, 0) as ex
@@ -50,7 +52,35 @@ CREATE OR REPLACE VIEW gravity_model_errors as
 			full join tsrc_cd_od_matrx_2014 as t 
 			on t.lvl2_orig = orig and t.lvl2_dest = dest
 	) as r
-	where x > 0 or ex > 0
+
+	JOIN
+
+	(
+		select lvl2_orig, tsrc_trips, gen_trips, model_trips, tsrc_trips/gen_trips as scaling_factor
+		from (
+			
+			select 	lvl2_orig, sum(trips) as tsrc_trips
+			from tsrc_cd_od_matrx_2014 as t 
+			group by t.lvl2_orig
+			order by t.lvl2_orig
+		) as a, (
+			select orig, sum(trips) as model_trips 
+			from gravity_model_results 
+			group by orig
+			order by orig
+		) as b, (
+
+		select 	zone_lvl2,
+				sum(production) as gen_trips
+			from 	canada_production_attraction
+			--where zone_id < 7060
+			group by zone_lvl2
+			order by zone_lvl2
+		) as c
+		where a.lvl2_orig = b.orig and a.lvl2_orig = c.zone_lvl2
+	) as o_counts on orig = o_counts.lvl2_orig
+
+	where  x > 0 or ex > 0
 	order by orig asc, dest asc;
 
 select * from gravity_model_errors;
