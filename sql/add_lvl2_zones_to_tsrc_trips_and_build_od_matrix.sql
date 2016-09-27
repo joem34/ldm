@@ -6,9 +6,9 @@ ALTER TABLE tsrc_trip ADD COLUMN dest_is_metro integer;
 
 --set a metro or not metro flag. #TODO; this will need to be calculated differently for generated trips
 update tsrc_trip
-SET orig_is_metro = case when orccmat2 is not null then 1
+SET orig_is_metro = case when orccmat2 > 0 then 1
 			else 0 end,
-    dest_is_metro = case when mdccma2 is not null then 1
+    dest_is_metro = case when mdccma2 > 0 then 1
 			else 0 end;
 			
 
