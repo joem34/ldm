@@ -1,36 +1,49 @@
 #m logit
-library("mnlogit")
+install.packages("mnlogit")
+install.packages("tidyr")
+install.packages("dplyr")
+install.packages("data.table")
+install.packages("purrr")
+install.packages("broom")
 
-#data("Fishing", package = "mlogit")
-#head(Fishing, 3)
+require(mnlogit)
+require(tidyr)
+require(dplyr)
+require(data.table)
+require(purrr)
+require(broom)
 
-num.alternatives = 12
+trips <- as.data.frame(fread("canada/data/mnlogit/mlogit_trip_input_67.csv"))
+weights <- as.data.frame(fread("canada/data/mnlogit/mlogit_trip_weights_67.csv"))
 
-trip_dataset <- read.csv("C:/mto_longDistanceTravel/mlogit/mlogit_trip_input_dummies_12.csv",
-                         colClasses=c("choice"="logical"))
+trips$dist_log <- log(trips$dist)
+trips$dist_log[trips$dist_log<0] <- 0
+trips$dist_exp <- exp(-trips$dist)
+trips$retail_emp <- trips$naics_44
+trips$professional_employment <- trips$naics_51 + trips$naics_52 + trips$naics_54 + trips$naics_55
 
-trip_dataset$dist_log <- log(trip_dataset$dist)
-trip_dataset$dist_log[trip_dataset$dist_log<0] <- 0
-trip_dataset$retail_emp <- trip_dataset$naics_44
-trip_dataset$professional_employment <- trip_dataset$naics_51 + trip_dataset$naics_52 + trip_dataset$naics_54 + trip_dataset$naics_55
+trips.by.purpose <- trips %>% filter(purpose < 2) %>% group_by(purpose) %>% nest()
 
-trip_dataset$weight <- trip_dataset$weight / (sum(trip_dataset$weight))
-weights <- trip_dataset$weight[seq(1, length(trip_dataset$weight), num.alternatives)]
 
-lesiure_trips <- subset(trip_dataset, purpose == 1 )
-business_trips <- subset(trip_dataset, purpose == 2 )
-visit_trips <- subset(trip_dataset, purpose == 3 )
+f <- formula(choice ~ exp(-dist) + retail_emp + professional_employment | 0 )
 
-f <- formula(choice ~ exp(-dist) + dist_log + dist + professional_employment | income + 0 )
+trip_models <- trips.by.purpose %>% mutate(model = map(data, ~ mnlogit(f, ., choiceVar = 'alt', ncores=8)))
+trip_models <- trip_models %>% mutate(model_summary = map(model, ~ summary(.)))                    
 
-ml.trip <- mnlogit(f, data = business_trips, choiceVar = 'alt') #, weights=weights)
+trip_models$model_summary
+
+ml.trip <- mnlogit(f, data = trips.by.purpose$data[[1]], choiceVar = 'alt', ncores=8) #, weights=weights)
 summary(ml.trip)
 
-cor(trip_dataset$retail_emp, trip_dataset$professional_employment)
+#lrtest(ml.trip, ml.trip.i)
+
+
+cor(trips$professional_employment, trips$retail_emp)
 
 library("mnlogit")
 
 data(Fish, package = "mnlogit")
 fm <- formula(mode ~ price | income | catch)
-fit <- mnlogit(fm, Fish, ncores=1) 
+fit <- mnlogit(fm, Fish, ncores=8) 
 summary(fit)
+

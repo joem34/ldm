@@ -1,9 +1,11 @@
 import psycopg2
 import psycopg2.extras
-import random
+import io
 import csv
+import unidecode
 # Connect to an existing database
 conn = psycopg2.connect("dbname=canada user=postgres")
+import util as mutil
 
 #get the list of trips
 
@@ -18,7 +20,9 @@ conn = psycopg2.connect("dbname=canada user=postgres")
 
 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 #TODO: exclude non-stated from trips
-cur.execute("SELECT id, mrdtrip2, lvl2_orig, lvl2_dest, incomgr2, age_gr2, edlevgr, wttp, orig_is_metro, dest_is_metro from tsrc_trip where lvl2_orig < 4000 or lvl2_dest < 4000 and refyear = 2014;")
+#TODO check why some lvl2s in trips are null
+#TODO: make sure that there are trips for every combination of destination and purpose
+cur.execute("SELECT id, mrdtrip2, lvl2_orig, lvl2_dest, incomgr2, age_gr2, edlevgr, wttp, orig_is_metro, dest_is_metro FROM tsrc_trip WHERE lvl2_dest is not null and lvl2_orig is not null limit 10000")
 
 trips = cur.fetchall()
 
@@ -36,40 +40,33 @@ alternatives = cur.fetchall()
 alternative_list = [a['zone_lvl2'] for a in alternatives]
 print alternative_list
 
+od_matrix = mutil.get_cd_od_matrix(conn)
 
-cur.execute("""select a.zone_id as o, b.zone_id as d, ST_Distance(ST_Transform(ac, 26917), ST_Transform(bc, 26917))/1000 as dist from (
-                select CAST(cduid AS integer) as zone_id, ST_Centroid(geom) as ac from census_divisions where pruid = '35'
-                union
-                select zone_id, ST_Centroid(geom) from external_zones_v2
-            ) as a,
-             (
-                select CAST(cduid AS integer) as zone_id, ST_Centroid(geom) as bc from census_divisions where pruid = '35'
-                union
-                select zone_id, ST_Centroid(geom) from external_zones_v2 where zone_id in (%s)
-            ) as b""" % (dest_zones))
-od_matrix = {(a['o'],a['d']): a['dist'] for a in cur.fetchall()}
-
-out_location = "C:/mto_longDistanceTravel/mlogit/mlogit_trip_input_dummies_%d.csv" % len(alternative_list)
+out_location = """C:\Users\Joe\canada\data\mnlogit\mlogit_trip_input_%d.csv""" % len(alternative_list)
+weights_location = """C:\Users\Joe\canada\data\mnlogit\mlogit_trip_weights_%d.csv""" % len(alternative_list)
 print out_location
-with open(out_location, 'w') as out:
+with io.open(out_location, 'w', newline='\n') as out:
     csvwriter = csv.writer(out)
-    headers = ["chid", "choice", "alt", "purpose", "weight", "income", "population", "employment", "dist", "mm", "mr", "rm", "rr"]
+    headers = ["chid", "choice", "alt", "purpose", "income", "population", "employment", "dist", "mm", "mr", "rm", "rr"]
 
     naics_headers = ("naics_11,naics_21,naics_22,naics_23,naics_31,naics_41,naics_44,naics_48,naics_51,naics_52,naics_53,naics_54,"  +
 			        "naics_55,naics_56,naics_61,naics_62,naics_71,naics_72,naics_81,naics_91").split(",")
 
     headers.extend(naics_headers)
 
-    csvwriter.writerow(headers)
+    out.write(unicode(",".join(headers)))
+    out.write(u"\n")
     print headers
     used_destinations = set()
-
+    weights = []
+    output = []
     chid = 1
     for t in trips:
         trip_dest = t['lvl2_dest']
         trip_origin = t['lvl2_orig']
 
         weight = t['wttp']
+        weights.append([chid,weight])
         age = t['age_gr2']
         income = t['incomgr2']
         education = t['edlevgr']
@@ -94,12 +91,20 @@ with open(out_location, 'w') as out:
                 metro = 1 if a['metro'] else 0
                 dist = od_matrix[(trip_origin, alt_dest)]
 
-                row = [chid, chosen, alt_dest, purpose, weight, income, population, employment, dist, metro_to_metro, metro_to_regional, regional_to_metro, regional_to_regional]
+                row = [chid, chosen, alt_dest, purpose, income, population, employment, dist, metro_to_metro, metro_to_regional, regional_to_metro, regional_to_regional]
                 row.extend([a[x] for x in naics_headers])
-                csvwriter.writerow(row)
+
+                output.append(unicode(",".join(map(str,row))))
         chid += 1
             #if trip_dest in alternative_list: print t, a, chosen
     print used_destinations
+    out.write(u"\n".join(output))
+
+    with io.open(weights_location, 'w', newline='\n') as out:
+        out.write(u"chid,weight\n")
+        for w in weights:
+            out.write(u",".join(map(str,w)))
+            out.write(u"\n")
 
     #best way to build a table of alternatives?
 
