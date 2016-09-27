@@ -23,8 +23,8 @@ cur.execute("SELECT id, mrdtrip2, lvl2_orig, lvl2_dest, incomgr2, age_gr2, edlev
 trips = cur.fetchall()
 
 dest_zones = "9793, 3557, 3531, 3507, 3540, 9753"
-#dest_zones = ",".join(set([str(t['lvl2_dest']) for t in trips]))
-dest_zones = ",".join(set([str(t['lvl2_dest']) for t in trips][:20]))
+dest_zones = ",".join(set([str(t['lvl2_dest']) for t in trips]))
+#dest_zones = ",".join(set([str(t['lvl2_dest']) for t in trips][:20]))
 print dest_zones
 #dest_zones = "3557, 3531"
 
