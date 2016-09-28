@@ -20,7 +20,11 @@ where (orcprovt = 35 and orccdt2 = o.cd) or (orcprovt <> 35 and (orccmat2 = o.cm
 update tsrc_trip
 SET lvl2_dest = d.zone_lvl2
 from zone_lvl2 as d
-where (mdccd = d.cd and mddplfl = 35) or (orcprovt <> 35 and (mdccma2 = d.cma or mddplfl = d.pr));
+where (mddplfl = 35 and mdccd = d.cd) or (mddplfl <> 35 and (mdccma2 = d.cma or mddplfl = d.pr));
+
+--remove any trips that  are in ontario but dont have a origin/dest cd
+delete from tsrc_trip
+where (orcprovt = 35 and orccdt2 = 9999) or (mddplfl = 35 and mdccd = 9999)
 
 --build lvl2 od matrix from trips
 
