@@ -1,12 +1,4 @@
 #m logit
-install.packages("mnlogit")
-install.packages("tidyr")
-install.packages("dplyr")
-install.packages("data.table")
-install.packages("purrr")
-install.packages("broom")
-install.packages("h5")
-
 require(mnlogit)
 require(tidyr)
 require(dplyr)
@@ -14,7 +6,7 @@ require(data.table)
 require(purrr)
 require(broom)
 library( h5 )
-setwd("C:/Users/Joe/")
+#setwd("C:/Users/Joe/")
 
 trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_all_trips.csv"))
 trips <- trips %>% rename(purpose = mrdtrip2, chid = id)
@@ -25,9 +17,7 @@ alternatives <- alternatives %>% rename(alt = zone_lvl2)
 f <- h5file("canada/data/mnlogit/cd_travel_times.omx")
 tt <- f["data/cd_traveltimes"]
 cd_tt <- tt[]
-cds = h5attr(tt, "rownames")
-row.names(cd_tt) <- h5attr(tt, "rownames")
-colnames(cd_tt) <- h5attr(tt, "colnames")
+cds = f["lookup/cd"][]
 #build an indexing of the cds/zones to speed things up when cacluating all travel times
 cd_index <- vector(mode="integer", length=10000)
 for (i in seq_along(cds)){
@@ -40,12 +30,22 @@ valid_alternatives <- alternatives[c(1:3)] %>% filter(alt %in% unique(s_trips$lv
 print ("excluded alternatives with no recorded trps (probably mostly US trips)")
 setdiff(alternatives$alt, valid_alternatives$alt)
 
+#compute language change of trips, alternatives (TODO; make this more robust later)
+get_zone_language <- Vectorize(function(z) { if (z %in% c(9750,9752,9753,9754,9755,9756,
+                                                          9757,9758,9759,9760,9761,9762,
+                                                          9763,9764,9767,9768, 9770,9771,
+                                                          9773,9774,9775,9776,9777,9778,
+                                                          9779,9780,9781,9782,9783,9784,
+                                                          9785, 9788)) { 1 } else { 0 } })
+
+s_trips <- s_trips %>% mutate(o.lang = get_zone_language(lvl2_orig))
+valid_alternatives <- valid_alternatives %>% mutate(d.lang = get_zone_language(alt)) 
+
 #need to build list of alternative choices: one for each trip, and every alternative
 trips_long <- merge(x = valid_alternatives, y = s_trips, by = NULL) %>% mutate(choice = lvl2_dest == alt)
 
 #make a vectorised version of a function to get distance between two cds, that can be applied to a column with dplyr
-get_dist <- function(o,d) { cd_tt[cd_index[o], cd_index[d]] }
-get_dist_v <- Vectorize(get_dist)
+get_dist_v <- Vectorize(function(o,d) { cd_tt[cd_index[o], cd_index[d]] })
 
 #compute distance #this is a bit slow
 trips_long <- trips_long %>% 
@@ -56,24 +56,25 @@ trips_long <- trips_long %>%
   ) 
 
 trips_long$dist_log[trips_long$dist_log<0] <- 0
+#calculate if the origin and dest have different languages
+trips_long <- trips_long %>% mutate(lang.barrier = (o.lang+d.lang)%%2)
 
 #trips$retail_emp <- trips$naics_44
 #trips$professional_employment <- trips$naics_51 + trips$naics_52 + trips$naics_54 + trips$naics_55
 
-f <- formula(choice ~ dist_log + dist_exp + population | 0 )
+f <- formula(choice ~ dist_log + dist_exp + population + lang.barrier | 0 )
 
+#ml.trip <- mnlogit(f, data = trips_long, choiceVar = 'alt', ncores=8) #, weights=weights)
+#summary(ml.trip)
 
-ml.trip <- mnlogit(f, data = trips_long, choiceVar = 'alt', ncores=8) #, weights=weights)
-summary(ml.trip)
-
-trips.by.purpose <- trips %>% filter(purpose < 2) %>% group_by(purpose) %>% nest()
-
+trips.by.purpose <- trips_long %>% filter(purpose < 4) %>% group_by(purpose) %>% nest()
 
 trip_models <- trips.by.purpose %>% mutate(model = map(data, ~ mnlogit(f, ., choiceVar = 'alt', ncores=8)))
 trip_models <- trip_models %>% mutate(model_summary = map(model, ~ summary(.)))                    
 
 trip_models$model_summary
 
+data.frame(coef(trip_models$model_summary[[1]]))
 
 #lrtest(ml.trip, ml.trip.i)
 
