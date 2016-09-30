@@ -15,7 +15,7 @@ tt <- f["data/cd_traveltimes"]
 cd_tt <- tt[]
 cds = f["lookup/cd"][]
 #build an indexing of the cds/zones to speed things up when cacluating all travel times
-cd_index <- vector(mode="integer", length=10000)
+cd_index <- vector(mode="integer", length=max(cds))
 for (i in seq_along(cds)){
   cd_index[cds[i]] = i
 }
@@ -89,7 +89,10 @@ trip_models$model_summary
 data.frame(coef(trip_models$model_summary[[1]]))
 
 #lrtest(ml.trip, ml.trip.i)
-
+#make trip dist matrix
+results <- predict(trip_models$model[[1]])
+results.df <- data.frame(results)
+results.df %>% group_by(origin) %>% summarise_each(funs(sum))
 
 cor(trips$professional_employment, trips$retail_emp)
 
@@ -100,3 +103,6 @@ fm <- formula(mode ~ price | income | catch)
 fit <- mnlogit(fm, Fish, ncores=8) 
 summary(fit)
 
+#predicting using random sampling
+sample(attr(results,"dimnames")[[2]], 100, prob = results[1,], replace = TRUE)
+as.numeric(names(which.max(table(results.1))))
