@@ -25,7 +25,7 @@ s_trips <- trips[c(1:8)]#[1:1000,]
 valid_alternatives <- alternatives[c(1:3, ncol(alternatives))] %>% 
   filter(alt %in% unique(s_trips$lvl2_dest)) %>%
   mutate(metro = as.numeric(metro == 't')) %>% #convert to numeric
-  rename(alt_is_metro =metro)
+  rename(alt_is_metro = metro)
 
 print ("excluded alternatives with no recorded trps (probably mostly US trips)")
 setdiff(alternatives$alt, valid_alternatives$alt)
@@ -52,9 +52,11 @@ trips_long <- trips_long %>%
   mutate(
     dist = get_dist_v(lvl2_orig, alt),
     dist_log = log(dist),
-    dist_exp = exp(-dist),
+    dist_2 = dist^2,
+    dist_exp = exp(-0.003 * dist),
     lang.barrier = (o.lang+d.lang)%%2 #calculate if the origin and dest have different languages
   ) 
+trips_long$dist_log[trips_long$dist_log<0] <- 0
 
 trips_long <- trips_long %>%
   mutate(
@@ -64,7 +66,6 @@ trips_long <- trips_long %>%
     rr = (1-orig_is_metro)*(1-alt_is_metro)
   )
 
-trips_long$dist_log[trips_long$dist_log<0] <- 0
 
 #trips$retail_emp <- trips$naics_44
 #trips$professional_employment <- trips$naics_51 + trips$naics_52 + trips$naics_54 + trips$naics_55
@@ -79,7 +80,7 @@ weights.by.purpose <- trips %>% select(purpose, wtep) %>% filter(purpose < 4) %>
 trips.by.purpose$weights <- weights.by.purpose$data
 
 
-f <- formula(choice ~ dist_log + dist_exp + population + lang.barrier + mm + rm | 0 )
+f <- formula(choice ~ dist_log + dist_exp + dist_2 + dist + population + lang.barrier + mm + rm | 0 )
 trip_models <- trips.by.purpose %>% mutate(model = map2(data, weights, ~ mnlogit(f, .x, choiceVar = 'alt', weights=.y$wtep, ncores=8)))
 
 trip_models <- trip_models %>% mutate(model_summary = map(model, ~ summary(.)))                    
@@ -89,19 +90,20 @@ trip_models$model_summary
 data.frame(coef(trip_models$model_summary[[1]]))
 
 #lrtest(ml.trip, ml.trip.i)
-#make trip dist matrix
-results <- predict(trip_models$model[[1]])
-results.df <- data.frame(results)
-results.df %>% group_by(origin) %>% summarise_each(funs(sum))
+#make trip dist matricies
+results <- data.frame(purpose = c(1:3))
+for (i in results$purpose) {
+  results$df[[i]] <- data.frame(predict(trip_models$model[[i]]))
+  results$df[[i]]$origin <- (trips %>% filter(purpose == i))$lvl2_orig
+  results$trip.matrx[[i]] <- results$df[[i]] %>% group_by(origin) %>% summarise_each(funs(sum))
+  row.names(results$trip.matrx[[i]]) <- results$trip.matrx[[i]]$origin
+  results$trip.matrx[[i]] <- as.matrix(results$trip.matrx[[i]])[,-1]
+}
+#combine trip matricies
+total_matrix <- Reduce('+', results$trip.matrx)
 
 cor(trips$professional_employment, trips$retail_emp)
 
-library("mnlogit")
-
-data(Fish, package = "mnlogit")
-fm <- formula(mode ~ price | income | catch)
-fit <- mnlogit(fm, Fish, ncores=8) 
-summary(fit)
 
 #predicting using random sampling
 sample(attr(results,"dimnames")[[2]], 100, prob = results[1,], replace = TRUE)
