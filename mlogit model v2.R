@@ -96,13 +96,14 @@ for (i in results$purpose) {
   trip_columns <- (trips %>% filter(purpose == i))
   results$df[[i]] <- data.frame(predict(trip_models$model[[i]]))
   
-  #results$df[[i]]<- data.frame(sapply(results$df[[i]], function(x) x * trip_columns$wtep[[i]])) # multiply values by weight
+  results$df[[i]]<- data.frame(sapply(results$df[[i]], function(x) x * trip_columns$wtep)) # multiply values by weight
   
   results$df[[i]]$origin <- trip_columns$lvl2_orig #link to origin
   results$trip.matrx[[i]] <- results$df[[i]] %>% group_by(origin) %>% summarise_each(funs(sum))
   results$trip.matrx[[i]] <- melt(results$trip.matrx[[i]], 
                                   id.vars = c("origin"), variable.name = "dest", value.name=paste0("purpose.",toString(i)))
 }  
+
 #combine trip matricies
 total_matrix <- merge(results$trip.matrx[[1]], results$trip.matrx[[2]], all = TRUE, by=c("origin", "dest"))
 total_matrix <- merge(total_matrix, results$trip.matrx[[3]], all = TRUE, by=c("origin", "dest"))
@@ -120,14 +121,31 @@ errors <- merge(total_matrix, tsrc.by.purpose, by=c("origin", "dest"), all=FALSE
 errors <- errors %>% mutate(abs_err = abs(total.x - total.y),
                  rel_err = abs_err / total.y)
 
-palette = 2
-res1 <- errors
-g1 <- qplot(abs_err, rel_err, data = res1, main="All lvl2 zones", 
-            xlab="absolute error ", ylab="relative error")  +
-  geom_point() + labs(x="absolute error ", y="relative error") +
-  scale_colour_brewer(drop=FALSE, type = "qual", palette = palette)
+
+#write errors to file, plot error graph
+write.csv(x = errors, file = "canada/data/mnlogit_results_weighted.csv")
+res1 <- res1 %>% mutate(od_type = ifelse(origin < 4000 & dest < 4000, "II", 
+                                         ifelse(origin < 4000 & dest > 4000, "IE", 
+                                                ifelse(origin > 4000 & dest < 4000, "EI", "EE" 
+                                                ))))
+res1$od_type <- as.factor(res1$od_type)
+
+res1$od_type <- factor(res1$od_type, levels = rev(levels(res1$od_type)))
+g1 <- ggplot(res1) +
+  geom_point(data = res1, aes(x = abs_err, y = rel_err, color=od_type)) +
+  geom_point(data = subset(res1, od_type == 'II'),
+             aes(x = abs_err, y = rel_err, color = od_type )) +
+  xlim(0, 6000) + ylim(0, 200) + 
+  labs(title="Discrete Choice Model Errors") + labs(x="Absolute error ", y="Relative error") +
+  scale_color_brewer(name="OD Pair Type",
+                     labels=c("II - Intra Ontario", "IE - Outgoing", "EI - Incoming", "EE - External"), 
+                     palette = 2, type = "qual")
 
 g1
+#save graph as png file
+png(file="canada/docs/mnlogit_results_weighted.png",width=1400,height=800,res=150)
+g1
+dev.off()
 
 cor(trips$professional_employment, trips$retail_emp)
 
