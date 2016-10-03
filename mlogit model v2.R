@@ -1,6 +1,6 @@
 #m logit
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(mnlogit, tidyr, dplyr,data.table,purrr,broom,h5)
+pacman::p_load(mnlogit, tidyr, dplyr,data.table,purrr,broom,h5, ggplot2)
 
 #setwd("C:/Users/Joe/")
 
@@ -92,18 +92,48 @@ data.frame(coef(trip_models$model_summary[[1]]))
 #lrtest(ml.trip, ml.trip.i)
 #make trip dist matricies
 results <- data.frame(purpose = c(1:3))
-for (i in results$purpose) {
+for (i in results$purpose) { 
+  trip_columns <- (trips %>% filter(purpose == i))
   results$df[[i]] <- data.frame(predict(trip_models$model[[i]]))
-  results$df[[i]]$origin <- (trips %>% filter(purpose == i))$lvl2_orig
+  
+  #results$df[[i]]<- data.frame(sapply(results$df[[i]], function(x) x * trip_columns$wtep[[i]])) # multiply values by weight
+  
+  results$df[[i]]$origin <- trip_columns$lvl2_orig #link to origin
   results$trip.matrx[[i]] <- results$df[[i]] %>% group_by(origin) %>% summarise_each(funs(sum))
-  row.names(results$trip.matrx[[i]]) <- results$trip.matrx[[i]]$origin
-  results$trip.matrx[[i]] <- as.matrix(results$trip.matrx[[i]])[,-1]
-}
+  results$trip.matrx[[i]] <- melt(results$trip.matrx[[i]], 
+                                  id.vars = c("origin"), variable.name = "dest", value.name=paste0("purpose.",toString(i)))
+}  
 #combine trip matricies
-total_matrix <- Reduce('+', results$trip.matrx)
+total_matrix <- merge(results$trip.matrx[[1]], results$trip.matrx[[2]], all = TRUE, by=c("origin", "dest"))
+total_matrix <- merge(total_matrix, results$trip.matrx[[3]], all = TRUE, by=c("origin", "dest"))
+total_matrix[is.na(total_matrix)] <- 0 #convert all NA to 0
+total_matrix$dest <- as.numeric(substr(total_matrix$dest, 2, 5)) #remove x from start of destination
+total_matrix <- total_matrix %>% mutate(total = purpose.1 + purpose.2 + purpose.3)
+
+#calculate errors
+tsrc.by.purpose <- trips %>% 
+  filter(purpose < 4) %>%
+  group_by (lvl2_orig, lvl2_dest) %>%
+  summarise(total = n()) %>%
+  rename (origin = lvl2_orig, dest = lvl2_dest)
+errors <- merge(total_matrix, tsrc.by.purpose, by=c("origin", "dest"), all=FALSE)
+errors <- errors %>% mutate(abs_err = abs(total.x - total.y),
+                 rel_err = abs_err / total.y)
+
+palette = 2
+res1 <- errors
+g1 <- qplot(abs_err, rel_err, data = res1, main="All lvl2 zones", 
+            xlab="absolute error ", ylab="relative error")  +
+  geom_point() + labs(x="absolute error ", y="relative error") +
+  scale_colour_brewer(drop=FALSE, type = "qual", palette = palette)
+
+g1
 
 cor(trips$professional_employment, trips$retail_emp)
 
+setdiff(results$df[[i]]$origin[[2]], results$df[[i]]$origin[[3]])
+
+tm.1 <- total_matrix[[1]]
 
 #predicting using random sampling
 sample(attr(results,"dimnames")[[2]], 100, prob = results[1,], replace = TRUE)
