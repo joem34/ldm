@@ -32,19 +32,24 @@ require(grid)
 grid.newpage()
 # Create layout : nrow = 2, ncol = 2
 layout <- matrix(c(1,1,1,1,2,3,4,5), 4, 2, byrow=TRUE)
-palette = 2
+palette = 5
 pushViewport(viewport(layout = grid.layout(4, 2)))
 # A helper function to define a region on the layout
 define_region <- function(row, col){
   viewport(layout.pos.row = row, layout.pos.col = col)
 }
 
-res1 <- calculate.rel.error(con, NULL)
-g1 <- qplot(abs_err, rel_err, data = res1, main="All lvl2 zones", 
-     xlab="absolute error ", ylab="relative error", colour=od_type)  +
-  geom_point() + labs(x="absolute error ", y="relative error") +
-  scale_colour_brewer(drop=FALSE, type = "qual", palette = palette)
-
+res1 <- read.csv("Projects/canadia/data/gravity_model_results.txt", sep="\t")
+res1$od_type <- factor(res1$od_type, levels = rev(levels(res1$od_type)))
+palette = 2
+g1 <- qplot(abs_err, rel_err, data = res1, main="Gravity Model Errors", 
+     xlab="Absolute error ", ylab="Relative error", colour=od_type)  +
+  geom_point() + labs(x="Absolute error ", y="Relative error") +
+  scale_colour_brewer(drop=FALSE, type = "qual", palette = palette)  +
+  scale_color_discrete(name="OD Pair Type",
+        breaks=c("II", "IE", "EI"),
+        labels=c("II - Intra Ontario", "IE - Outgoing", "EI - Incoming"))
+g1
 
 res <- calculate.rel.error(con, NULL)
 g2 <- ggplot(res, aes(x = abs_err, y = rel_err, colour=od_type))+
