@@ -10,17 +10,36 @@ SET orig_is_metro = case when orccmat2 > 0 then 1
 			else 0 end,
     dest_is_metro = case when mdccma2 > 0 then 1
 			else 0 end;
-			
 
 update tsrc_trip
-SET lvl2_orig = o.zone_lvl2
-from zone_lvl2 as o
-where (orcprovt = 35 and orccdt2 = o.cd) or (orcprovt <> 35 and (orccmat2 = o.cma or orcprovt = o.pr));
+SET lvl2_orig = NULL, lvl2_dest = NULL	;		
 
+--SET origin lvl 2 zone for internal origin and external cmas
 update tsrc_trip
-SET lvl2_dest = d.zone_lvl2
-from zone_lvl2 as d
-where (mddplfl = 35 and mdccd = d.cd) or (mddplfl <> 35 and (mdccma2 = d.cma or mddplfl = d.pr));
+SET lvl2_orig = o.id
+from level2_zones as o
+where (orcprovt = 35 and orccdt2 = o.cduid and orccmat2 = o.cmauid) 
+	or (orcprovt <> 35 and (orccmat2 = o.cmauid and orcprovt = o.pruid));
+	
+--SET origin lvl 2 zone for external provinces
+update tsrc_trip
+SET lvl2_orig = o.id
+from level2_zones as o
+where lvl2_orig is NULL AND (orcprovt <> 35 and (orcprovt = o.pruid));
+
+--SET destination lvl 2 zone for internal origin and external cmas
+update tsrc_trip
+SET lvl2_dest = d.id
+from level2_zones as d
+where (mddplfl = 35 and mdccd = d.cduid and mdccma2 = d.cmauid) 
+	or (mddplfl <> 35 and (mdccma2 = d.cmauid and mddplfl = d.pruid));
+	
+--SET destination lvl 2 zone for external provinces
+update tsrc_trip
+SET lvl2_dest = d.id
+from level2_zones as d
+where lvl2_dest is NULL AND (mddplfl <> 35 and (mddplfl = d.pruid));
+
 
 --remove any trips that  are in ontario but dont have a origin/dest cd
 delete from tsrc_trip
