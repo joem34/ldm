@@ -29,11 +29,15 @@ INSERT INTO level2_zones (pruid, cduid, cmauid, description, zone_type, metro, g
 UNION
 --get remaining areas of census divisions as the remainding zones
 	SELECT CAST(cd.pruid as INTEGER), CAST(cd.cduid as INTEGER), 0, cd.cdname, 0, 0,
-		ST_Multi(COALESCE(ST_Difference(cd.geom, cdcma.geom), cd.geom)) as geom
-	FROM census_divisions as cd
-	left join temp_cd_cma_intersection as cdcma on CAST(cd.cduid as integer) = cdcma.cduid
-	where cd.pruid = '35' and GeometryType(COALESCE(ST_Difference(cd.geom, cdcma.geom), cd.geom)) != 'GEOMETRYCOLLECTION'
+		ST_Multi(ST_Difference(cd.geom, all_cmas.geom)) as geom
+	FROM census_divisions as cd,
+		(SELECT ST_Union(geom) as geom from cmas where cmatype = 'B' and pruid = '35') as all_cmas
+	
+	where cd.pruid = '35' and GeometryType(COALESCE(ST_Difference(cd.geom, all_cmas.geom), cd.geom)) != 'GEOMETRYCOLLECTION'
 order by cduid;
+
+
+
 
 --add canadian province zones
 INSERT INTO level2_zones (pruid, cduid, cmauid, description, zone_type, metro, ext_zone_id, geom)
