@@ -1,11 +1,14 @@
 #m logit
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(mnlogit, tidyr, dplyr,data.table,purrr,broom,h5, ggplot2)
+pacman::p_load(mnlogit, tidyr, dplyr,data.table,purrr,broom,h5)
 
 #setwd("C:/Users/Joe/")
 
 trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_all_trips.csv"))
-trips <- trips %>% rename(purpose = mrdtrip2, chid = id)
+trips <- trips %>% 
+  rename(purpose = mrdtrip2, chid = id) %>%
+  mutate(daily.weight = wtep / (365 * 3)) #need to scale weight by number of years, and to a daily count
+
 alternatives <- as.data.frame(fread("canada/data/mnlogit/mnlogit_all_alternatives.csv"))
 alternatives <- alternatives %>% rename(alt = zone_lvl2)
 
@@ -76,12 +79,12 @@ trips_long <- trips_long %>%
 
 trips.by.purpose <- trips_long %>% filter(purpose < 4) %>% group_by(purpose) %>% nest()
 #build weights for each purpose
-weights.by.purpose <- trips %>% select(purpose, wtep) %>% filter(purpose < 4) %>% group_by(purpose) %>% nest()
+weights.by.purpose <- trips %>% select(purpose, daily.weight) %>% filter(purpose < 4) %>% group_by(purpose) %>% nest()
 trips.by.purpose$weights <- weights.by.purpose$data
 
 
 f <- formula(choice ~ dist_log + dist_exp + dist_2 + dist + population + lang.barrier + mm + rm | 0 )
-trip_models <- trips.by.purpose %>% mutate(model = map2(data, weights, ~ mnlogit(f, .x, choiceVar = 'alt', weights=.y$wtep, ncores=8)))
+trip_models <- trips.by.purpose %>% mutate(model = map2(data, weights, ~ mnlogit(f, .x, choiceVar = 'alt', weights=.y$daily.weight, ncores=8)))
 
 trip_models <- trip_models %>% mutate(model_summary = map(model, ~ summary(.)))                    
 
@@ -96,9 +99,9 @@ for (i in results$purpose) {
   trip_columns <- (trips %>% filter(purpose == i))
   results$df[[i]] <- data.frame(predict(trip_models$model[[i]]))
   
-  results$df[[i]]<- data.frame(sapply(results$df[[i]], function(x) x * trip_columns$wtep)) # multiply values by weight
+  results$df[[i]]<- data.frame(sapply(results$df[[i]], function(x) x * trip_columns$daily.weight)) # multiply values by weight
   
-  results$df[[i]]$origin <- trip_columns$lvl2_orig #link to origin
+  results$df[[i]]$origin <- trip_columns$lvl2_orig #link to origin 
   results$trip.matrx[[i]] <- results$df[[i]] %>% group_by(origin) %>% summarise_each(funs(sum))
   results$trip.matrx[[i]] <- melt(results$trip.matrx[[i]], 
                                   id.vars = c("origin"), variable.name = "dest", value.name=paste0("purpose.",toString(i)))
@@ -115,44 +118,16 @@ total_matrix <- total_matrix %>% mutate(total = purpose.1 + purpose.2 + purpose.
 tsrc.by.purpose <- trips %>% 
   filter(purpose < 4) %>%
   group_by (lvl2_orig, lvl2_dest) %>%
-  summarise(total = n()) %>%
+  summarise(total = sum(daily.weight)) %>% #need to scale weight by number of years, and to a daily count
   rename (origin = lvl2_orig, dest = lvl2_dest)
 errors <- merge(total_matrix, tsrc.by.purpose, by=c("origin", "dest"), all=FALSE)
 errors <- errors %>% mutate(abs_err = abs(total.x - total.y),
                  rel_err = abs_err / total.y)
 
 
-#write errors to file, plot error graph
+#write errors to file
 write.csv(x = errors, file = "canada/data/mnlogit_results_weighted.csv")
-res1 <- res1 %>% mutate(od_type = ifelse(origin < 4000 & dest < 4000, "II", 
-                                         ifelse(origin < 4000 & dest > 4000, "IE", 
-                                                ifelse(origin > 4000 & dest < 4000, "EI", "EE" 
-                                                ))))
-res1$od_type <- as.factor(res1$od_type)
 
-res1$od_type <- factor(res1$od_type, levels = rev(levels(res1$od_type)))
-g1 <- ggplot(res1) +
-  geom_point(data = res1, aes(x = abs_err, y = rel_err, color=od_type)) +
-  geom_point(data = subset(res1, od_type == 'II'),
-             aes(x = abs_err, y = rel_err, color = od_type )) +
-  xlim(0, 6000) + ylim(0, 200) + 
-  labs(title="Discrete Choice Model Errors") + labs(x="Absolute error ", y="Relative error") +
-  scale_color_brewer(name="OD Pair Type",
-                     labels=c("II - Intra Ontario", "IE - Outgoing", "EI - Incoming", "EE - External"), 
-                     palette = 2, type = "qual")
-
-g1
-#save graph as png file
-png(file="canada/docs/mnlogit_results_weighted.png",width=1400,height=800,res=150)
-g1
-dev.off()
-
-cor(trips$professional_employment, trips$retail_emp)
-
-setdiff(results$df[[i]]$origin[[2]], results$df[[i]]$origin[[3]])
-
-tm.1 <- total_matrix[[1]]
-
-#predicting using random sampling
-sample(attr(results,"dimnames")[[2]], 100, prob = results[1,], replace = TRUE)
-as.numeric(names(which.max(table(results.1))))
+#save graph
+source("canada/R/mto_graphing.R")
+error.plot <- error_chart(errors,"canada/charts/mnlogit_model_errors.png")
