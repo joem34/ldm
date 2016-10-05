@@ -1,6 +1,6 @@
 library(ggplot2)
 
-error_chart <- function(error.results, save.file.name) {
+error_chart <- function(error.results, model.formula, save.file.name) {
   internal.zone.cutoff = 70
   #plot error graph
   res1 <- error.results %>% mutate(od_type = ifelse(origin < internal.zone.cutoff & dest < internal.zone.cutoff, "II", 
@@ -16,7 +16,9 @@ error_chart <- function(error.results, save.file.name) {
     geom_point(data = subset(res1, od_type == 'II'),
                aes(x = abs_err, y = rel_err, color = od_type )) +
     xlim(0, 6000) + ylim(0, 200) + 
-    labs(title="Discrete Choice Model Errors") + labs(x="Absolute error ", y="Relative error") +
+    labs(title="Discrete Choice Model Errors") + 
+    labs(subtitle=deparse(model.formula)) + 
+    labs(x="Absolute error ", y="Relative error") +
     scale_color_brewer(name="OD Pair Type",
                        labels=c("II - Intra Ontario", "IE - Outgoing", "EI - Incoming", "EE - External"), 
                        palette = 2, type = "qual")

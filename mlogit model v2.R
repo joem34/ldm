@@ -62,7 +62,7 @@ build_long_trips <- function (a,t) {
 #need to build list of alternative choices for each purpose: one for each trip, and every alternative
 segments <- segments %>% mutate( trips.long = map2 (alternatives, s_trips, build_long_trips) )
 
-f <- formula(choice ~ dist_log + dist_exp + dist_2 + dist + pop_log + lang.barrier + mm + rm | 0 )
+f <- formula(choice ~ dist_log + dist_exp + dist_2 + dist + population + lang.barrier + mm + rm | 0 )
 #run the model for each segment
 trip_models <- segments %>% 
   transmute(model = map2(trips.long, s_trips, 
