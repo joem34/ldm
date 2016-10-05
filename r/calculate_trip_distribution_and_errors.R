@@ -1,9 +1,9 @@
 ############ Trip distribution matrix
 
 #make trip dist matricies for segment
-results <- data.frame(purpose = segments$purpose)
-for (i in results$purpose) { 
-  trip_columns <- (trips %>% filter(purpose == i))
+results <- data.frame(category = segments$category)
+for (i in results$category) { 
+  trip_columns <- (trips %>% filter(category == i))
   results$df[[i]] <- data.frame(predict(trip_models$model[[i]]))
   
   results$df[[i]]<- data.frame(sapply(results$df[[i]], function(x) x * trip_columns$daily.weight)) # multiply values by weight
@@ -27,8 +27,8 @@ results <- results %>%
                                           )
            )
 
-purpose.errors <- results %>% 
-  select(purpose, trip.matrix, ex.od) %>%
+category.errors <- results %>% 
+  select(category, trip.matrix, ex.od) %>%
   mutate(
     t = map2(trip.matrix, ex.od, function(x, ex) {
       merge(x, ex, by=c("origin", "dest"), all.x=TRUE) %>%
@@ -40,10 +40,10 @@ purpose.errors <- results %>%
     }
   ))
 
-#add the purpose identifier to each data frame, then concatenate them all together
-purpose.errors <- purpose.errors %>% 
-  mutate(t = map2(t, purpose, ~ mutate(.x, purpose = .y)))
-combined.errors <- data.table::rbindlist(purpose.errors$t)
+#add the category identifier to each data frame, then concatenate them all together
+category.errors <- category.errors %>% 
+  mutate(t = map2(t, category, ~ mutate(.x, category = .y)))
+combined.errors <- data.table::rbindlist(category.errors$t)
 
 #combine trip matricies
 total.errors <- combined.errors %>% group_by (origin, dest) %>%

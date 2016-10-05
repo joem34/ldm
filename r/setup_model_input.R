@@ -2,7 +2,7 @@
 
 trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_all_trips2.csv"))
 trips <- trips %>% 
-  rename(purpose = mrdtrip2, chid = id) %>%
+  rename(category = mrdtrip2, chid = id) %>%
   mutate(daily.weight = wtep / (365 * 3)) #need to scale weight by number of years, and to a daily count
 
 alternatives <- as.data.frame(fread("canada/data/mnlogit/mnlogit_canada_alternatives2.csv"))
@@ -14,18 +14,18 @@ tt <- f["data/cd_traveltimes"]
 cd_tt <- tt[]
 
 #filter trips to only those that we want to use, and get the origin language
-s_trips <- trips %>% filter(purpose < 4) %>%
+s_trips <- trips %>% filter(category < 4) %>%
   mutate(o.lang = alternatives[lvl2_orig,]$d.lang)
 
-#get valid alternatives for each purpose, and sort them. i.e. business has no records for one of the lvl2 zones
+#get valid alternatives for each category, and sort them. i.e. business has no records for one of the lvl2 zones
 segments <- s_trips %>% 
-  group_by(purpose) %>% 
+  group_by(category) %>% 
   nest() %>% 
   mutate(alt.ids = map(data, function (x) sort(unique(x$lvl2_dest)))) %>% 
   rename (s_trips = data)
 
 
-#filter alternatives for each purpose
+#filter alternatives for each category
 segments <- segments %>% 
   mutate (alternatives = map(alt.ids, function (x) filter(alternatives, alt %in% x)))
 
@@ -55,7 +55,7 @@ build_long_trips <- function (a,t) {
     )
 }
 
-#need to build list of alternative choices for each purpose: one for each trip, and every alternative
+#need to build list of alternative choices for each category: one for each trip, and every alternative
 segments <- segments %>% mutate( trips.long = map2 (alternatives, s_trips, build_long_trips) )
 
 

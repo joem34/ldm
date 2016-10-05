@@ -15,3 +15,7 @@ data.frame(coef(trip_models$model_summary[[1]]))
 
 #lrtest(ml.trip, ml.trip.i)
 
+
+#working towards getting the coefficients into a dataframe in a nice format
+temp <- coef(trip_models$model_summary[[1]])
+setNames(as.vector(temp), names(temp))
