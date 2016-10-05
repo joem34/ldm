@@ -1,23 +1,53 @@
 ############ Trip distribution matrix
 
+#make trip dist matricies for segment
+results <- data.frame(purpose = segments$purpose)
+for (i in results$purpose) { 
+  trip_columns <- (trips %>% filter(purpose == i))
+  results$df[[i]] <- data.frame(predict(trip_models$model[[i]]))
+  
+  results$df[[i]]<- data.frame(sapply(results$df[[i]], function(x) x * trip_columns$daily.weight)) # multiply values by weight
+  
+  results$df[[i]]$origin <- trip_columns$lvl2_orig #link to origin 
+  results$trip.matrix[[i]] <- results$df[[i]] %>% group_by(origin) %>% summarise_each(funs(sum))
+  results$trip.matrix[[i]] <- melt(results$trip.matrix[[i]], 
+                                  id.vars = c("origin"), variable.name = "dest", value.name="total")
+  #remove the x from the destination
+  results$trip.matrix[[i]]$dest <- as.numeric(substring(results$trip.matrix[[i]]$dest, 2))
+}  
+########### Calculate segment errors
+results$s_trips <- segments$s_trips
+
+#make the tsrc od counts for each category ex = expected
+results <- results %>% 
+  mutate ( ex.od = map(s_trips, ~ group_by(., lvl2_orig, lvl2_dest) %>%
+                                                   #need to scale weight by number of years, and to a daily count
+                                                   summarise(total = sum(daily.weight)) %>% 
+                                                   rename (origin = lvl2_orig, dest = lvl2_dest)
+                                          )
+           )
+
+purpose.errors <- results %>% 
+  select(purpose, trip.matrix, ex.od) %>%
+  mutate(
+    t = map2(trip.matrix, ex.od, function(x, ex) {
+      merge(x, ex, by=c("origin", "dest"), all.x=TRUE) %>%
+        rename (x = total.x, ex = total.y) %>%
+        mutate(
+          ex = ifelse(is.na(ex), 0, ex),
+          abs_err = abs(ex - x), #calculate errors here
+          rel_err = abs_err / ex)
+    }
+  ))
+
+#add the purpose identifier to each data frame, then concatenate them all together
+purpose.errors <- purpose.errors %>% 
+  mutate(t = map2(t, purpose, ~ mutate(.x, purpose = .y)))
+combined.errors <- data.table::rbindlist(purpose.errors$t)
 
 #combine trip matricies
-total_matrix <- merge(results$trip.matrx[[1]], results$trip.matrx[[2]], all = TRUE, by=c("origin", "dest"))
-total_matrix <- merge(total_matrix, results$trip.matrx[[3]], all = TRUE, by=c("origin", "dest"))
-total_matrix[is.na(total_matrix)] <- 0 #convert all NA to 0
-total_matrix$dest <- as.numeric(substr(total_matrix$dest, 2, 5)) #remove x from start of destination
-total_matrix <- total_matrix %>% mutate(total = purpose.1 + purpose.2 + purpose.3)
-
-
-
-
-########### Calculate errors
-tsrc.by.purpose <- s_trips %>% 
-  group_by (lvl2_orig, lvl2_dest) %>%
-  summarise(total = sum(daily.weight)) %>% #need to scale weight by number of years, and to a daily count
-  rename (origin = lvl2_orig, dest = lvl2_dest)
-errors <- merge(total_matrix, tsrc.by.purpose, by=c("origin", "dest"), all=FALSE)
-errors <- errors %>% mutate(abs_err = abs(total.x - total.y),
-                            rel_err = abs_err / total.y)
+total.errors <- combined.errors %>% group_by (origin, dest) %>%
+  summarise_all(sum) %>% 
+  mutate(abs_err = abs(ex - x), rel_err = abs_err / ex)
 
 
