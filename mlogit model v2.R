@@ -4,16 +4,16 @@ pacman::p_load(mnlogit, tidyr, dplyr,data.table,purrr,broom,h5)
 
 #setwd("C:/Users/Joe/")
 
-trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_all_trips.csv"))
+trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_all_trips2.csv"))
 trips <- trips %>% 
   rename(purpose = mrdtrip2, chid = id) %>%
   mutate(daily.weight = wtep / (365 * 3)) #need to scale weight by number of years, and to a daily count
 
-alternatives <- as.data.frame(fread("canada/data/mnlogit/mnlogit_all_alternatives.csv"))
-alternatives <- alternatives %>% rename(alt = zone_lvl2)
+alternatives <- as.data.frame(fread("canada/data/mnlogit/mnlogit_canada_alternatives2.csv"))
+alternatives <- alternatives %>% select (alt, population, employment, alt_is_metro, d.lang = speak_french)
 
 #load skim
-f <- h5file("canada/data/mnlogit/cd_travel_times.omx")
+f <- h5file("canada/data/mnlogit/cd_travel_times2.omx")
 tt <- f["data/cd_traveltimes"]
 cd_tt <- tt[]
 cds = f["lookup/cd"][]
@@ -23,68 +23,57 @@ for (i in seq_along(cds)){
   cd_index[cds[i]] = i
 }
 
-s_trips <- trips[c(1:8)]#[1:1000,]
-#filter alternatives that don't appear in the trip destinations (check by purpose too?)
-valid_alternatives <- alternatives[c(1:3, ncol(alternatives))] %>% 
-  filter(alt %in% unique(s_trips$lvl2_dest)) %>%
-  mutate(metro = as.numeric(metro == 't')) %>% #convert to numeric
-  rename(alt_is_metro = metro)
 
-print ("excluded alternatives with no recorded trps (probably mostly US trips)")
-setdiff(alternatives$alt, valid_alternatives$alt)
+#filter trips to only those that we want to use, and get the origin language
+s_trips <- trips %>% filter(purpose < 4) %>%
+  mutate(o.lang = alternatives[lvl2_orig,]$d.lang)
 
-#compute language change of trips, alternatives (TODO; make this more robust later)
-get_zone_language <- Vectorize(function(z) { if (z %in% c(9750,9752,9753,9754,9755,9756,
-                                                          9757,9758,9759,9760,9761,9762,
-                                                          9763,9764,9767,9768, 9770,9771,
-                                                          9773,9774,9775,9776,9777,9778,
-                                                          9779,9780,9781,9782,9783,9784,
-                                                          9785, 9788)) { 1 } else { 0 } })
+#get valid alternatives for each purpose, and sort them. i.e. business has no records for one of the lvl2 zones
+segments <- s_trips %>% 
+  group_by(purpose) %>% 
+  nest() %>% 
+  mutate(alt.ids = map(data, function (x) sort(unique(x$lvl2_dest)))) %>% 
+  rename (s_trips = data)
 
-s_trips <- s_trips %>% mutate(o.lang = get_zone_language(lvl2_orig))
-valid_alternatives <- valid_alternatives %>% mutate(d.lang = get_zone_language(alt)) 
 
-#need to build list of alternative choices: one for each trip, and every alternative
-trips_long <- merge(x = valid_alternatives, y = s_trips, by = NULL) %>% mutate(choice = lvl2_dest == alt)
+#filter alternatives for each purpose
+segments <- segments %>% 
+  mutate (alternatives = map(alt.ids, function (x) filter(alternatives, alt %in% x)))
 
 #make a vectorised version of a function to get distance between two cds, that can be applied to a column with dplyr
 get_dist_v <- Vectorize(function(o,d) { cd_tt[cd_index[o], cd_index[d]] })
 
-#compute distance #this is a bit slow
-trips_long <- trips_long %>% 
-  mutate(
-    dist = get_dist_v(lvl2_orig, alt),
-    dist_log = log(dist),
-    dist_2 = dist^2,
-    dist_exp = exp(-0.003 * dist),
-    lang.barrier = (o.lang+d.lang)%%2 #calculate if the origin and dest have different languages
-  ) 
-trips_long$dist_log[trips_long$dist_log<0] <- 0
+build_long_trips <- function (a,t) {
+  #merge(x = a, y = t, by = NULL) 
+  a1 <- data.table(a) #hack using data tables that is alot faster than doing a merge on dataframes
+  t1 <- data.table(t)
+  setkeyv(a1[,k:=1], c(key(a1), "k"))
+  setkeyv(t1[,k:=1], c(key(t1), "k"))
+  merge(t1, a1, by=.EACHI, allow.cartesian = TRUE) %>% 
+    mutate(
+      choice = lvl2_dest == alt,
+      dist = get_dist_v(lvl2_orig, alt),
+      dist_log = log(dist),
+      dist_log = ifelse (dist_log < 0, 0, dist_log),
+      dist_2 = dist^2,
+      dist_exp = exp(-0.003 * dist),
+      lang.barrier = (o.lang+d.lang)%%2, #calculate if the origin and dest have different languages
+      mm = orig_is_metro * alt_is_metro,
+      rm = (1-orig_is_metro)*alt_is_metro,
+      mr = (1-alt_is_metro)*orig_is_metro,
+      rr = (1-orig_is_metro)*(1-alt_is_metro)
+    )
+}
 
-trips_long <- trips_long %>%
-  mutate(
-    mm = orig_is_metro * alt_is_metro,
-    rm = (1-orig_is_metro)*alt_is_metro,
-    mr = (1-alt_is_metro)*orig_is_metro,
-    rr = (1-orig_is_metro)*(1-alt_is_metro)
-  )
-
-
-#trips$retail_emp <- trips$naics_44
-#trips$professional_employment <- trips$naics_51 + trips$naics_52 + trips$naics_54 + trips$naics_55
-
-
-#ml.trip <- mnlogit(f, data = trips_long, choiceVar = 'alt', ncores=8) #, weights=weights)
-#summary(ml.trip)
-
-trips.by.purpose <- trips_long %>% filter(purpose < 4) %>% group_by(purpose) %>% nest()
-#build weights for each purpose
-weights.by.purpose <- trips %>% select(purpose, daily.weight) %>% filter(purpose < 4) %>% group_by(purpose) %>% nest()
-trips.by.purpose$weights <- weights.by.purpose$data
-
+#need to build list of alternative choices for each purpose: one for each trip, and every alternative
+segments <- segments %>% mutate( trips.long = map2 (alternatives, s_trips, build_long_trips) )
 
 f <- formula(choice ~ dist_log + dist_exp + dist_2 + dist + population + lang.barrier + mm + rm | 0 )
-trip_models <- trips.by.purpose %>% mutate(model = map2(data, weights, ~ mnlogit(f, .x, choiceVar = 'alt', weights=.y$daily.weight, ncores=8)))
+#run the model for each segment
+trip_models <- segments %>% 
+  mutate(model = map2(trips.long, s_trips, 
+                      function(t.l,t.s) mnlogit(f, t.l, choiceVar = 'alt', weights=t.s$daily.weight, ncores=8))
+  )
 
 trip_models <- trip_models %>% mutate(model_summary = map(model, ~ summary(.)))                    
 
@@ -115,19 +104,18 @@ total_matrix$dest <- as.numeric(substr(total_matrix$dest, 2, 5)) #remove x from 
 total_matrix <- total_matrix %>% mutate(total = purpose.1 + purpose.2 + purpose.3)
 
 #calculate errors
-tsrc.by.purpose <- trips %>% 
-  filter(purpose < 4) %>%
+tsrc.by.purpose <- s_trips %>% 
   group_by (lvl2_orig, lvl2_dest) %>%
   summarise(total = sum(daily.weight)) %>% #need to scale weight by number of years, and to a daily count
   rename (origin = lvl2_orig, dest = lvl2_dest)
 errors <- merge(total_matrix, tsrc.by.purpose, by=c("origin", "dest"), all=FALSE)
 errors <- errors %>% mutate(abs_err = abs(total.x - total.y),
-                 rel_err = abs_err / total.y)
+                            rel_err = abs_err / total.y)
 
 
 #write errors to file
-write.csv(x = errors, file = "canada/data/mnlogit_results_weighted.csv")
+write.csv(x = errors, file = "canada/data/mnlogit_results_weighted2.csv")
 
 #save graph
 source("canada/R/mto_graphing.R")
-error.plot <- error_chart(errors,"canada/charts/mnlogit_model_errors.png")
+error.plot <- error_chart(errors,"canada/charts/mnlogit_model_errors2.png")

@@ -1,11 +1,12 @@
 library(ggplot2)
 
 error_chart <- function(error.results, save.file.name) {
-  
+  internal.zone.cutoff = 70
   #plot error graph
-  res1 <- error.results %>% mutate(od_type = ifelse(origin < 4000 & dest < 4000, "II", 
-                                           ifelse(origin < 4000 & dest > 4000, "IE", 
-                                                  ifelse(origin > 4000 & dest < 4000, "EI", "EE" 
+  res1 <- error.results %>% mutate(od_type = ifelse(origin < internal.zone.cutoff & dest < internal.zone.cutoff, "II", 
+                                           ifelse(origin < internal.zone.cutoff & dest > internal.zone.cutoff, "IE", 
+                                                  ifelse(origin > internal.zone.cutoff 
+                                                         & dest < internal.zone.cutoff, "EI", "EE" 
                                                   ))))
   res1$od_type <- as.factor(res1$od_type)
   
