@@ -3,6 +3,11 @@ ALTER TABLE tsrc_trip ADD COLUMN lvl2_orig integer;
 ALTER TABLE tsrc_trip ADD COLUMN lvl2_dest integer;
 ALTER TABLE tsrc_trip ADD COLUMN orig_is_metro integer;
 ALTER TABLE tsrc_trip ADD COLUMN dest_is_metro integer;
+ALTER TABLE tsrc_trip ADD COLUMN is_summer integer;
+
+--is trip winter or summer, as set by Sundar
+update tsrc_trip
+SET is_summer = CAST(refmth < 4 or refmth > 10 as integer)
 
 --set a metro or not metro flag. #TODO; this will need to be calculated differently for generated trips
 update tsrc_trip

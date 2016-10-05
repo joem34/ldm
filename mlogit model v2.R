@@ -16,13 +16,6 @@ alternatives <- alternatives %>% select (alt, population, employment, alt_is_met
 f <- h5file("canada/data/mnlogit/cd_travel_times2.omx")
 tt <- f["data/cd_traveltimes"]
 cd_tt <- tt[]
-cds = f["lookup/cd"][]
-#build an indexing of the cds/zones to speed things up when cacluating all travel times
-cd_index <- vector(mode="integer", length=max(cds))
-for (i in seq_along(cds)){
-  cd_index[cds[i]] = i
-}
-
 
 #filter trips to only those that we want to use, and get the origin language
 s_trips <- trips %>% filter(purpose < 4) %>%
@@ -41,7 +34,7 @@ segments <- segments %>%
   mutate (alternatives = map(alt.ids, function (x) filter(alternatives, alt %in% x)))
 
 #make a vectorised version of a function to get distance between two cds, that can be applied to a column with dplyr
-get_dist_v <- Vectorize(function(o,d) { cd_tt[cd_index[o], cd_index[d]] })
+get_dist_v <- Vectorize(function(o,d) { cd_tt[o, d] })
 
 build_long_trips <- function (a,t) {
   #merge(x = a, y = t, by = NULL) 
@@ -57,6 +50,7 @@ build_long_trips <- function (a,t) {
       dist_log = ifelse (dist_log < 0, 0, dist_log),
       dist_2 = dist^2,
       dist_exp = exp(-0.003 * dist),
+      pop_log = log(population),
       lang.barrier = (o.lang+d.lang)%%2, #calculate if the origin and dest have different languages
       mm = orig_is_metro * alt_is_metro,
       rm = (1-orig_is_metro)*alt_is_metro,
@@ -68,10 +62,10 @@ build_long_trips <- function (a,t) {
 #need to build list of alternative choices for each purpose: one for each trip, and every alternative
 segments <- segments %>% mutate( trips.long = map2 (alternatives, s_trips, build_long_trips) )
 
-f <- formula(choice ~ dist_log + dist_exp + dist_2 + dist + population + lang.barrier + mm + rm | 0 )
+f <- formula(choice ~ dist_log + dist_exp + dist_2 + dist + pop_log + lang.barrier + mm + rm | 0 )
 #run the model for each segment
 trip_models <- segments %>% 
-  mutate(model = map2(trips.long, s_trips, 
+  transmute(model = map2(trips.long, s_trips, 
                       function(t.l,t.s) mnlogit(f, t.l, choiceVar = 'alt', weights=t.s$daily.weight, ncores=8))
   )
 
@@ -83,7 +77,7 @@ data.frame(coef(trip_models$model_summary[[1]]))
 
 #lrtest(ml.trip, ml.trip.i)
 #make trip dist matricies
-results <- data.frame(purpose = c(1:3))
+results <- data.frame(purpose = segments$purpose)
 for (i in results$purpose) { 
   trip_columns <- (trips %>% filter(purpose == i))
   results$df[[i]] <- data.frame(predict(trip_models$model[[i]]))
@@ -112,10 +106,16 @@ errors <- merge(total_matrix, tsrc.by.purpose, by=c("origin", "dest"), all=FALSE
 errors <- errors %>% mutate(abs_err = abs(total.x - total.y),
                             rel_err = abs_err / total.y)
 
+#save results
+run.folder <- paste("model", format(Sys.time(), "%Y-%m-%d-%H%M%S"), sep = "_")
+current.run.folder <- file.path("canada/data/mnlogit/runs", run.folder)
+dir.create(current.run.folder)
 
+capture.output(trip_models$model_summary, file = file.path(current.run.folder, "model_summary.txt"))
+#save(), file = file.path(current.run.folder, "models.dat"))
 #write errors to file
-write.csv(x = errors, file = "canada/data/mnlogit_results_weighted2.csv")
+write.csv(x = errors, file = file.path(current.run.folder, "errors.csv"))
 
 #save graph
 source("canada/R/mto_graphing.R")
-error.plot <- error_chart(errors,"canada/charts/mnlogit_model_errors2.png")
+error.plot <- error_chart(errors,file.path(current.run.folder, "error_chart.png"))
