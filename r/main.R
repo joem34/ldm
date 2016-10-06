@@ -11,12 +11,16 @@ start.run <- function () {
   dir.create(current.run.folder)
 }
 
+class.columns <- list("mrdtrip2" = list("1","2","3"))
+
 start.run()
-class.column <- "mrdtrip2"
-for (class in c("1","2","3")) {
-  class.ref <- paste(class.column, class, sep = "_")
-  print (paste("processing class ", class.ref ))
- 
+for (class.column in names(class.columns)) {
+  for (class in class.columns[[class.column]]) {
+
+    class.ref <- paste(class.column, class, sep = "_")
+    print (paste("processing class:", class.ref ))
+  } 
+}
   source("canada/R/setup_model_input.R",echo=FALSE)
   
   source("canada/R/run_mnlogit_model.R",echo=FALSE)
