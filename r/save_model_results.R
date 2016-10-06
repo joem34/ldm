@@ -4,7 +4,8 @@ print ("    Saving")
 
 
 append.csv <- function(x, file) {
-  write.table(x = x, file = file,na = "", sep = ",", append = TRUE, row.names = FALSE)
+  inc.col.names <- !file.exists(file)
+  write.table(x = x, file = file,na = "", sep = ",", append = TRUE, row.names = FALSE, col.names = inc.col.names)
 }
 
 append.csv(model.coefficients, file.path(current.run.folder, "model_coefficients.csv"))
@@ -16,4 +17,8 @@ cat(deparse(f), "\n", file = file.path(current.run.folder, "formulas.txt"), appe
 
 #save graph
 source("canada/R/mto_graphing.R")
-error.plot <- error_chart(errors, file.path(current.run.folder, "total_error_chart.png"))
+chart_folder <- file.path(current.run.folder, "charts")
+dir.create(chart_folder, showWarnings = FALSE)
+
+error.file.name <- paste0(class.ref, "_error_chart.png")
+error.plot <- error_chart(errors, file.path(chart_folder, error.file.name))

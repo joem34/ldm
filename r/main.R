@@ -13,8 +13,9 @@ start.run <- function () {
 
 start.run()
 class.column <- "mrdtrip2"
-for (class in c(1)) {
-  print (paste("processing class ", class ))
+for (class in c("1","2","3")) {
+  class.ref <- paste(class.column, class, sep = "_")
+  print (paste("processing class ", class.ref ))
  
   source("canada/R/setup_model_input.R",echo=FALSE)
   
