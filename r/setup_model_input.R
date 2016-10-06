@@ -1,24 +1,26 @@
 ############### Setup Model Input
 
-trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_all_trips2.csv"))
-trips <- trips %>% 
-  rename(category = mrdtrip2, chid = id) %>%
-  mutate(daily.weight = wtep / (365 * 3)) #need to scale weight by number of years, and to a daily count
-
 alternatives <- as.data.frame(fread("canada/data/mnlogit/mnlogit_canada_alternatives2.csv"))
 alternatives <- alternatives %>% select (alt, population, employment, alt_is_metro, d.lang = speak_french)
+
+trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_all_trips2.csv"))
+trips <- trips %>% 
+  filter(mrdtrip2 < 4) %>%
+  rename(chid = id) %>%
+  mutate( 
+    category = factor(mrdtrip2, labels = c("Leisure", "Visit", "Business")), 
+    daily.weight = wtep / (365 * 3),
+    o.lang = alternatives[lvl2_orig,]$d.lang
+  )  #need to scale weight by number of years, and to a daily count
+
 
 #load skim
 f <- h5file("canada/data/mnlogit/cd_travel_times2.omx")
 tt <- f["data/cd_traveltimes"]
 cd_tt <- tt[]
 
-#filter trips to only those that we want to use, and get the origin language
-s_trips <- trips %>% filter(category < 4) %>%
-  mutate(o.lang = alternatives[lvl2_orig,]$d.lang)
-
 #get valid alternatives for each category, and sort them. i.e. business has no records for one of the lvl2 zones
-segments <- s_trips %>% 
+segments <- trips %>% 
   group_by(category) %>% 
   nest() %>% 
   mutate(alt.ids = map(data, function (x) sort(unique(x$lvl2_dest)))) %>% 
@@ -38,7 +40,7 @@ build_long_trips <- function (a,t) {
   t1 <- data.table(t)
   setkeyv(a1[,k:=1], c(key(a1), "k"))
   setkeyv(t1[,k:=1], c(key(t1), "k"))
-  merge(t1, a1, by=.EACHI, allow.cartesian = TRUE) %>% 
+  data.table::merge(t1, a1, by=.EACHI, allow.cartesian = TRUE) %>% 
     mutate(
       choice = lvl2_dest == alt,
       dist = get_dist_v(lvl2_orig, alt),

@@ -1,15 +1,32 @@
 ############ Trip distribution matrix
 
+#get od pair type
+internal.zone.cutoff = 70
+
+#function to calculate the od pair type. need to input the internal zone cutoff, assumes that internal zones are first in list
+get.od.type <- function (origin, dest) {
+  factor(
+    ifelse(origin < internal.zone.cutoff & dest < internal.zone.cutoff, "II", 
+           ifelse(origin < internal.zone.cutoff & dest > internal.zone.cutoff, "IE", 
+                  ifelse(origin > internal.zone.cutoff & dest < internal.zone.cutoff, "EI", "EE" 
+                  ))), levels = c("II", "IE", "EI", "EE")
+  )
+}
+
+
 #make trip dist matricies for segment
-results <- data.frame(category = segments$category)
-for (i in results$category) { 
-  trip_columns <- (trips %>% filter(category == i))
-  results$df[[i]] <- data.frame(predict(trip_models$model[[i]]))
+results <- segments %>% select(category, s_trips)
+
+results <- segments %>% transmute(
+  category = category,
+  s_trips = s_trips,
+  weighted.predictions = map2(model, s_trips, function(m, t) data.frame(predict(m)) * t$daily.weight)
+)
+#add origin to each row of weighted.predictions
+for (i in as.numeric(results$category)) { 
+  results$weighted.predictions[[i]]$origin <- segments$s_trips[[i]]$lvl2_orig
   
-  results$df[[i]]<- data.frame(sapply(results$df[[i]], function(x) x * trip_columns$daily.weight)) # multiply values by weight
-  
-  results$df[[i]]$origin <- trip_columns$lvl2_orig #link to origin 
-  results$trip.matrix[[i]] <- results$df[[i]] %>% group_by(origin) %>% summarise_each(funs(sum))
+  results$trip.matrix[[i]] <- results$weighted.predictions[[i]] %>% group_by(origin) %>% summarise_each(funs(sum))
   results$trip.matrix[[i]] <- melt(results$trip.matrix[[i]], 
                                   id.vars = c("origin"), variable.name = "dest", value.name="total")
   #remove the x from the destination
@@ -34,6 +51,7 @@ category.errors <- results %>%
       merge(x, ex, by=c("origin", "dest"), all.x=TRUE) %>%
         rename (x = total.x, ex = total.y) %>%
         mutate(
+          type = get.od.type(origin, dest),
           ex = ifelse(is.na(ex), 0, ex),
           abs_err = abs(ex - x), #calculate errors here
           rel_err = abs_err / ex)
@@ -46,7 +64,8 @@ category.errors <- category.errors %>%
 combined.errors <- data.table::rbindlist(category.errors$t)
 
 #combine trip matricies
-total.errors <- combined.errors %>% group_by (origin, dest) %>%
+total.errors <- combined.errors %>% group_by (origin, dest, type) %>%
+  select(-category) %>%
   summarise_all(sum) %>% 
   mutate(abs_err = abs(ex - x), rel_err = abs_err / ex)
 
