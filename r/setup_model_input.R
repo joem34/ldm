@@ -2,24 +2,9 @@
 
 print ("    Setup input files")
 
-
-alternatives <- as.data.frame(fread("canada/data/mnlogit/mnlogit_canada_alternatives2.csv"))
-alternatives <- alternatives %>% select (alt, population, employment, alt_is_metro, d.lang = speak_french)
-
-trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_all_trips2.csv"))
-trips <- trips %>% 
-  filter_(paste(class.column, class, sep = " == ")) %>% #use underscore and then quoted arguments to filter by a string
-  rename(chid = id) %>%
-  mutate( 
-    daily.weight = wtep / (365 * 3),
-    o.lang = alternatives[lvl2_orig,]$d.lang
-  )  #need to scale weight by number of years, and to a daily count
-
-
-#load skim
-f <- h5file("canada/data/mnlogit/cd_travel_times2.omx")
-tt <- f["data/cd_traveltimes"]
-cd_tt <- tt[]
+#use underscore and then quoted arguments to filter by a string
+trips <- all_trips %>% filter_(paste0(class.column, " == '", class, "'")) 
+  
 
 #from here on it varies by 
 
