@@ -2,7 +2,6 @@
 print ("    Model estimation")
 
 
-f <- formula(choice ~ dist_log + dist_exp + dist_2 + dist + pop_log + lang.barrier + mm + rm | 0 )
 #run the model for each segment
 model <- mnlogit(f, trips.long, choiceVar = 'alt', weights=trips$daily.weight, ncores=8)
 

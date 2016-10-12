@@ -1,22 +1,24 @@
 import json
 import unicodecsv as csv
 
+fs_folder = "../../data/foursquare/"
+
 venues = {}
-files = ['20160914-121208', '20160917-104649']
+files = ['venues_20160916-104555', 'venues_20160913-181900']
 for date in files:
-    with open("output/venues_%s.json" % date) as f:
+    with open(fs_folder + "%s.json" % date) as f:
         venues.update(json.load(f))
 
 print len(venues)
 count_50 = 0
-with open("output/zone_venue_stats.csv", 'w') as out:
+with open(fs_folder + "zone_venue_stats.csv", 'w') as out:
     csvwriter = csv.writer(out)
     csvwriter.writerow(["zone_id", "venue_count", "checkin_count"])
     for (zone, vs) in venues.iteritems():
-        if len(vs['venues']) == 50:
+        if len(vs) == 50:
             count_50 += 1
-        print (zone, len(vs['venues']))
-        csvwriter.writerow([zone, len(vs['venues']), sum([v['stats']['checkinsCount'] for v in vs['venues']])])
+        print (zone, len(vs))
+        csvwriter.writerow([zone, len(vs), sum([v['stats']['checkinsCount'] for v in vs])])
 
 #location.(country, state, lat, lng)
 #stats.(checkinsCount, usersCount, tipCount)
@@ -25,7 +27,7 @@ with open("output/zone_venue_stats.csv", 'w') as out:
 
 venue_id_set = set()
 
-with open("output/all_venues.csv", 'w') as out:
+with open(fs_folder + "all_venues.csv", 'w') as out:
     csvwriter = csv.writer(out, encoding='utf-8')
     csvwriter.writerow(["venue_id", "name", "country", "state",
                         "lon", "lat", "category_name", "category_id", "tips", "users", "checkins"])
