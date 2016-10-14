@@ -24,4 +24,20 @@ order by id, v.search_cat_name;
 
 SELECT Populate_Geometry_Columns();
 
-select * from foursquare.zone_category_counts;
+--with r scripts, get venue count by zones, then convert to wide format
+DROP TABLE IF EXISTS foursquare.zone_checkins_wide;
+CREATE TABLE foursquare.zone_checkins_wide (
+	"zone_id" INTEGER, 
+	"arts_entertainment" INTEGER,
+	"hotel" INTEGER,
+	"medical" INTEGER,
+	"outdoor" INTEGER,
+	"services" INTEGER, 
+	"ski_area" INTEGER 
+	);
+COPY foursquare.zone_checkins_wide FROM 'C:/Users/Joe/canada/data/foursquare/zone_lvl2_venue_counts_wide.csv' csv header;
+
+
+select id, pruid, search_cat_name, count as num_venues, sum as checkins from foursquare.zone_category_counts;
+
+

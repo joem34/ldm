@@ -55,7 +55,13 @@ from canada_production_attraction;
 --build attribute table from canada_production_attraction
 DROP TABLE IF EXISTS destination_attributes;
 
-SELECT zone_lvl2 as alt, pa.*, z2.metro as alt_is_metro , CAST(z2.pruid = 24 AS INTEGER) speak_french
+SELECT zone_lvl2 as alt, pa.*, z2.metro as alt_is_metro , CAST(z2.pruid = 24 AS INTEGER) speak_french, 
+	fs.arts_entertainment as fs_arts_entertainment, 
+	COALESCE (fs.hotel, 0) as fs_hotel, 
+	COALESCE (fs.medical, 0) as fs_medical, 
+	COALESCE (fs.outdoor, 0) as fs_outdoor, 
+	COALESCE (fs.services, 0) as fs_services, 
+	COALESCE (fs.ski_area, 0) as fs_skiarea
 INTO destination_attributes
 from (
 	SELECT zone_lvl2, 
@@ -71,7 +77,8 @@ from (
 			group by zone_lvl2
 			order by zone_lvl2
 	) as pa
-JOIN level2_zones as z2 on pa.zone_lvl2 = z2.id;
+JOIN level2_zones as z2 on z2.id = pa.zone_lvl2
+left outer JOIN foursquare.zone_checkins_wide as fs on fs.zone_id = pa.zone_lvl2;
 
 select * from destination_attributes; --should be 117 canadian zones
 
