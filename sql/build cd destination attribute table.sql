@@ -60,13 +60,13 @@ INTO destination_attributes
 from (
 	SELECT zone_lvl2, 
 	sum(population) as population, sum(total_employment) as employment,
-			sum(naics_11) as naics_11,sum(naics_21) as naics_21,sum(naics_22) as naics_22,
-			sum(naics_23) as naics_23,sum(naics_31) as naics_31,sum(naics_41) as naics_41,
-			sum(naics_44) as naics_44,sum(naics_48) as naics_48,sum(naics_51) as naics_51,
-			sum(naics_52) as naics_52,sum(naics_53) as naics_53,
-			sum(naics_54) as naics_54, sum(naics_55) as naics_55,sum(naics_56) as naics_56,
-			sum(naics_61) as naics_61,sum(naics_62) as naics_62,sum(naics_71) as naics_71,
-			sum(naics_72) as naics_72,sum(naics_81) as naics_81,sum(naics_91) as naics_91
+			sum(naics_11 + naics_21 + naics_22 + naics_23 + naics_31) as goods_industry,
+			sum(naics_41 + naics_44 + naics_48 + naics_51 + naics_52 + naics_53 + naics_54 + naics_55 + naics_56) as service_industry,
+			sum(naics_51 + naics_52 + naics_53 + naics_54 + naics_55) as professional_industry,
+			sum(naics_61 + naics_62) as employment_health,
+			sum(naics_71) as arts_entertainment,
+			sum(naics_71 + naics_72) as leisure_hospitality
+			
 			FROM public.canada_production_attraction
 			group by zone_lvl2
 			order by zone_lvl2

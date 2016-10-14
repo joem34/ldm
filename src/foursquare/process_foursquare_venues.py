@@ -1,75 +1,91 @@
 import json
 import unicodecsv as csv
+import os
+from collections import defaultdict
+import itertools
+
+def filter_venues(top_5_categories_for_search, category, search_cat_id, num_checkins):
+    should_write = True
+    outdoor_categories = {"Beach", "Other Great Outdoors", "Scenic Lookout", "Trail",
+             "Campground", "National Park", "Farm", "Island", "Mountain",
+             "Lighthouse", "Waterfall", "Nature Preserve", "Forest", "lake", "river"}
+
+    if search_cat_id == '4d4b7105d754a06377d81259' and category not in outdoor_categories:
+        should_write = False
+    if num_checkins == 0:
+        should_write = False
+    if category not in top_5_categories_for_search:
+        should_write = False
+    return should_write
+
+
+
+
+
 
 fs_folder = "../../data/foursquare/"
+venues_folder = os.path.join(fs_folder, "by_category")
 
 venues = {}
-files = ['venues_20160916-104555', 'venues_20160913-181900']
-for date in files:
-    with open(fs_folder + "%s.json" % date) as f:
-        venues.update(json.load(f))
+for f in os.listdir(venues_folder):
+    print f
+    if f.startswith("venues_"):
+        with open(os.path.join(venues_folder, f)) as fo:
+            venue_cat = os.path.splitext(f)[0].split('_')[-1]
+            venues[venue_cat] = []
+            print venue_cat
+            responses = json.load(fo)
+            for vs in [r['venues'] for r in responses.itervalues()]:
+                venues[venue_cat].extend(vs)
 
 print len(venues)
-count_50 = 0
-with open(fs_folder + "zone_venue_stats.csv", 'w') as out:
-    csvwriter = csv.writer(out)
-    csvwriter.writerow(["zone_id", "venue_count", "checkin_count"])
-    for (zone, vs) in venues.iteritems():
-        if len(vs) == 50:
-            count_50 += 1
-        print (zone, len(vs))
-        csvwriter.writerow([zone, len(vs), sum([v['stats']['checkinsCount'] for v in vs])])
 
-#location.(country, state, lat, lng)
-#stats.(checkinsCount, usersCount, tipCount)
-#id
-#categories[0..n-1](name, id)  #only take primary category
+with open(os.path.join(fs_folder, "top_5_sub_categories.csv")) as f:
+    reader = csv.reader(f)
+    top_5_categories = defaultdict(list)
+    [top_5_categories[row[0]].append(row[2]) for row in reader]
 
-venue_id_set = set()
+with open(os.path.join(fs_folder, "selected_categories.csv")) as f:
+    reader = csv.reader(f)
+    search_categories = {row[0]:row[1] for row in reader}
 
-with open(fs_folder + "all_venues.csv", 'w') as out:
+with open(os.path.join(venues_folder,"all_venues.csv"), 'wb') as out:
     csvwriter = csv.writer(out, encoding='utf-8')
     csvwriter.writerow(["venue_id", "name", "country", "state",
-                        "lon", "lat", "category_name", "category_id", "tips", "users", "checkins"])
-    for vs in venues.itervalues():
-        for v in vs['venues']:
+                        "lon", "lat", "category_name", "category_id", "search_cat_id", "search_cat_name", "tips", "users", "checkins"])
+    for cat in venues:
+        top_5_categories_for_search = top_5_categories[cat]
+        for v in venues[cat]:
             try:
                 venue_id = v['id']
                 venue_name = v['name']
+                search_cat_id = cat
+                search_cat_name = search_categories[search_cat_id]
+                #else:
 
-                if venue_id in venue_id_set:
-                    print "venue %s already included: %s" % (venue_id, venue_name)
+                country =  v['location']['country'] if 'country' in v['location'] else ''
+
+                state = v['location']['state'] if 'state' in v['location'] else ''
+
+                lon = v['location']['lng']
+                lat = v['location']['lat']
+
+                if len(v['categories']) > 0:
+                    category_name = v['categories'][0]['name']
+                    category_id = v['categories'][0]['id']
                 else:
-                    venue_id_set.add(venue_id)
+                    category_name = ''
+                    category_id = ''
 
-                    if 'country' in v['location']:
-                        country = v['location']['country']
-                    else:
-                        country = ''
+                tips = v['stats']['tipCount']
+                users = v['stats']['usersCount']
+                checkins = v['stats']['checkinsCount']
 
-                    if 'state' in v['location']:
-                        state = v['location']['state']
-                    else:
-                        state = ''
 
-                    lon = v['location']['lng']
-                    lat = v['location']['lat']
 
-                    if len(v['categories']) > 0:
-                        category_name = v['categories'][0]['name']
-                        category_id = v['categories'][0]['id']
-                    else:
-                        category_name = ''
-                        category_id = ''
-
-                    tips = v['stats']['tipCount']
-                    users = v['stats']['usersCount']
-                    checkins = v['stats']['checkinsCount']
+                if filter_venues(top_5_categories_for_search, category_name, search_cat_id, checkins):
                     csvwriter.writerow([venue_id, venue_name, country, state, lon, lat, category_name,
-                                       category_id, tips, users, checkins])
+                                       category_id, search_cat_id, search_cat_name, tips, users, checkins])
             except KeyError:
                 print v
                 exit()
-
-
-print count_50
