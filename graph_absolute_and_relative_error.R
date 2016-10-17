@@ -39,17 +39,30 @@ define_region <- function(row, col){
   viewport(layout.pos.row = row, layout.pos.col = col)
 }
 
-res1 <- read.csv("Projects/canadia/data/gravity_model_results.txt", sep="\t")
+res1 <- read.csv("canada/data/mnlogit_results.csv") # %>% filter(origin < 4000 | dest < 4000)
+res1 <- res1 %>% mutate(od_type = ifelse(origin < 4000 & dest < 4000, "II", 
+                                         ifelse(origin < 4000 & dest > 4000, "IE", 
+                                                ifelse(origin > 4000 & dest < 4000, "EI", "EE" 
+                                                ))))
+res1$od_type <- as.factor(res1$od_type)
+
 res1$od_type <- factor(res1$od_type, levels = rev(levels(res1$od_type)))
-palette = 2
-g1 <- qplot(abs_err, rel_err, data = res1, main="Gravity Model Errors", 
-     xlab="Absolute error ", ylab="Relative error", colour=od_type)  +
-  geom_point() + labs(x="Absolute error ", y="Relative error") +
-  scale_colour_brewer(drop=FALSE, type = "qual", palette = palette)  +
-  scale_color_discrete(name="OD Pair Type",
-        breaks=c("II", "IE", "EI"),
-        labels=c("II - Intra Ontario", "IE - Outgoing", "EI - Incoming"))
+res1 <- calculate.rel.error(con, NULL)
+
+g1 <- ggplot(res1) +
+  geom_point(data = res1, aes(x = abs_err, y = rel_err, color=od_type)) +
+  geom_point(data = subset(res1, od_type == 'IE'),
+             aes(x = abs_err, y = rel_err, color = od_type )) +
+  xlim(0, 6000) + ylim(0, 200) + 
+  labs(title="Gravity Model Errors") + labs(x="Absolute error ", y="Relative error") +
+  scale_color_brewer(name="OD Pair Type",
+                    labels=c("II - Intra Ontario", "IE - Outgoing", "EI - Incoming", "EE - External"), 
+                     palette = 2, type = "qual")
+
 g1
+png(file="canada/docs/gravity_model_results.png",width=1400,height=800,res=150)
+g1
+dev.off()
 
 res <- calculate.rel.error(con, NULL)
 g2 <- ggplot(res, aes(x = abs_err, y = rel_err, colour=od_type))+

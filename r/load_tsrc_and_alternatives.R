@@ -7,8 +7,8 @@ start.run <- function () {
 }
 
 
-alternatives <- as.data.frame(fread("canada/data/mnlogit/mnlogit_canada_alternatives2.csv"))
-alternatives <- alternatives %>% select (alt, population, employment, alt_is_metro, d.lang = speak_french)
+alternatives <- as.data.frame(fread("canada/data/mnlogit/mnlogit_canada_alternatives3.csv"))
+alternatives <- alternatives %>% rename (d.lang = speak_french)
 
 all_trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_all_trips2.csv"))
 all_trips <- all_trips %>% rename(chid = id) %>%

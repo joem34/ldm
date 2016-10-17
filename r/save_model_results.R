@@ -35,7 +35,9 @@ run.results <- data.frame(
   'class' = class,
   'formula' = Reduce(paste0, deparse(f)),
   'loglik' = logLik(model_summary), 
-  'AIC' = model_summary[['AIC']]
+  'AIC' = model_summary[['AIC']],
+  'params' = length(model.coefficients),
+  'correlation' = cor(errors$x, errors$ex)
 )
 
 append.csv(run.results, run_list_file)

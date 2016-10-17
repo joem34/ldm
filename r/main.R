@@ -1,6 +1,6 @@
 #m logit
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(mnlogit, tidyr, dplyr,data.table,purrr,broom,h5)
+pacman::p_load(mnlogit, tidyr, dplyr,data.table,purrr,broom,h5, ggplot2)
 
 
 #runnning different models:
@@ -10,27 +10,66 @@ source("canada/R/load_tsrc_and_alternatives.R", echo = FALSE)
 p.s.uq <- unique(all_trips$purpose_season)
 purpose_season_options <- p.s.uq[-grep("^other.*", p.s.uq)]
 
-class.columns <- list("purpose" = list("visit", "leisure", "business"),
+class.columns <- list(#"purpose" = list("visit", "leisure", "business"),
                       "purpose_season" = as.list(purpose_season_options))
 
 #class.columns <- list("purpose" = list("visit", "leisure", "business"))
 
 formulas <- c(
-  formula(choice ~ dist_exp + population + lang.barrier | 0 ),
-  formula(choice ~ dist_log + dist_exp + population + lang.barrier | 0 ),
-  formula(choice ~ dist_log + dist_exp + population + lang.barrier + mm + rm | 0 ),
-  formula(choice ~ dist_exp + pop_log + lang.barrier | 0 ),
-  formula(choice ~ dist_log + dist_exp + pop_log + lang.barrier | 0 ),
-  formula(choice ~ dist_log + dist_exp + pop_log + lang.barrier + mm + rm | 0 ),
-  formula(choice ~ dist_log + dist_exp + dist_2 + dist + population + lang.barrier | 0 ),
-  formula(choice ~ dist_log + dist_exp + dist_2 + dist + population + lang.barrier + mm + rm | 0 ),
-  formula(choice ~ dist_log + dist_exp + dist_2 + dist + pop_log + lang.barrier | 0 ),
-  formula(choice ~ dist_log + dist_exp + dist_2 + dist + pop_log + lang.barrier + mm + rm | 0 )
+  formula(choice ~ dist_exp + pop_log | 0),
+  formula(choice ~ dist_exp + pop_log + lang.barrier | 0),
+  formula(choice ~ dist_exp + pop_log + lang.barrier  + mm + rm | 0),
+ 
+  #compare working with area
+  formula(choice ~ dist_exp + dist_log + pop_log + lang.barrier + mm + rm  + 
+            fs_outdoor + fs_skiarea | 0 ),
+  formula(choice ~ dist_exp + dist_log + pop_log + lang.barrier + mm + rm  + 
+            I(fs_outdoor/area_km) + I(fs_skiarea/area_km) | 0 )
+
+)
+
+
+formulas_fs <- c(
+
+  formula(choice ~ dist_exp + pop_log + fs_arts_entertainment + fs_hotel + fs_medical + fs_outdoor + fs_services + fs_skiarea | 0),
+  formula(choice ~ dist_exp + pop_log + lang.barrier + fs_arts_entertainment + fs_hotel + fs_medical + fs_outdoor + fs_services + fs_skiarea | 0),
+  formula(choice ~ dist_exp + pop_log + lang.barrier  + mm + rm + fs_arts_entertainment + fs_hotel + fs_medical + fs_outdoor + fs_services + fs_skiarea | 0)
+
+)
+
+formulas_employment <-  c(
+  
+  formula(choice ~ dist_exp + dist_log + pop_log + lang.barrier + employment | 0 ),  
+  formula(choice ~ dist_exp + dist_log + pop_log + lang.barrier + mm + rm + employment | 0 ),  
+  formula(choice ~ dist_exp + dist_log + pop_log + lang.barrier + I(log(employment)) | 0 ),  
+  formula(choice ~ dist_exp + dist_log + pop_log + lang.barrier + mm + rm + I(log(employment)) | 0 )  
+)
+
+formulas_naics <- c(
+  
+  
+  
+  formula(choice ~ dist_exp + dist_log + pop_log + lang.barrier + 
+            goods_industry + service_industry + professional_industry + 
+            employment_health + arts_entertainment + leisure_hospitality | 0 ),
+  
+  formula(choice ~ dist_exp + dist_log + pop_log + lang.barrier + mm + rm  + 
+            goods_industry + service_industry + professional_industry + 
+            employment_health + arts_entertainment + leisure_hospitality | 0 ),
+  
+  formula(choice ~ dist_exp + dist_log + pop_log + lang.barrier + mm + rm  + 
+            service_industry + professional_industry | 0 ),
+  
+  formula(choice ~ dist_exp + dist_log + pop_log + lang.barrier + mm + rm  + 
+            service_industry + professional_industry + arts_entertainment | 0 ),
+  
+  formula(choice ~ dist_exp + dist_log + pop_log + lang.barrier + mm + rm  + 
+            service_industry + professional_industry + arts_entertainment + leisure_hospitality | 0 )
 )
 
 formulas_short <- tail(formulas, n=1)
 
-for (f in formulas_short) {
+for (f in formulas_employment) {
   run.date <- start.run()
   print (paste("processing formula:", Reduce(paste0, deparse(f)) ))
 
