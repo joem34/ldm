@@ -56,12 +56,13 @@ from canada_production_attraction;
 DROP TABLE IF EXISTS destination_attributes;
 
 SELECT zone_lvl2 as alt, pa.*, z2.metro as alt_is_metro , CAST(z2.pruid = 24 AS INTEGER) speak_french, 
-	fs.arts_entertainment as fs_arts_entertainment, 
+	COALESCE (fs.arts_entertainment, 0) as fs_arts_entertainment, 
 	COALESCE (fs.hotel, 0) as fs_hotel, 
 	COALESCE (fs.medical, 0) as fs_medical, 
 	COALESCE (fs.outdoor, 0) as fs_outdoor, 
 	COALESCE (fs.services, 0) as fs_services, 
-	COALESCE (fs.ski_area, 0) as fs_skiarea
+	COALESCE (fs.ski_area, 0) as fs_skiarea,
+	ST_Area(geography(ST_Transform(z2.geom,4326))) / 1000000 as area_km
 INTO destination_attributes
 from (
 	SELECT zone_lvl2, 

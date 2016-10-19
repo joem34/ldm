@@ -7,7 +7,11 @@ ALTER TABLE tsrc_trip ADD COLUMN is_summer integer;
 
 --is trip winter or summer, as set by Sundar
 update tsrc_trip
-SET is_summer = CAST(refmth < 4 or refmth > 10 as integer)
+SET is_summer = 1 - CAST(refmth < 4 or refmth > 10 as integer);
+
+update tsrc_trip
+SET season = case when is_summer = 1 then 'summer' else 'winter' end
+
 
 --set a metro or not metro flag. #TODO; this will need to be calculated differently for generated trips
 update tsrc_trip
