@@ -10,8 +10,8 @@ source("canada/R/load_tsrc_and_alternatives.R", echo = FALSE)
 p.s.uq <- unique(all_trips$purpose_season)
 purpose_season_options <- p.s.uq[-grep("^other.*", p.s.uq)]
 
-class.columns <- list(#"purpose" = list("visit", "leisure", "business"),
-                      "purpose_season" = as.list(purpose_season_options))
+class.columns <- list("purpose" = list("visit", "leisure", "business"))
+                      #"purpose_season" = as.list(purpose_season_options))
 
 #class.columns <- list("purpose" = list("visit", "leisure", "business"))
 
@@ -19,14 +19,10 @@ formulas <- c(
   formula(choice ~ dist_exp + pop_log | 0),
   formula(choice ~ dist_exp + pop_log + lang.barrier | 0),
   formula(choice ~ dist_exp + pop_log + lang.barrier  + mm + rm | 0),
- 
-  #compare working with area
-  formula(choice ~ dist_exp + dist_log + pop_log + lang.barrier + mm + rm  + 
-            fs_outdoor + fs_skiarea | 0 ),
-  formula(choice ~ dist_exp + dist_log + pop_log + lang.barrier + mm + rm  + 
-            I(fs_outdoor/area_km) + I(fs_skiarea/area_km) | 0 )
-
-)
+  formula(choice ~ dist_exp + pop_log + lang.barrier  + mm + rm + mr + rr | 0),
+  formula(choice ~ dist_exp + pop_log + lang.barrier  + mm + I(min(rm+mr, 1)) | 0),
+  formula(choice ~ dist_exp + pop_log + lang.barrier  + mm + I(min(rm+mr, 1)) + rr | 0)
+) 
 
 
 formulas_fs <- c(
@@ -67,9 +63,8 @@ formulas_naics <- c(
             service_industry + professional_industry + arts_entertainment + leisure_hospitality | 0 )
 )
 
-formulas_short <- tail(formulas, n=1)
 
-for (f in formulas_employment) {
+for (f in formulas) {
   run.date <- start.run()
   print (paste("processing formula:", Reduce(paste0, deparse(f)) ))
 

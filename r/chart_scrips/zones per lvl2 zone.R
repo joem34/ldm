@@ -62,7 +62,7 @@ season.difference.by.dest <- trips.by.season %>%
   transmute (
     lvl2_dest,purpose,
     #p = binom_t(summer, winter),
-    diff = winter/(summer+winter) - season.split[purpose]
+    diff = winter/(summer+winter) - winter.split[purpose]
   ) %>% 
   dcast(lvl2_dest ~ purpose, value.var = 'diff')
 season.difference.by.dest[is.na(season.difference.by.dest)] <- 0
