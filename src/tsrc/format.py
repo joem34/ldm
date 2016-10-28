@@ -29,9 +29,9 @@ def decode(answers, value):
 #dd = "data/ITS/PUMF_Canadians_E.json"
 #data = "data/ITS/data/2013/ITS_CDN_2013_PUMF.txt"
 
-dd = "data/TSRC/Visit_TSRC.json"
-data = "data/TSRC/data/2014/Visit_TSRC2014_pumf.txt"
-output = "data/TSRC/data/2014/Visit_TSRC2014_out.txt"
+dd = "data/input/ITS/VISAE.json"
+data = "data/input/ITS/2013/VISAE_ITS_2013_PUMF.txt"
+output = "data/input/ITS/2013/out_VISAE_ITS_2013_PUMF.txt"
 
 with open(dd, 'r') as src:
     j = json.load(src)
@@ -49,10 +49,10 @@ with open(data, 'r') as src:
         out.write("\n".encode('utf8'))
         for line in src:
             #print line
-            decoded_line = [decode(answers, line[pos-1:(pos-1)+length]) for (pos, length, answers) in d]
+            decoded_line = [line[pos-1:(pos-1)+length] for (pos, length, answers) in d]
             assert (len(decoded_line) == num_variables)
 
-            out.write("\t".join(decoded_line).encode('utf8'))
+            out.write(",".join(decoded_line).encode('utf8'))
             out.write("\n".encode('utf8'))
 
 

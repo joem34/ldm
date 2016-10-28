@@ -16,12 +16,31 @@ class.columns <- list("purpose" = list("visit", "leisure", "business"))
 #class.columns <- list("purpose" = list("visit", "leisure", "business"))
 
 formulas <- c(
+  formula(choice ~ dist_exp + pop | 0),
   formula(choice ~ dist_exp + pop_log | 0),
-  formula(choice ~ dist_exp + pop_log + lang.barrier | 0),
-  formula(choice ~ dist_exp + pop_log + lang.barrier  + mm + rm | 0),
-  formula(choice ~ dist_exp + pop_log + lang.barrier  + mm + rm + mr + rr | 0),
-  formula(choice ~ dist_exp + pop_log + lang.barrier  + mm + I(min(rm+mr, 1)) | 0),
-  formula(choice ~ dist_exp + pop_log + lang.barrier  + mm + I(min(rm+mr, 1)) + rr | 0)
+  #employment
+  formula(choice ~ dist_exp + pop_log + employment | 0),
+  #naics
+  formula(choice ~ dist_exp + pop_log +
+            goods_industry + service_industry + professional_industry + 
+            employment_health + arts_entertainment + leisure_hospitality | 0 ),  
+  formula(choice ~ dist_exp + pop_log +
+            service_industry + professional_industry + 
+            employment_health + arts_entertainment + leisure_hospitality | 0 ),
+  #lang_barrier, rm
+  formula(choice ~ dist_exp + pop_log  + 
+            service_industry + professional_industry + arts_entertainment + leisure_hospitality + lang.barrier | 0 ),
+)
+
+formulas <- c(
+  formula(choice ~ dist_exp + dist_log + pop_log  + 
+            service_industry + professional_industry + arts_entertainment + leisure_hospitality + lang.barrier + mm | 0 ),
+  formula(choice ~ dist_exp + dist_log + pop_log  + 
+            service_industry + professional_industry + arts_entertainment + leisure_hospitality + lang.barrier + rm | 0 ),
+  formula(choice ~ dist_exp + dist_log + pop_log  + 
+            service_industry + professional_industry + arts_entertainment + leisure_hospitality + lang.barrier + mm + rm | 0 ),
+  formula(choice ~ dist_exp + dist_log + pop_log  + 
+            service_industry + professional_industry + arts_entertainment + leisure_hospitality + lang.barrier + mm + mr | 0) #signular
 ) 
 
 
@@ -63,7 +82,6 @@ formulas_naics <- c(
             service_industry + professional_industry + arts_entertainment + leisure_hospitality | 0 )
 )
 
-
 for (f in formulas) {
   run.date <- start.run()
   print (paste("processing formula:", Reduce(paste0, deparse(f)) ))
@@ -75,15 +93,18 @@ for (f in formulas) {
       print (paste("processing class:", class.ref ))
   
       source("canada/R/setup_model_input.R",echo=FALSE)
-      
-      source("canada/R/run_mnlogit_model.R",echo=FALSE)
-      
-      source("canada/R/calculate_trip_distribution_and_errors.R",echo=FALSE)
-      
-      source("canada/R/save_model_results.R",echo=FALSE)
+      tryCatch({
+        source("canada/R/run_mnlogit_model.R",echo=FALSE)
+        source("canada/R/calculate_trip_distribution_and_errors.R",echo=FALSE)
+        source("canada/R/save_model_results.R",echo=FALSE)
+      }, error = function(e) {
+        print("    Error: Result was signular")
+      })
       
       print ("    Done")
     } 
   }
 }
+
+
 

@@ -31,7 +31,7 @@ build_long_trips <- function (a,t) {
       dist_log = ifelse (dist_log < 0, 0, dist_log),
       dist_2 = dist^2,
       dist_exp = exp(-dist),
-      pop_log = log(population),
+      pop_log = log(pop),
       lang.barrier = (o.lang+d.lang)%%2, #calculate if the origin and dest have different languages
       mm = orig_is_metro * alt_is_metro,
       rm = (1-orig_is_metro)*alt_is_metro,
