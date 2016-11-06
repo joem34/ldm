@@ -21,5 +21,5 @@ all_trips <- all_trips %>% rename(chid = id) %>%
 
 #load skim
 f <- h5file("canada/data/mnlogit/cd_travel_times2.omx")
-tt <- f["data/cd_traveltimes"]
+tt <- f["data/travel_time"]
 cd_tt <- tt[]
