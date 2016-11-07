@@ -25,7 +25,7 @@ error.plot <- error_chart(errors, file.path(chart_folder, error.file.name))
 #summaries
 summary_folder <- file.path(current.run.folder, "summaries")
 dir.create(summary_folder, showWarnings = FALSE)
-capture.output(model_summary, file = file.path(current.run.folder, paste(class.column, "-", class,"-model_summary.txt")))
+capture.output(model_summary, file = file.path(summary_folder, paste(class.column, "-", class,"-model_summary.txt")))
 
 #append run results to main file
 run_list_file <- file.path("canada/data/mnlogit/runs", "runs.csv")
@@ -36,8 +36,10 @@ run.results <- data.frame(
   'formula' = Reduce(paste0, deparse(f)),
   'loglik' = logLik(model_summary), 
   'AIC' = model_summary[['AIC']],
-  'params' = length(model.coefficients),
-  'correlation' = cor(errors$x, errors$ex)
+  'params' = nrow(model.coefficients),
+  'correlation' = cor(errors$x, errors$ex),
+  'rmse'  = sqrt(mean((errors$x - errors$ex)^2))
+  
 )
 
 append.csv(run.results, run_list_file)

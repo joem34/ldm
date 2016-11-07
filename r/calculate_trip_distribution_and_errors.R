@@ -8,16 +8,16 @@ internal.zone.cutoff = 70
 get.od.type <- function (origin, dest) {
   factor(
     ifelse(origin < internal.zone.cutoff & dest < internal.zone.cutoff, "II", 
-           ifelse(origin < internal.zone.cutoff & dest > internal.zone.cutoff, "IE", 
-                  ifelse(origin > internal.zone.cutoff & dest < internal.zone.cutoff, "EI", "EE" 
+           ifelse(origin < internal.zone.cutoff & dest >= internal.zone.cutoff, "IE", 
+                  ifelse(origin >= internal.zone.cutoff & dest < internal.zone.cutoff, "EI", "EE" 
                   ))), levels = c("II", "IE", "EI", "EE")
   )
 }
 
 
 #make trip dist matricies for segment
-weighted.predictions = data.frame(predict(model)) * trips$daily.weight
-weighted.predictions$origin <- trips$lvl2_orig #add origin to each row of weighted.predictions
+weighted.predictions = data.frame(predict(model)) * trips[[class]]$daily.weight
+weighted.predictions$origin <- trips[[class]]$lvl2_orig #add origin to each row of weighted.predictions
 
 trip.matrix <- weighted.predictions %>% 
   group_by(origin) %>% 
@@ -28,7 +28,7 @@ trip.matrix <- weighted.predictions %>%
 trip.matrix$dest <- as.numeric(substring(trip.matrix$dest, 2))
 
 #make the tsrc od counts for each category ex = expected
-ex.od <- trips %>% 
+ex.od <- trips[[class]] %>% 
   group_by(lvl2_orig, lvl2_dest) %>%
   #need to scale weight by number of years, and to a daily count
   summarise(total = sum(daily.weight)) %>% 

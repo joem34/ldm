@@ -3,7 +3,7 @@ print ("    Model estimation")
 
 
 #run the model for each segment
-model <- mnlogit(f, trips.long, choiceVar = 'alt', weights=trips$daily.weight, ncores=8)
+model <- mnlogit(f, model.inputs[[class]], choiceVar = 'alt', weights=trips[[class]]$daily.weight, ncores=8)
 
 model_summary <- summary(model)                    
 
