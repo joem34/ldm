@@ -16,7 +16,10 @@ trips[[class]] <- all_trips %>%
 alt.ids <- unique(trips[[class]]$lvl2_dest)
 
 #filter alternatives for each category
-valid.alternatives <- filter(alternatives, alt %in% alt.ids)
+valid.alternatives <- filter(alternatives, alt %in% alt.ids) %>%
+  mutate (
+    alt_is_metro = ifelse(alt_is_metro == 1, 1, 0) #2 means remainer of state, we only want 1)
+  )
 
 #make a vectorised version of a function to get distance between two cds, that can be applied to a column with dplyr
 get_dist_v <- Vectorize(function(o,d) { cd_tt[o, d] })
@@ -34,12 +37,13 @@ build_long_trips <- function (a,t) {
     dist_log = log(dist),
     dist_log = ifelse (dist_log < 0, 0, dist_log),
     dist_2 = dist^2,
-    dist_exp = exp(-dist),
+    dist_exp = exp(-0.005*dist),
     pop_log = log(pop),
     lang.barrier = (o.lang+d.lang)%%2, #calculate if the origin and dest have different languages
     mm = orig_is_metro * alt_is_metro,
     rm = (1-orig_is_metro)*alt_is_metro,
-    mr = (1-alt_is_metro)*orig_is_metro
+    mr = (1-alt_is_metro)*orig_is_metro,
+    rr = (1-alt_is_metro)*(1-orig_is_metro)
   ) 
 }
 

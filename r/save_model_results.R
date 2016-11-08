@@ -8,7 +8,7 @@ append.csv <- function(x, file, ...) {
   write.table(x = x, file = file,na = "", sep = ",", append = TRUE, row.names = FALSE, col.names = inc.col.names, ...)
 }
 
-append.csv(model.coefficients, file.path(current.run.folder, "model_coefficients.csv"))
+append.csv(model.coefficients, file.path(current.run.folder, "model_output.csv"))
 append.csv(x = errors, file = file.path(current.run.folder, "model_errors.csv"))
 
 #write all formulas

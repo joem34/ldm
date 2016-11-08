@@ -8,12 +8,15 @@ start.run <- function () {
 
 
 alternatives <- as.data.frame(fread("canada/data/mnlogit/mnlogit_canada_alternatives3.csv"))
-alternatives <- alternatives %>% rename (d.lang = speak_french, pop = population)
+alternatives <- alternatives %>% 
+  rename (d.lang = speak_french, pop = population) %>%
+  mutate (attraction = pop + employment)
 
-all_trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_all_trips2.csv"))
+all_trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_no_intra.csv"))
 all_trips <- all_trips %>% rename(chid = id) %>%
   mutate( 
-    daily.weight = wtep / (365 * 3),
+    daily.weight = wtep / (365 * 4),
+    #employment = employment/1e5, #gives better coefficients
     o.lang = alternatives[lvl2_orig,]$d.lang,
     purpose_season = paste(purpose, season, sep="_")
   )  #need to scale weight by number of years, and to a daily count

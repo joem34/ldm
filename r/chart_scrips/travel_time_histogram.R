@@ -15,8 +15,8 @@ internal.zone.cutoff = 70
 get.od.type <- function (origin, dest) {
   factor(
     ifelse(origin < internal.zone.cutoff & dest < internal.zone.cutoff, "II", 
-           ifelse(origin < internal.zone.cutoff & dest > internal.zone.cutoff, "IE", 
-                  ifelse(origin > internal.zone.cutoff & dest < internal.zone.cutoff, "EI", "EE" 
+           ifelse(origin < internal.zone.cutoff & dest >= internal.zone.cutoff, "IE", 
+                  ifelse(origin >= internal.zone.cutoff & dest < internal.zone.cutoff, "EI", "EE" 
                   ))), levels = c("II", "IE", "EI", "EE")
   )
 }
@@ -28,7 +28,7 @@ tsrc_trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_trips_more_variab
   mutate (distance = get_dist_v(lvl2_orig, lvl2_dest),
           odtype = get.od.type(lvl2_orig, lvl2_dest),
           weight = wtep) %>%
-  filter (purpose != 'other' & dist2 < 99999)
+  filter (purpose != 'other' & dist2 < 99999 & odtype != 'EE')
 
 
 ggplot() + 
@@ -50,7 +50,7 @@ tt.anomalies <- tsrc_trips %>%
 head(tt.anomalies, 20)
 
 
-tt_function <- function (x) 0.397439806*log(x) + 10.71044028*exp(-0.003 * x) + -3.13E-06*x^2 + 0.008030016*x
+tt_function <- function (x) -6314.508108*exp(-1 * x)
 
 ggplot() +
   stat_function(data = data.frame(x=c(40, 4000)), aes(x), fun=tt_function)
