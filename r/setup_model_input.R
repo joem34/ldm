@@ -30,21 +30,32 @@ build_long_trips <- function (a,t) {
   t1 <- data.table(t)
   setkeyv(a1[,k:=1], c(key(a1), "k"))
   setkeyv(t1[,k:=1], c(key(t1), "k"))
-  merge(t1, a1, by=.EACHI, allow.cartesian = TRUE) %>% 
+  dt <- merge(t1, a1, by=.EACHI, allow.cartesian = TRUE) %>% 
   mutate(
     choice = lvl2_dest == alt,
     dist = get_dist_v(lvl2_orig, alt),
     dist_log = log(dist),
     dist_log = ifelse (dist_log < 0, 0, dist_log),
     dist_2 = dist^2,
-    dist_exp = exp(-0.005*dist),
+    dist_exp = exp(-class.k[purpose]*dist),
     pop_log = log(pop),
     lang.barrier = (o.lang+d.lang)%%2, #calculate if the origin and dest have different languages
     mm = orig_is_metro * alt_is_metro,
+    intra = (lvl2_orig == alt),
+    mm_intra = mm * intra,
+    mm_inter = mm * (!intra),
     rm = (1-orig_is_metro)*alt_is_metro,
     mr = (1-alt_is_metro)*orig_is_metro,
-    rr = (1-alt_is_metro)*(1-orig_is_metro)
+    rr = (1-alt_is_metro)*(1-orig_is_metro),
+    log_fs_arts_entertainment = log(fs_arts_entertainment),
+    log_fs_hotel = log(fs_hotel),
+    log_fs_medical = log(fs_medical),
+    log_fs_outdoor = log(fs_outdoor),
+    log_fs_services = log(fs_services),
+    log_fs_skiarea = log(fs_skiarea)
   ) 
+  for (j in 1:ncol(dt)) set(dt, which(is.infinite(dt[[j]])), j, 0)
+  dt
 }
 
 #need to build list of alternative choices for each category: one for each trip, and every alternative

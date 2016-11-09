@@ -12,7 +12,7 @@ alternatives <- alternatives %>%
   rename (d.lang = speak_french, pop = population) %>%
   mutate (attraction = pop + employment)
 
-all_trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_no_intra.csv"))
+all_trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_all_trips2.csv"))
 all_trips <- all_trips %>% rename(chid = id) %>%
   mutate( 
     daily.weight = wtep / (365 * 4),
