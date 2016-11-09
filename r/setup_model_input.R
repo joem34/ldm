@@ -4,8 +4,8 @@ print (paste0("    Setup input files - ", class))
 
 #use underscore and then quoted arguments to filter by a string
 trips[[class]] <- all_trips %>% 
-  filter_(paste0(class.column, " == '", class, "'")) %>%
-  filter (lvl2_orig < 70 | lvl2_dest < 70)
+  filter_(paste0(class.column, " == '", class, "'")) # %>%
+  #filter (lvl2_orig < 70 | lvl2_dest < 70) #try again with external inter-province trips
   
 
   

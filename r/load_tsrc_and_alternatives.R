@@ -12,7 +12,7 @@ alternatives <- alternatives %>%
   rename (d.lang = speak_french, pop = population) %>%
   mutate (attraction = pop + employment)
 
-all_trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_all_trips2.csv"))
+all_trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_trips_no_intra_province.csv"))
 all_trips <- all_trips %>% rename(chid = id) %>%
   mutate( 
     daily.weight = wtep / (365 * 4),
@@ -23,6 +23,6 @@ all_trips <- all_trips %>% rename(chid = id) %>%
 
 
 #load skim
-f <- h5file("canada/data/mnlogit/cd_travel_times2.omx")
-tt <- f["data/travel_time"]
+f2 <- h5file("canada/data/mnlogit/cd_travel_times2.omx")
+tt <- f2["data/travel_time"]
 cd_tt <- tt[]

@@ -14,18 +14,25 @@ get.od.type <- function (origin, dest) {
   )
 }
 
-
 #make trip dist matricies for segment
 weighted.predictions = data.frame(predict(model)) * trips[[class]]$daily.weight
 weighted.predictions$origin <- trips[[class]]$lvl2_orig #add origin to each row of weighted.predictions
 
-trip.matrix <- weighted.predictions %>% 
+trip.matrix <- weighted.predictions %>%
   group_by(origin) %>% 
   summarise_each(funs(sum)) %>%
-  melt(id.vars = c("origin"), variable.name = "dest", value.name="total")
+  melt(id.vars = c("origin"), variable.name = "dest", value.name="total")  
 
 #remove the x from the destination
 trip.matrix$dest <- as.numeric(substring(trip.matrix$dest, 2))
+
+#delete external non-relevant o,d pairs 
+right.zones = c(70,76:81,83,97,98,101,104)
+left.zones = c(71,72,73,74,75,82,84:96,99,100,102,103,105:117)
+
+trip.matrix <- trip.matrix %>% 
+  filter (!(origin %in% left.zones & dest %in% left.zones))%>% 
+  filter (!(origin %in% right.zones & dest %in% right.zones))
 
 #make the tsrc od counts for each category ex = expected
 ex.od <- trips[[class]] %>% 
