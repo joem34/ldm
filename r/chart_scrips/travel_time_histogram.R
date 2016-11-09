@@ -27,8 +27,9 @@ get_dist_v <- Vectorize(function(o,d) { cd_tt[o, d] })
 tsrc_trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_trips_more_variables.csv")) %>% 
   mutate (distance = get_dist_v(lvl2_orig, lvl2_dest),
           odtype = get.od.type(lvl2_orig, lvl2_dest),
+          intra.pr = orig_pr == dest_pr,
           weight = wtep) %>%
-  filter (purpose != 'other' & dist2 < 99999 & odtype != 'EE')
+  filter (purpose != 'other' & dist2 < 99999)
 
 
 ggplot() + 
@@ -40,6 +41,15 @@ ggplot() +
   geom_histogram(data=tsrc_trips, aes(distance, fill=purpose, weight=wtep), bins = 30) +
   facet_wrap(~odtype) +
   ggtitle("Histogram of distance for TSRC Trips - Estimated Distance")
+
+#external zones, only trips between provinces
+ggplot() + 
+  geom_histogram(data=subset(tsrc_trips, odtype='EE'), aes(distance, fill=purpose, weight=wtep), bins = 30) +
+  facet_wrap(~intra.pr) +
+  ggtitle("Interprovince? for TSRC Trips - Estimated Distance")
+
+
+
 
 tt.anomalies <- tsrc_trips %>% 
   filter (distance > 1000 & distance < 2000) %>% 
