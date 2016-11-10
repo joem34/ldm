@@ -1,6 +1,6 @@
 #m logit
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(mnlogit, tidyr, dplyr,data.table,purrr,broom,h5, ggplot2)
+pacman::p_load(mnlogit, tidyr, dplyr,data.table,purrr,broom,h5, ggplot2, gtools)
 
 
 #runnning different models:
@@ -11,6 +11,8 @@ p.s.uq <- unique(all_trips$purpose_season)
 purpose_season_options <- p.s.uq[-grep("^other.*", p.s.uq)]
 
 class.columns <- list("purpose" = list("visit", "leisure", "business"))
+
+class.k = c('leisure' = 0.0049, 'visit' = 0.0047, 'business' = 0.0033)
 
 #set up model inputs for each class
 for (class.column in names(class.columns)) {
@@ -41,6 +43,7 @@ for (f in formulas) {
       
       print ("    Done")
     }
+    # save thesis friendly coefficients
     a <- fread(file.path(current.run.folder, "model_output.csv")) %>% select (class, parameter, coef, p)
     b <- a %>% dcast(parameter ~ class, value.var=c("coef", "p")) %>% 
       mutate (p_business = stars.pval(p_business),

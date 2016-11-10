@@ -55,6 +55,7 @@ build_long_trips <- function (a,t) {
     log_fs_skiarea = log(fs_skiarea)
   ) 
   for (j in 1:ncol(dt)) set(dt, which(is.infinite(dt[[j]])), j, 0)
+  for (j in 1:ncol(dt)) set(dt, which(is.nan(dt[[j]])), j, 0)
   dt
 }
 

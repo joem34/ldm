@@ -26,20 +26,21 @@ trip.matrix <- weighted.predictions %>%
 #remove the x from the destination
 trip.matrix$dest <- as.numeric(substring(trip.matrix$dest, 2))
 
-#delete external non-relevant o,d pairs 
-right.zones = c(70,76:81,83,97,98,101,104)
-left.zones = c(71,72,73,74,75,82,84:96,99,100,102,103,105:117)
-
-trip.matrix <- trip.matrix %>% 
-  filter (!(origin %in% left.zones & dest %in% left.zones))%>% 
-  filter (!(origin %in% right.zones & dest %in% right.zones))
-
 #make the tsrc od counts for each category ex = expected
 ex.od <- trips[[class]] %>% 
-  group_by(lvl2_orig, lvl2_dest) %>%
+  group_by(lvl2_orig, lvl2_dest, orig_pr, dest_pr) %>%
   #need to scale weight by number of years, and to a daily count
   summarise(total = sum(daily.weight)) %>% 
   rename (origin = lvl2_orig, dest = lvl2_dest)
+
+od.filter <- function( orig_pr, lvl2_orig, dest_pr, lvl2_dest ){
+  quebec.exceptions = lvl2_orig != lvl2_dest & 
+    orig_pr == 24 & dest_pr == 24 & 
+    (lvl2_orig %in% c(85, 117) | lvl2_dest %in% c(85, 117))
+  is.included = (orig_pr <= 35 & dest_pr >= 35) | (orig_pr >= 35 & dest_pr <= 35) | quebec.exceptions
+  return (is.included)
+            
+}
 
 errors <- merge(trip.matrix, ex.od, by=c("origin", "dest"), all.x=TRUE) %>%
         rename (x = total.x, ex = total.y) %>%
@@ -51,6 +52,7 @@ errors <- merge(trip.matrix, ex.od, by=c("origin", "dest"), all.x=TRUE) %>%
           abs_err = abs(ex - x), #calculate errors here
           rel_err = ifelse (ex > 0, abs_err / ex, 0) #if relative error would be infinity, then set it to 0 instead
         ) %>%
+  filter(od.filter(orig_pr, origin, dest_pr, dest)) %>%
   select (class.column, class, origin, dest, type, x, ex, abs_err, rel_err)
 
 #### could be useful for combining the trip matricies later

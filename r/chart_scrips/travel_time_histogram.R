@@ -2,6 +2,8 @@ library("ggplot2")
 library("dplyr")
 library("h5")
 library("data.table")
+library(reshape2)
+
 #load skim
 f <- h5file("canada/data/mnlogit/lvl2_zones_distance.omx")
 tt <- f["data/distance"]
@@ -27,47 +29,35 @@ get_dist_v <- Vectorize(function(o,d) { cd_tt[o, d] })
 tsrc_trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_trips_more_variables.csv")) %>% 
   mutate (distance = get_dist_v(lvl2_orig, lvl2_dest),
           odtype = get.od.type(lvl2_orig, lvl2_dest),
-          intra.pr = orig_pr == dest_pr,
+          quebec = orig_pr == 24 & dest_pr == 24 & (lvl2_orig %in% c(85, 117) | lvl2_dest %in% c(85, 117)),
+          is.included = ifelse((orig_pr <= 35 & dest_pr >= 35) | (orig_pr >= 35 & dest_pr <= 35) | quebec, "Included in Model", "Excluded"),
+          count = "All",
           weight = wtep) %>%
   filter (purpose != 'other' & dist2 < 99999)
 
+tsrc_trips$is.included <- factor(tsrc_trips$is.included,
+                       levels = c("Included in Model", "Excluded"))
+mm.tsrc <- tsrc_trips %>% 
+  select(id, dist2, distance, is.included) %>% 
+  melt(id.vars=c("id", "is.included")) %>%
+  mutate (variable = ifelse(variable == "dist2", "Observed", "Estimated"))
 
+mm.tsrc$variable <- factor(mm.tsrc$variable,
+                           levels = c("Observed", "Estimated"))
+
+#ob vs est by include/exclude
 ggplot() + 
-  geom_histogram(data=tsrc_trips, aes(dist2, fill=purpose, weight=wtep), bins = 30)  +
-  facet_wrap(~odtype) +
-  ggtitle("Histogram of distance for TSRC Trips - Observed Distance")
+  geom_histogram(data=subset(mm.tsrc, value < 4000), aes(value), bins = 30) +
+  facet_wrap(is.included ~ variable) +
+  ggtitle("Estimated vs Observed Trip Distance") + theme_bw() +
+  xlab("Distance") +
+  ylab("Number of Records")
 
+#combined ob vs est
 ggplot() + 
-  geom_histogram(data=tsrc_trips, aes(distance, fill=purpose, weight=wtep), bins = 30) +
-  facet_wrap(~odtype) +
-  ggtitle("Histogram of distance for TSRC Trips - Estimated Distance")
-
-#external zones, only trips between provinces
-ggplot() + 
-  geom_histogram(data=subset(tsrc_trips, odtype='EE'), aes(distance, fill=purpose, weight=wtep), bins = 30) +
-  facet_wrap(~intra.pr) +
-  ggtitle("Interprovince? for TSRC Trips - Estimated Distance")
-
-
-
-
-tt.anomalies <- tsrc_trips %>% 
-  filter (distance > 1000 & distance < 2000) %>% 
-  group_by (lvl2_orig, lvl2_dest, odtype, distance) %>% 
-  summarize(count = sum(weight)) %>% 
-  arrange(desc(count))
-
-head(tt.anomalies, 20)
-
-
-tt_function <- function (x) -6314.508108*exp(-1 * x)
-
-ggplot() +
-  stat_function(data = data.frame(x=c(40, 4000)), aes(x), fun=tt_function)
-
-#grid.arrange(histo, tt_func)
-
-
-ggplot(data.frame(x=c(40, 4000)), aes(x)) + stat_function(fun=tt_function)
-
+  geom_histogram(data=subset(mm.tsrc, value < 4000), aes(value), bins = 30) +
+  facet_wrap(~ variable) +
+  ggtitle("Estimated vs Observed Trip Distance") + theme_bw() +
+  xlab("Distance") +
+  ylab("Number of Records")
 
