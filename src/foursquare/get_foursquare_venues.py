@@ -32,6 +32,21 @@ def calc_distance(lat1, lon1, lat2, lon2):
 timer = 0
 program_start_time = time.time()
 
+
+import time
+def call_api():
+    api_rate = 5000
+    start = time.time()
+
+    #call api here...
+    response = None
+
+    end = time.time()
+    delay = max((3600.0)/api_rate - (end-start), 0)
+    #print "api call took %.2f seconds, wait %.2f" % (end-start, delay)
+    time.sleep(delay)
+    return response
+
 def call_venue_api(client, zone_id, north, east, south, west, categories = None):
     start = time.time()
     ne = str(north) + ',' +  str(east)
