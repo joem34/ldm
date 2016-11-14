@@ -36,14 +36,14 @@ head(errors)
 sum(errors$x); sum(errors$ex)
 
 g1 <- ggplot(subset(errors, !is.infinite(rel.error))) +
-    geom_point(aes(x = abs.error2, y = rel.error, color=type), alpha = 7/10) +
+    geom_point(aes(x = abs.error2, y = rel.error2, color=type), alpha = 7/10) +
     labs(title="Gravity Model Errors") + 
     labs(x="Absolute error (# Trips) ", y="Relative error (x Trips)") +
     scale_color_brewer(name="OD Pair Type",
                        #labels=c("II - Intra Ontario", "IE - Outgoing", "EI - Incoming"), 
                        palette = 2, type = "qual") +
   #scale_y_continuous(labels = 'x') + #, limits = c(0, 25)) +
-  ylim(-1,0) +
+  #ylim(-1,0) +
   facet_wrap( ~ purpose, scales = "free_x")
   #facet_wrap(~ purpose)
 

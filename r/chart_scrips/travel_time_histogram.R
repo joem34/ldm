@@ -3,9 +3,10 @@ library("dplyr")
 library("h5")
 library("data.table")
 library(reshape2)
-
+library(svglite)
+setwd("C:/Users/Joe")
 #load skim
-f <- h5file("canada/data/mnlogit/lvl2_zones_distance.omx")
+f <- h5file("canada/data/mnlogit/combined_zones_distance.omx")
 tt <- f["data/distance"]
 cd_tt <- tt[]
 
@@ -30,13 +31,13 @@ tsrc_trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_trips_more_variab
   mutate (distance = get_dist_v(lvl2_orig, lvl2_dest),
           odtype = get.od.type(lvl2_orig, lvl2_dest),
           quebec = orig_pr == 24 & dest_pr == 24 & (lvl2_orig %in% c(85, 117) | lvl2_dest %in% c(85, 117)),
-          is.included = ifelse((orig_pr <= 35 & dest_pr >= 35) | (orig_pr >= 35 & dest_pr <= 35) | quebec, "Included in Model", "Excluded"),
+          is.included = ifelse((orig_pr <= 35 & dest_pr >= 35) | (orig_pr >= 35 & dest_pr <= 35) | quebec, "Included in Model", "Excluded from Model"),
           count = "All",
           weight = wtep) %>%
   filter (purpose != 'other' & dist2 < 99999)
 
 tsrc_trips$is.included <- factor(tsrc_trips$is.included,
-                       levels = c("Included in Model", "Excluded"))
+                       levels = c("Included in Model", "Excluded from Model"))
 mm.tsrc <- tsrc_trips %>% 
   select(id, dist2, distance, is.included) %>% 
   melt(id.vars=c("id", "is.included")) %>%
@@ -49,9 +50,13 @@ mm.tsrc$variable <- factor(mm.tsrc$variable,
 ggplot() + 
   geom_histogram(data=subset(mm.tsrc, value < 4000), aes(value), bins = 30) +
   facet_wrap(is.included ~ variable) +
-  ggtitle("Estimated vs Observed Trip Distance") + theme_bw() +
+  #ggtitle("Estimated vs Observed Trip Distance") + 
+  theme_bw() +
   xlab("Distance") +
   ylab("Number of Records")
+
+ggsave(file="C:\\Users\\Joe\\canada\\thesis\\Figures/est_vs_obs_distance.pdf", width = 5, height = 4)
+
 
 #combined ob vs est
 ggplot() + 
