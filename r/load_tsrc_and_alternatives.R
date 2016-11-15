@@ -23,6 +23,6 @@ all_trips <- all_trips %>% rename(chid = id) %>%
 
 
 #load skim
-f2 <- h5file("canada/data/mnlogit/cd_travel_times2.omx")
-tt <- f2["data/travel_time"]
+f2 <- h5file("canada/data/mnlogit/combined_zones_distance.omx")
+tt <- f2["data/distance"]
 cd_tt <- tt[]
