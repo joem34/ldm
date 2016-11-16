@@ -16,6 +16,8 @@ select id, purpose, season, lvl2_orig, orcprovt as orig_pr, lvl2_dest, mddplfl a
 from tsrc_trip
 ) to 'C:/Users/Joe/canada/data/mnlogit/mnlogit_trips_more_variables.csv' WITH CSV HEADER;
 
+drop table if exists tsrc_trip_filtered;
+
 select id, purpose, season, lvl2_orig, lvl2_dest, orcprovt as orig_pr, mddplfl as dest_pr, incomgr2, orig_is_metro, dest_is_metro, wtep
 into tsrc_trip_filtered
 from tsrc_trip

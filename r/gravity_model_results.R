@@ -41,28 +41,29 @@ errors <- merge(gm, tsrc.od, by.x = c('orig', 'dest', 'purpose'), by.y = c('lvl2
 
 head(errors)
 
+write.csv(errors,"C:/Users/Joe/canada/data/mnlogit/runs/gravity_model/errors.csv", row.names = FALSE)
+
+
 sum(errors$x); sum(errors$ex)
 
 g1 <- ggplot(errors) +
-    geom_point(aes(abs.error, rel.errory)) +
+    geom_point(aes(abs.error, rel.errory), shape=1) +
     labs(x="Absolute error (# Trips) ", y="Maximum relative error (x Trips)") +
   theme_bw() +
     scale_color_brewer(name="OD Pair Type",
                        #labels=c("II - Intra Ontario", "IE - Outgoing", "EI - Incoming"), 
                        palette = 2, type = "qual") +
-  #scale_y_continuous(labels = 'x') + #, limits = c(0, 25)) +
-  #ylim(-1,0) +
-  facet_wrap( ~ purpose, scales = "free_x")
-  #facet_wrap(~ purpose)
+  facet_wrap(~ purpose)
 
 
  g1 
 ggsave(file="C:\\Users\\Joe\\canada\\thesis\\Figures/gravity_model_errors.png", width = 10, height = 5)
   
 g2 <- ggplot(errors) +
-  geom_point(aes(ex,x-ex)) +
+  geom_point(aes(ex,x-ex), shape=1) +
   labs(x="Observed Trips ", y="Error") +
   theme_bw() +
+  ylim(c(-2000, 2000)) +
   facet_wrap(~ purpose) + 
   geom_abline(intercept = 0, slope = 0, linetype="dashed")
 g2

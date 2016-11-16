@@ -19,9 +19,6 @@ source("canada/R/mto_graphing.R")
 chart_folder <- file.path(current.run.folder, "charts")
 dir.create(chart_folder, showWarnings = FALSE)
 
-error.file.name <- paste0(class.ref, "_error_chart.png")
-error.plot <- error_chart(errors, file.path(chart_folder, error.file.name))
-
 #summaries
 summary_folder <- file.path(current.run.folder, "summaries")
 dir.create(summary_folder, showWarnings = FALSE)

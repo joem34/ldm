@@ -49,23 +49,9 @@ errors <- merge(trip.matrix, ex.od, by=c("origin", "dest"), all.x=TRUE) %>%
           class = class,
           type = get.od.type(origin, dest),
           ex = ifelse(is.na(ex), 0, ex),
-          abs_err = abs(ex - x), #calculate errors here
-          rel_err = ifelse (ex > 0, abs_err / ex, 0) #if relative error would be infinity, then set it to 0 instead
+          abs.error = abs(ex - x), #calculate errors here
+          max.rel.error = abs(x-ex)/pmin(x,ex),
+          max.rel.error = ifelse(is.infinite(max.rel.error), 0, max.rel.error)
         ) %>%
-  filter(od.filter(orig_pr, origin, dest_pr, dest)) %>%
-  select (class.column, class, origin, dest, type, x, ex, abs_err, rel_err)
-
-#### could be useful for combining the trip matricies later
-# 
-# #add the category identifier to each data frame, then concatenate them all together
-# category.errors <- category.errors %>% 
-#   mutate(t = map2(t, category, ~ mutate(.x, category = .y)))
-# combined.errors <- data.table::rbindlist(category.errors$t)
-# 
-# #combine trip matricies
-# total.errors <- combined.errors %>% group_by (origin, dest, type) %>%
-#   select(-category) %>%
-#   summarise_all(sum) %>% 
-#   mutate(abs_err = abs(ex - x), rel_err = abs_err / ex)
-
+  select (class.column, class, origin, dest, type, x, ex, abs.error, max.rel.error)
 

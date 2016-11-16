@@ -44,6 +44,7 @@ build_long_trips <- function (a,t) {
     intra = (lvl2_orig == alt),
     mm_intra = mm * intra,
     mm_inter = mm * (!intra),
+    r_intra = (!orig_is_metro) * intra,
     rm = (1-orig_is_metro)*alt_is_metro,
     mr = (1-alt_is_metro)*orig_is_metro,
     rr = (1-alt_is_metro)*(1-orig_is_metro),

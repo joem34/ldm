@@ -1,6 +1,6 @@
 #m logit
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(mnlogit, tidyr, dplyr,data.table,purrr,broom,h5, ggplot2, gtools)
+pacman::p_load(mnlogit, tidyr, dplyr,data.table,purrr,broom,h5, ggplot2, gtools, xtable)
 
 
 #runnning different models:
@@ -10,9 +10,9 @@ source("canada/R/load_tsrc_and_alternatives.R", echo = FALSE)
 p.s.uq <- unique(all_trips$purpose_season)
 purpose_season_options <- p.s.uq[-grep("^other.*", p.s.uq)]
 
-class.columns <- list("purpose" = list("visit", "leisure", "business"))
+class.columns <- list("purpose" = list("Visit", "Leisure", "Business"))
 
-class.k = c('leisure' = 0.0049, 'visit' = 0.0047, 'business' = 0.0033)
+class.k = c('Leisure' = 0.0035, 'Visit' = 0.0030, 'Business' = 0.0013)
 
 #set up model inputs for each class
 for (class.column in names(class.columns)) {
@@ -43,17 +43,6 @@ for (f in formulas) {
       
       print ("    Done")
     }
-    # save thesis friendly coefficients
-    a <- fread(file.path(current.run.folder, "model_output.csv")) %>% select (class, parameter, coef, p)
-    b <- a %>% dcast(parameter ~ class, value.var=c("coef", "p")) %>% 
-      mutate (p_business = stars.pval(p_business),
-              p_leisure = stars.pval(p_leisure),
-              p_visit = stars.pval(p_visit)) %>%
-      transmute(parameter, 
-                visit = signif(coef_visit, 3), visit_p = p_visit, 
-                leisure = signif(coef_leisure, 3), leisure_p = p_leisure, 
-                business = signif(coef_business, 3), business_p = p_business)
-    write.csv(b, file.path(current.run.folder, "model_coefficients.csv"), row.names = FALSE)
-    
+    source("canada/R/output_combined_results.R", echo=FALSE)
   }
 }

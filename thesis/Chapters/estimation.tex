@@ -24,18 +24,18 @@ A separate model was created for each trip purpose, and calibrated to match the 
 \centering
 \caption{Gravity Model Calibration}
 \label{table:gravity-calibration}
-\begin{tabular}{@{}lllllll@{}}
+\begin{tabular}{@{}lllll|ll@{}}
 \toprule
 Model & Trips & $\bar{d}$ & $d$ & $k$ & RMSE & $r^2$ \\ \midrule
-   Business  & 34,229.43  &     244     &  242.92   & 0.0002 & 57.48  & 0.33  \\
-   Leisure   & 83,357.94  &     149     &  150.79   & 0.0016 & 93.43  & 0.36  \\
-   Visit     & 129,843.18 &     163     &  161.00   & 0.0013 & 104.45 & 0.40  \\ \bottomrule
+   Business  & 34,229.43  &     244     &  243.20   & 0.0013 & 53.45  & 0.42  \\
+   Leisure   & 83,357.94  &     149     &  148.13   & 0.0035 & 100.72  & 0.36  \\
+   Visit     & 129,843.18 &     163     &  164.77   & 0.0030 & 103.65 & 0.52  \\ \bottomrule
 \end{tabular}
 \end{table}
 
 
 \subsection{Results}
-Figure~\ref{fig:gravity-residuals} presents an error plot, with the observed trips on the x axis, and difference between the observed and predicted on the y axis. While the three purposes cannot be compared with each other, due to the differing sample sizes, it is clear that all three models have serious errors, and are almost unusable. The predicted values should fall roughly above and below the dotted line. There is a definite pattern in the observed data, indicating that important OD pairs, ones with large numbers of trips, are strongly underestimated. The calibration attempts to fit the many OD pairs with smaller number of trips to fit the observed average trip distance. However, this comes at the expense of model accuracy for large, important connections.
+Figure~\ref{fig:gravity-residuals} presents an error plot, with the observed trips on the x axis, and difference between the observed and predicted on the y axis. While the three purposes cannot be compared with each other, due to the differing sample sizes, it is clear that all three models have serious errors, and are almost unusable. The predicted values should fall roughly above and below the dotted line. There is a definite pattern in the observed data, indicating that important OD pairs, ones with large numbers of trips, are strongly underestimated. The numerous OD pairs with small numbers of trips dominate the calibration to the observed average trip distance. However, this comes at the expense of model accuracy for large, important connections.
 
 \begin{figure}[H]
 \centering
@@ -48,7 +48,7 @@ Figure~\ref{fig:gravity-errors} gives a better indication of how the model fits 
 
 $$\frac{|x-E(x)|}{\min(x, E(x))}$$
 
-This error metric was chosen over the standard relative error $\frac{|x-E(x)|}{E(x)}$ as it treats over and underestimations equally. When the relative error is used, only one term, $E(x)$ is in the denominator, meaning that large underestimations produce very small relative errors, reducing the visibility of such errors in the chart. Large y values are only of concern when the x value, namely absolute error, is also large.
+In the standard relative error $\frac{|x-E(x)|}{E(x)}$, only one term, $E(x)$ is present in the denominator, meaning that large underestimations produce very small relative errors, reducing the visibility of such errors in the chart. In contrast, the maximum relative error treats overestimations and underestimations equally. For this model, it is also more useful than the error plot in figure~\ref{fig:gravity-residuals}, as the error Large y values are only of concern when the x value, namely absolute error, is also large.
 
 \begin{figure}[H]
 \centering
@@ -57,18 +57,144 @@ This error metric was chosen over the standard relative error $\frac{|x-E(x)|}{E
 \label{fig:gravity-errors}
 \end{figure}
 
-Large outliers for all three trip purposes in figure~\ref{fig:gravity-errors}. The size of these errors even obscures the also important errors closer to the origin. The points along the x axis indicate that some OD pair estimations are off by over 1000 trips. 
-
-Investigating leisure trips, significant outliers are visible. A clear weakness of the gravity model can be seen by further examining some of these outliers. The number of leisure trips originating from zones in the Toronto region to tourist destinations just outside of Toronto, such as Niagara Falls and Muskoka are strongly underestimated. By its nature, the gravity model is limited in how it can model such zone interactions, as it only takes into account one attraction factor and one impedance factor.
+Large outliers are present for all three trip purposes in figure~\ref{fig:gravity-errors}. A clear weakness of the gravity model can be seen by further examining some of these outliers for the leisure purpose. The number of leisure trips originating from zones in the Toronto region to tourist destinations such as Niagara Falls and Muskoka are strongly underestimated. By its nature, the gravity model is limited in how well it can model such zone interactions, as it only takes into account one attraction factor and one impedance factor.
 
 The propensity for leisure travellers to visit destinations with tourist attractions is clearly determined by factors other than the population and employment of the destination. The multinomial logit model of destination choice discussed in the next section adds such factors, and explores how they can be modelled.
 
 \chapter{Destination Choice Model}
 \label{section:destination-choice}
+\section{Introduction}
+As mentioned multiple times in this thesis already, discrete choice models are much more powerful than gravity models. However, this power comes at the cost of additional complexity, both in their set-up, estimation and application. A destination choice model gives the probability that the traveller $i$ will choose alternative $j$. 
+
+\begin{align*}
+ P_{ni} = \frac{e^{\beta x_{ni}}}{\sum_{k=1}^{K} e^{\beta x_{nk}}} 
+ \intertext{where}
+ x_{nk} = \left\lbrace \beta_{nk}^1,...,\beta_{nk}^K \right\rbrace and \left\lbrace w_1,...,w_K \right\rbrace \\
+ K = \text{is the total number of alternatives}
+\end{align*}
+
+These $\beta$, the coefficients of the model, need to be calibrated using some optimisation function. In this thesis, this is done using Maximum Likelyhood Esimation, through the mnlogit package described in section~\ref{section:mnlogit}. The probabilities provided by an estimated model for each alternative and individual can then be used in a weighted selection of a destination for that individual. Furthermore, a trip distribution matrix is can be created by summing the probabilities over the travellers for each OD pair. This allows the model to directly be compared with aggregate models if required.
+
+Firstly, the data must be transformed into the correct input structure, and this process was described in section~\ref{section:mnlogit-structure}. The next step is estimation. The estimation of a discrete choice model for destination choice is much more involved than the construction of a gravity model, since modeller has almost infinite possible permutations of variables at his or her disposal. Divining the best variables is part art, part science. Some variables may be statistically significant, while adding little useful explanatory power to the model. Others may only be significant when paired with certain other variables. Rather than just present a final model, this next section elaborates on the model development process, covering the estimation, validation and implementation stages.
 
 \section{Estimation}
+In this section, the evolution of a destination choice model is presented. in \textit{m1}, a simple model based on the gravity model is presented.\textit{m2} and \textit{m3} add further interaction variables between origin and destinations. \textit{m4} explores the potential of LSBN data to improve the measure of destination utility. Finally, \textit{m5} adds the important explanatory variable of income to the model.
+
 \subsection{Socio-economic Variables}
+For the first model, the same inputs as for the gravity model are used, namely the exponential of distance $e^{-d_{ij}}$, and the combined population $p$ and employment $emp$.
+
+The distance factor for each trip purpose was adjusted by the impedance factor $k$ estimated for the respective gravity model (see \ref{section:gravity-model}). This approach significantly improved the model, and provides a quick way to calibrate the distance coefficient without requiring the design of a more complicated GEV models.
+
+Metropolitan areas are not homogeneous in land use patterns. There exists residential areas, and central business districts, to which people may choose to travel. However, at the spatial resolution of our zone system, these differences are hidden, resulting in a very high correlation between population and employment across the destination choice set of 98.95\%. Hence, as in the gravity model, we sum population and employment into one variable, which we use for our model. In order to simplify the further model equations, we assign a new variable for each destination
+$$ civic_j = \ln\left( p_j + emp_j \right) $$
+
+The resulting model \textit{m1}, is defined by the utility $u$ of destination $j$ for a traveller in origin $i$: 
+$$ u_{ij} = \beta_1~e^{-k d_{ij}} + \beta_2~civic_j $$
+
+where $\beta_n$ are the coefficients to be estimated by the mnlogit package. This model forms the base for further models discussed in the next sections. 
+
+As discussed in section (CITE), the employment can also be separated by category, and models were explored where only a section of categories was included as employment. Filtering the categories of employment did not improve the model. The individual employment categories were also not considered separately as unique variables, as they were highly inter-correlated.
+
+The parameters of this model \textit{m1} (see table~\ref{table:m1-coeff} make for interesting analysis. All the signs are as expected, and differences in the coefficients across trip purposes are evident. A leisure trip is less likely to go towards areas of civic importance than visits or business, suggesting a preference to \enquote{escape the city}, and the trip distance is naturally less important for business travellers. For each trip purpose, the basic multinomial logit model had a lower RMSE than the gravity model, as seen in table (CITE). 
+
+%TODO: model m1 coefficients
+\begin{table}[H]
+\label{table:m1-coeff}
+\centering
+\caption{\textit{m1} Coefficients}
+\begin{tabular}{@{}rlrlrlrl@{}}
+  \toprule
+ Parameter & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business} &  \\ \midrule
+  $e^{-k\ d_{ij}}$ 	& 4.29 & *** & 3.86 & *** & 4.21 & *** \\ 
+  $civic_j$ 		& 0.51 & *** & 0.35 & *** & 0.76 & *** \\   
+   \bottomrule
+\end{tabular}
+\end{table}
+
+%TODO: model m1 results
+
 \subsection{Origin-Destination Interactions}
+In this section, the model is extended with two additional variables that were introduced in section (CITE). Model \textit{m2} is specified by the utility function
+\begin{align*}
+u_{ij} = \beta_1~e^{-k\ d_{ij}} + \beta_2~civic_j + \beta_3~language_{ij}+ \beta_4~mm_{ij} + \beta_5~rm_{ij}
+\intertext{where}
+language_{ij} = language(i) \neq language(j)\\
+mm_{ij} = metro(i)~\wedge~metro(j)\\
+rm_{ij} = !metro(i)~\wedge~metro(j)
+\end{align*}
+
+There are 4 possible combinations of a metropolitan flag for origin and destination pairs, however, only two were selected for inclusion in the model. The flag that identifies trips leaving metropolitan areas,$mr_{ij}$, results in an unsolvable model, all other combinations, other than the one selected, $\beta_4~mm_{ij} + \beta_5~rm_{ij}$, also result in unsolvable models. 
+
+The use of these two parameters add small improvements to the model, as can be seen in the lower AIC. The RMSE is almost the same between the models. Table~\ref{table:m2-coeff} presents the estimated parameters for this model. The new parameters vary strongly between trip purposes. 
+$mm_{ij}$  works well for each trip purpose, with visit and leisure trips more likely to leave metropolitan areas, and business travel more likely to be inter metropolitan. However, language and $rm_{ij}$  do not work as well. They are not statistically significant for visit trips, and the coefficient value is at least an order of magnitude smaller than for the other trip purposes. Business dealings normally require a common language, and hence it is not surprising to see a negative coefficient for language in this category, however the language coefficient for leisure is hard to justify. Finally, $rm_{ij}$  is not significant for two trip purposes, despite working well for leisure trips. 
+
+%%%Just include the bad model, no brackets.
+% model m2 coefficients
+\begin{table}[H]
+\centering
+\caption{\textit{m2} Coefficients}
+\label{table:m2-coeff}
+\begin{tabular}{@{}rlrlrlrl@{}}
+  \toprule
+ Parameter & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business} &  \\ \midrule
+  $e^{-k\ d_{ij}}$ 	& 4.35 & *** & 4.57 & *** & 3.81 & *** \\  
+  $civic_j$ 		& 0.52 	& *** & 0.48 & *** & 0.73 & *** \\  
+  $language_{ij}$ 	& 0.05 & * & 0.58 & *** & -0.44 & *** \\ 
+  $mm_{ij}$  		& -0.10 & *** & -0.99 & *** & 0.55 & *** \\ 
+  $rm_{ij}$			& 0.06 & * & -0.39 & *** & -0.09 & . \\  
+   \bottomrule
+\end{tabular}
+\end{table}
+% model m2 error chart
+
+Comparing figures~\ref{fig:gravity-errors} and (Ref m2), we can see the how many outliers have been significantly brought back towards the origin, indicating an improvement in the model. However, there are still some significant outliers, with a sample of the largest in Table (CITE). These outliers fall into two categories:
+\begin{itemize}
+\item Overestimation of intra zonal Trips within a metropolitan zone such as Toronto.
+\item Underestimation of leisure  as visit trips  from metropolitan centers  to tourist attractions such as Niagara Falls.
+\end{itemize}
+
+%Model m3
+As seen in figure (CITE), The large intra zonal errors occur in small metropolitan zones. Since we don't want to penalise intra-zonal travel in the larger zones, which is already well estimated by the model,  $mm_{ij}$  is replaced with two new variables,
+
+	$$	
+	intrametro_{ij} = \left.
+  \begin{cases}
+    mm_{ij}, & \text{if } i = j \\
+    0, & \text{otherwise } 0 
+  \end{cases}
+  \right\}
+	$$
+  
+	$$	
+	intermetro_{ij} = \left.
+  \begin{cases}
+    mm_{ij}, & \text{if } i \neq j \\
+    0, & \text{otherwise } 0 
+  \end{cases}
+  \right\}
+	$$
+	
+The other zone interaction variables $language_{ij}$  and $rm_{ij}$  are removed in this iteration, as they weren't suitable in the previous model, and the significance of their coefficients did not improve in this iteration when combined with the two new variables $intrametro_{ij}$ and $intrametro_{ij}$.
+
+
+% latex table generated in R 3.3.1 by xtable 1.8-2 package
+% Wed Nov 16 14:53:39 2016
+\begin{table}[H]
+\centering
+\caption{\textit{m3} Estimation Results}
+\begin{tabular}{@{}rlrlrlrl@{}}
+  \toprule
+ Parameter & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business} &  \\ \midrule
+  $e^{-k\ d_{ij}}$ 	& 4.90 	& *** & 4.90 & *** & 4.44 & *** \\ 
+  $civic_j$ & 0.56 	& *** 	& 0.52 & *** & 0.74 & *** \\ 
+  $intermetro_{ij}$ & -0.08 & *** & -0.89 & *** & 0.56 & *** \\ 
+  $intrametro_{ij}$ & -1.71 & *** & -2.63 & *** & -0.94 & *** \\ 
+   \bottomrule
+\end{tabular}
+\end{table}
+
+
+
 \subsection{Incorporating LBSN Data}
 \subsection{Model Subsets}
 \paragraph{Seasons}
