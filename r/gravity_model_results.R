@@ -74,5 +74,5 @@ g2
 ggsave(file="C:\\Users\\Joe\\canada\\thesis\\Figures/gravity_model_residuals.png", width = 10, height = 5)
 
 
-errors %>% group_by(purpose) %>% summarise ( rmse = sqrt(mean((x - ex)^2)), trips = sum(ex), r2 = cor(x, ex))
+errors %>% group_by(purpose) %>% summarise (trips = sum(ex), r2 = cor(x, ex),  rmse = sqrt(mean((x - ex)^2)))
 

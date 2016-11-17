@@ -1,4 +1,5 @@
 \section{Foursquare}
+\label{section:data-foursquare}
 Trip distribution models that consider only population and employment, while common, have a significant flaw. They fail to account for landmarks and attractions, such as National Parks that attract large numbers of people, yet have low population or employment. Destination choice modeling provides the opportunity to incorporate parameters that reflect these drivers of travel demand. 
 	
 Leisure travel is a particular case where socio-economic metrics don't always reflect the attractiveness of a destination. Areas such as as lakes, national parks and ski resorts are popular long recreational destinations in the summer and winter respectively, yet have small populations and employment. 
@@ -11,7 +12,7 @@ The TSRC microfile records the activities performed on each recorded trip and de
 \end{itemize}	
 In this section, we describe how the collection and processing of foursquare check-in data was performed, in order to build destination utility variables.
 
-\subsection{Fousquare Venue Search API}
+\subsection{Foursquare Venue Search API}
 Foursquare collects a wealth of data, on where and when users check-in. Users and their behavior can be tracked over time using twitter as a proxy, however the time-frame for this thesis prevented this method. Instead the public venue API was used, which is much more limited in its scope. For a search area and criteria, the API returns a list of venues in JSON format. Each venue record provides the following relevant information:
 \begin{itemize}
 \item Name
@@ -62,4 +63,4 @@ In table~\ref{table:foursquare_categories}, the number of venues and check-ins p
 
 TODO: move to future work
 \subsection{Summary}
-In conclusion, the foursquare API provides data at a higher spatial resolution than the TSRC microfile, but without the temporal detail. While more temporal detail could naturally improve the model, The ranking and total check-in counts for each venue still provide very useful indicators for the intensity of activity in many zones. These metrics are particularly useful for identifying destinations in non-metro areas.
+In conclusion, the foursquare API provides data at a higher spatial resolution than the TSRC microfile, but without the temporal detail. While more temporal detail could naturally improve the model, The ranking and total check-in counts for each venue still provide very useful indicators for the intensity of activity in many zones. These metrics are particularly useful for identifying destinations in non-metropolitan areas.

@@ -45,6 +45,7 @@ build_long_trips <- function (a,t) {
     rm = (1-orig_is_metro)*alt_is_metro,
     mr = (1-alt_is_metro)*orig_is_metro,
     rr = (1-alt_is_metro)*(1-orig_is_metro),
+    attraction = attraction,
     log_fs_arts_entertainment = log(fs_arts_entertainment),
     log_fs_hotel = log(fs_hotel),
     log_fs_medical = log(fs_medical),

@@ -52,7 +52,7 @@ def call_venue_api(client, zone_id, north, east, south, west, categories = None)
     ne = str(north) + ',' +  str(east)
     sw = str(south) + ',' +  str(west)
 
-        params={'intent':'browse', 'ne': ne, "sw":sw , 'limit':100}
+    params={'intent':'browse', 'ne': ne, "sw":sw , 'limit':100}
     if categories: params.update({'categoryId':categories})
 
     y = calc_distance(west, north, west,  south)
