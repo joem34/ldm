@@ -85,7 +85,7 @@ For the first model, the same inputs as for the gravity model are used, namely t
 
 The distance factor for each trip purpose was adjusted by the impedance factor $k$ estimated for the respective gravity model (see \ref{section:gravity-model}). This approach significantly improved the model, and provides a quick way to calibrate the distance coefficient without requiring the design of a more complicated GEV models.
 
-Metropolitan areas are not homogeneous in land use patterns. There exists residential areas, and central business districts, to which people may choose to travel. However, at the spatial resolution of our zone system, these differences are hidden, resulting in a very high correlation between population and employment across the destination choice set of 98.95\%. Hence, as in the gravity model, we sum population and employment into one variable, which we use for our model. In order to simplify the further model equations, we assign a new variable for each destination
+Metropolitan areas are not homogeneous in land use patterns. There exists residential areas, and central business districts, to which people may choose to travel. However, at the spatial resolution of our zone system, these differences are hidden, resulting in a very high correlation between population and employment across the destination choice set of 98.95\%. Hence, as in the gravity model, population and employment are summed together. This value is  then log transformed, due to the long tail in the distribution (see figure~\ref{fig:pop-emp-density} in appendix (CITE). In order to simplify the further model equations, we assign a new variable for each destination
 $$ civic_j = \ln\left( p_j + emp_j \right) $$
 
 The resulting model \textit{m1}, is defined by the utility $u$ of destination $j$ for a traveller in origin $i$: 
@@ -93,9 +93,9 @@ $$ u_{ij} = \beta_1~e^{-k d_{ij}} + \beta_2~civic_j $$
 
 where $\beta_n$ are the coefficients to be estimated by the mnlogit package. This model forms the base for further models discussed in the next sections. 
 
-As discussed in section (CITE), the employment can also be separated by category, and models were explored where only a section of categories was included as employment. Filtering the categories of employment did not improve the model. The individual employment categories were also not considered separately as unique variables, as they were highly inter-correlated.
+The employment data is classified by NAICS category, and models were explored where only a section of categories was included as employment. Filtering the categories of employment did not improve the model. The individual employment categories were also not considered separately as unique variables, as they were highly inter-correlated (see table~\ref{fig:pop-emp-correlation} in appendix (CITE).
 
-The parameters of this model \textit{m1} (see table~\ref{table:m1-coeff} make for interesting analysis. All the signs are as expected, and differences in the coefficients across trip purposes are evident. A leisure trip is less likely to go towards areas of civic importance than visits or business, suggesting a preference to \enquote{escape the city}, and the trip distance is naturally less important for business travellers. For each trip purpose, the basic multinomial logit model had a lower RMSE than the gravity model, as seen in table (CITE). 
+The parameters of this model \textit{m1} (see table~\ref{table:m1-coeff}encouraging. All the signs are as expected, and differences in the coefficients across trip purposes are evident. A leisure trip is less likely to go towards areas of civic importance than visits or business, suggesting a preference to \enquote{escape the city}, and the trip distance is naturally less important for business travellers. For each trip purpose, the basic multinomial logit model already performs better than the gravity model, as evident in the higher correlation and lower RMSE values in table (CITE). 
 
 %TODO: model m1 coefficients
 \begin{table}[H]
@@ -147,14 +147,14 @@ $mm_{ij}$  works well for each trip purpose, with visit and leisure trips more l
 \end{table}
 % model m2 error chart
 
-Comparing figures~\ref{fig:gravity-errors} and (Ref m2), we can see the how many outliers have been significantly brought back towards the origin, indicating an improvement in the model. However, there are still some significant outliers, with a sample of the largest in Table (CITE). These outliers fall into two categories:
+Comparing figures~\ref{fig:gravity-errors} and (Ref m2), we can see the how many outliers have been significantly brought back towards the origin, indicating an improvement in the model. However, there are still some significant outliers, with a sample of the largest in table~\ref{table:m2-error-table} in appendix (CITE). These outliers fall into two categories:
 \begin{itemize}
-\item Overestimation of intra zonal Trips within a metropolitan zone such as Toronto.
-\item Underestimation of leisure  as visit trips  from metropolitan centers  to tourist attractions such as Niagara Falls.
+\item Overestimation of intra zonal trips within a metropolitan zone such as Toronto.
+\item Underestimation of leisure and visit trips from metropolitan centers to tourist attractions such as Niagara Falls.
 \end{itemize}
 
 %Model m3
-As seen in figure (CITE), The large intra zonal errors occur in small metropolitan zones. Since we don't want to penalise intra-zonal travel in the larger zones, which is already well estimated by the model,  $mm_{ij}$  is replaced with two new variables,
+As seen in figure (CITE), The large intra zonal trip counts occur in small metropolitan zones. Since we don't want to penalise intra-zonal travel in the larger zones, which is already well estimated by the model,  $mm_{ij}$  is replaced with two new variables,
 
 	$$	
 	intrametro_{ij} = \left.
@@ -174,14 +174,14 @@ As seen in figure (CITE), The large intra zonal errors occur in small metropolit
   \right\}
 	$$
 	
-The other zone interaction variables $language_{ij}$  and $rm_{ij}$  are removed in this iteration, as they weren't suitable in the previous model, and the significance of their coefficients did not improve in this iteration when combined with the two new variables $intrametro_{ij}$ and $intrametro_{ij}$.
-
+The other zone interaction variables $language_{ij}$  and $rm_{ij}$  are removed in this iteration, as they weren't suitable in the previous model, and the significance of their coefficients did not improve in this iteration when combined with the two new variables $intrametro_{ij}$ and $intrametro_{ij}$. 
 
 % latex table generated in R 3.3.1 by xtable 1.8-2 package
 % Wed Nov 16 14:53:39 2016
 \begin{table}[H]
 \centering
-\caption{\textit{m3} Estimation Results}
+\caption{\textit{m3} Estimation Coefficients}
+\label{table:m3-coeff}
 \begin{tabular}{@{}rlrlrlrl@{}}
   \toprule
  Parameter & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business} &  \\ \midrule
@@ -193,9 +193,44 @@ The other zone interaction variables $language_{ij}$  and $rm_{ij}$  are removed
 \end{tabular}
 \end{table}
 
+The parameters for the \textit{m3} model are showing in table~\ref{table:m3-coeff}. The are all significant, with the two new variables having differing magnitudes and signs, that make logical sense for the different purposes. Business shows a strong preference for travelling to other metropolitan areas, as expected. Leisure travel is also very strongly influenced by metropolitan connections, but with a negative sign. This replicates the observed explanatory power of the $rm_{ij}$ variable for leisure travel in \textit{m2}, while also working for visit and business trips as well.
 
+In table~\ref{table:model_comparisons} we can see significant improvements throughout the model iterations across all metrics. In figure~ref{figure:m3-errors}, we can also see visually the significant improvements over the gravity model. The errors on OD pairs with small numbers of observed trips are drastically reduced, particularly for visit trips. The trend to under-estimate OD pairs with large numbers of observed trips is still evident, and this problem is tackled in the next section. 
+
+\begin{table}[H]
+\centering
+\caption{Comparison of model iterations}
+\label{table:model_comparisons}
+
+\input{Chapters/model_comparisons_table}
+\end{table}
 
 \subsection{Incorporating LBSN Data}
+
+%TODO: shouldk this be somewhere else?
+In this section, the potential of data from LSBNs to improve the modeling of destination choice is explored. As mentioned in the previous section, the traditional socio-economic variables don't reflect \textit{why} people travel to a particular destination. People don't travel to a location purely because many people live there, but because there are more opportunities in that location. Population and employment act as proxy variables for some of these opportunities, but not all. 
+
+As seen in the model results so far, this is particularly the case for leisure trips. The TSRC data show that activities such as skiing and visiting national parks are commonly performed on long distance trips. Areas where these outdoor activities are performed often have a low population and employment, while providing other attractive features to the traveler.
+
+The collection and processing of LSBN data from foursquare was covered in section~\ref{section:data-foursquare}. To summarize briefly, the venues were collected into the following categories for each destination:
+\begin{multicols}{2}
+\raggedcolumns
+\begin{itemize}
+\item Medical
+\item Ski Area
+\item Airport
+\item Hotel
+\item Arts
+\item Nightlife
+\item Outdoors
+\end{itemize}
+\end{multicols}
+
+Different approaches to including the foursquare variables in the model estimation were explored, and it was found that the best approach involved taking the natural log of the check-in count for each category. Not all 
+
+%outdoor did not work - high value for toronto and niagara, as metro centers - senic lookouts
+
+
 \subsection{Model Subsets}
 \paragraph{Seasons}
 \paragraph{Income Strata}
