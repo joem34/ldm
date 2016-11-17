@@ -53,5 +53,6 @@ errors <- merge(trip.matrix, ex.od, by=c("origin", "dest"), all.x=TRUE) %>%
           max.rel.error = abs(x-ex)/pmin(x,ex),
           max.rel.error = ifelse(is.infinite(max.rel.error), 0, max.rel.error)
         ) %>%
+  filter(od.filter(orig_pr, origin, dest_pr, dest)) %>%
   select (class.column, class, origin, dest, type, x, ex, abs.error, max.rel.error)
 

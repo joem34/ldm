@@ -34,9 +34,6 @@ build_long_trips <- function (a,t) {
   mutate(
     choice = lvl2_dest == alt,
     dist = get_dist_v(lvl2_orig, alt),
-    dist_log = log(dist),
-    dist_log = ifelse (dist_log < 0, 0, dist_log),
-    dist_2 = dist^2,
     dist_exp = exp(-class.k[purpose]*dist),
     pop_log = log(pop),
     lang.barrier = (o.lang+d.lang)%%2, #calculate if the origin and dest have different languages
