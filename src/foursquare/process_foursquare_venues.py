@@ -40,28 +40,15 @@ for f in os.listdir(venues_folder):
 
 print len(venues)
 
-with open(os.path.join(fs_folder, "top_5_sub_categories.csv")) as f:
-    reader = csv.reader(f)
-    top_5_categories = defaultdict(list)
-    [top_5_categories[row[0]].append(row[2]) for row in reader]
-
-with open(os.path.join(fs_folder, "selected_categories.csv")) as f:
-    reader = csv.reader(f)
-    search_categories = {row[0]:row[1] for row in reader}
-
 with open(os.path.join(venues_folder,"all_venues.csv"), 'wb') as out:
     csvwriter = csv.writer(out, encoding='utf-8')
     csvwriter.writerow(["venue_id", "name", "country", "state",
-                        "lon", "lat", "category_name", "category_id", "search_cat_id", "search_cat_name", "tips", "users", "checkins"])
+                        "lon", "lat", "category_name", "category_id", "search_cat_name", "tips", "users", "checkins"])
     for cat in venues:
-        top_5_categories_for_search = top_5_categories[cat]
         for v in venues[cat]:
             try:
                 venue_id = v['id']
                 venue_name = v['name']
-                search_cat_id = cat
-                search_cat_name = search_categories[search_cat_id]
-                #else:
 
                 country =  v['location']['country'] if 'country' in v['location'] else ''
 
@@ -81,11 +68,8 @@ with open(os.path.join(venues_folder,"all_venues.csv"), 'wb') as out:
                 users = v['stats']['usersCount']
                 checkins = v['stats']['checkinsCount']
 
-
-
-                if filter_venues(top_5_categories_for_search, category_name, search_cat_id, checkins):
-                    csvwriter.writerow([venue_id, venue_name, country, state, lon, lat, category_name,
-                                       category_id, search_cat_id, search_cat_name, tips, users, checkins])
+                csvwriter.writerow([venue_id, venue_name, country, state, lon, lat, category_name,
+                                       category_id, cat, tips, users, checkins])
             except KeyError:
                 print v
                 exit()
