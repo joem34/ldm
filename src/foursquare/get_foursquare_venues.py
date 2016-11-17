@@ -52,7 +52,7 @@ def call_venue_api(client, zone_id, north, east, south, west, categories = None)
     ne = str(north) + ',' +  str(east)
     sw = str(south) + ',' +  str(west)
 
-    params={'intent':'browse', 'ne': ne, "sw":sw , 'limit':100}
+        params={'intent':'browse', 'ne': ne, "sw":sw , 'limit':100}
     if categories: params.update({'categoryId':categories})
 
     y = calc_distance(west, north, west,  south)
@@ -124,15 +124,22 @@ def run():
     lvl2_zones =  "data/input/lvl2 zones"
     calls_per_hour = 5000
 
-    with open("data/foursquare/selected_categories.csv") as categories_csv:
-        categories = [row[0] for row in csv.reader(categories_csv)]
-        categories_string = string.join(categories, sep=',')
+    categories = {
+        'Medical':  ['4bf58dd8d48988d178941735','4bf58dd8d48988d177941735','4bf58dd8d48988d196941735','4bf58dd8d48988d104941735','4d954af4a243a5684765b473'],
+        'Ski Area': ['4bf58dd8d48988d1e9941735'],
+        'Airport':   ['4bf58dd8d48988d1ed931735'],
+        'Hotel':    ['4bf58dd8d48988d1fa931735'],
+        'Nightlife':    ['4d4b7105d754a06376d81259'],
+        'Outdoors':     ['52e81612bcbc57f1066b7a21','52e81612bcbc57f1066b7a13','4bf58dd8d48988d162941735','4bf58dd8d48988d1e4941735','4bf58dd8d48988d165941735'],
+        'Sightseeing':  ['4bf58dd8d48988d1e2931735','4deefb944765f83613cdba6e','4bf58dd8d48988d181941735','4bf58dd8d48988d182941735','4bf58dd8d48988d165941735']
+    }
 
     with collection(boundary_test, "r") as zones:
         #get_venues_for_zones(client, zones)
         #get_venues_for_zones(client, zones, categories_string)
         for cat in categories:
-            get_venues_for_zones(client, zones, cat)
+            cat_string = ','.join(categories[cat])
+            get_venues_for_zones(client, zones, cat_string)
 
 
 run()
