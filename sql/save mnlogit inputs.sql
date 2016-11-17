@@ -18,7 +18,7 @@ from tsrc_trip
 
 drop table if exists tsrc_trip_filtered;
 
-select id, purpose, season, lvl2_orig, lvl2_dest, orcprovt as orig_pr, mddplfl as dest_pr, incomgr2, orig_is_metro, dest_is_metro, wtep
+select id, refyear, purpose, season, lvl2_orig, lvl2_dest, orcprovt as orig_pr, mddplfl as dest_pr, incomgr2, orig_is_metro, dest_is_metro, wtep
 into tsrc_trip_filtered
 from tsrc_trip
 where (((orcprovt <= 35 and mddplfl >= 35) or (orcprovt >= 35 and mddplfl <= 35)) --eclude external intra province trips,

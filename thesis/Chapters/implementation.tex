@@ -1,12 +1,30 @@
-\chapter{Implementation}
+\section{Implementation}
 \label{section:implementation}
-\section{MTO Model Integration}
+subsection{MTO Model Integration}
+The Destination Choice model described in this thesis was designed as a component of a a larger long distance model for the Ministry of Transportation, Ontario. This long distance model is being developed in the JAVA programming language as a traditional 4-step model. 
 
-\section{Algorithm}
+\subsection{Algorithm}
+In the first step, a list trips (without destinations) is generated for a synthetic population of households and persons. For each of these trips, the destination choice model is run, returning a predicted destination for that trip. The algorithm works as followed, with step~\ref{item:trip} being performed in parallel using Java8 streams. (TODO: CITE?)
+\begin{enumerate}
+\item A Destination Choice Model is initialized with the following:
+	\begin{itemize}
+	\item Coefficients for each model strata
+	\item Destination zones and their attributes
+	\item The distance matrix between zones
+	\end{itemize}
+\item \label{item:trip} For each trip:
+	\begin{enumerate}
+	\item Calculate the utility of each destination $j$, using the relevant stored coefficients.
+	\item \label{item:denom} calculate the denominator of the logit equation $q = {\sum_{j=1}^{J} e^{u_j}}
+	$
+	\item Calculate the probability of each destination $j$, $P(j) = e^{u_j} / q $
+	\item Choose a destination based on the probabilities using an \textit{EnumeratedDistribution} from the Apache commons math library 
+	\begin{verbatim}
+	return new EnumeratedDistribution<>(probabilities).sample();
+	\end{verbatim}
 
-\section{Disaggregation to TAZs}
+	\item store the destination in the trip object
+	\end{enumerate}
+\end{enumerate}
 
-
-\chapter{Validation}
-
-\section{Case study of a new Ski Resort}
+\section{Validation - Case study of a new Ski Resort}
