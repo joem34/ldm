@@ -5,6 +5,7 @@ error_chart <- function(res1, save.file.name, x.max = NULL, y.max = NULL) {
   g1 <- ggplot(subset(res1, !is.infinite(rel_err))) +
     geom_point(aes(x = abs_err, y = rel_err, color=type), alpha = 8/10) +
     xlim(0, 6000) + ylim(0, 200) + 
+    theme(text=element_text(family="serif")) +
     labs(title="Discrete Choice Model Errors") + 
     labs(x="Absolute error ", y="Relative error") +
     scale_color_brewer(name="OD Pair Type",

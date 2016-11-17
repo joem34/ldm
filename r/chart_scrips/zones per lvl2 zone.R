@@ -28,7 +28,8 @@ ggplot() +
   scale_y_continuous(breaks = seq(0,max(cd_cma_mapping$number.of.zones),100)) +
   theme_bw() +
   xlab("Aggregation Method") + ylab("Number of Zones") +
-  theme(legend.position="none")
+  theme(legend.position="none") +
+  theme(text=element_text(family="serif"))
 
 ggsave(file="C:\\Users\\Joe\\canada\\thesis\\Figures/zoning_methods.pdf", width = 5, height = 7)
 

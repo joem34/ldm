@@ -24,6 +24,7 @@ g1 <- ggplot(all.errors) +
   geom_point(aes(abs.error, max.rel.error), shape=1) +
   labs(x="Absolute error (# Trips) ", y="Maximum relative error (x Trips)") +
   theme_bw() +
+  theme(text=element_text(family="serif")) + 
   scale_color_brewer(name="OD Pair Type",
                      #labels=c("II - Intra Ontario", "IE - Outgoing", "EI - Incoming"), 
                      palette = 2, type = "qual") +

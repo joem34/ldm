@@ -53,7 +53,8 @@ g1 <- ggplot(errors) +
     scale_color_brewer(name="OD Pair Type",
                        #labels=c("II - Intra Ontario", "IE - Outgoing", "EI - Incoming"), 
                        palette = 2, type = "qual") +
-  facet_wrap(~ purpose)
+  facet_wrap(~ purpose) +
+  theme(text=element_text(family="serif"))
 
 
  g1 
@@ -65,7 +66,8 @@ g2 <- ggplot(errors) +
   theme_bw() +
   ylim(c(-2000, 2000)) +
   facet_wrap(~ purpose) + 
-  geom_abline(intercept = 0, slope = 0, linetype="dashed")
+  geom_abline(intercept = 0, slope = 0, linetype="dashed") +
+  theme(text=element_text(family="serif"))
 g2
 
 

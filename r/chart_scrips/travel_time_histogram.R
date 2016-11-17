@@ -53,7 +53,8 @@ ggplot() +
   #ggtitle("Estimated vs Observed Trip Distance") + 
   theme_bw() +
   xlab("Distance") +
-  ylab("Number of Records")
+  ylab("Number of Records") +
+  theme(text=element_text(family="serif"))
 
 ggsave(file="C:\\Users\\Joe\\canada\\thesis\\Figures/est_vs_obs_distance.pdf", width = 5, height = 4)
 
