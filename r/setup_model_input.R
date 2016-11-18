@@ -46,12 +46,13 @@ build_long_trips <- function (a,t) {
     mr = (1-alt_is_metro)*orig_is_metro,
     rr = (1-alt_is_metro)*(1-orig_is_metro),
     attraction = attraction,
-    log_fs_arts_entertainment = log(fs_arts_entertainment),
-    log_fs_hotel = log(fs_hotel),
-    log_fs_medical = log(fs_medical),
-    log_fs_outdoor = log(fs_outdoor),
-    log_fs_services = log(fs_services),
-    log_fs_skiarea = log(fs_skiarea)
+    log_airport = log(airport),
+    log_hotel = log(hotel),
+    log_medical = log(medical),
+    log_nightlife = log(nightlife),
+    log_outdoors = log(outdoors),
+    log_sightseeing = log(sightseeing),
+    log_skiing = log(skiing)
   ) 
   for (j in 1:ncol(dt)) set(dt, which(is.infinite(dt[[j]])), j, 0)
   for (j in 1:ncol(dt)) set(dt, which(is.nan(dt[[j]])), j, 0)
