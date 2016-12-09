@@ -173,13 +173,13 @@ Comparing figures~\ref{fig:gravity-errors} and (Ref m2), we can see the how many
 \end{itemize}
 
 %Model m3
-As seen in figure (CITE), The large intra-zonal trip counts occur in small metropolitan zones. Since we don't want to penalize intra-zonal travel in the larger zones, which is already well estimated by the model,  $mm_{ij}$  is replaced with two new variables,
+As seen in figure (CITE), The large intra-zonal trip counts occur in small metropolitan zones. Since we don't want to penalize intra-zonal travel in the larger zones, which is already well estimated by the model,  $mm_{ij}$  is replaced with three new variables,
 
 	$$	
 	intrametro_{ij} = \left.
   \begin{cases}
-    mm_{ij}, & \text{if } i = j \\
-    0, & \text{otherwise } 0 
+    1, & \text{if } metro(i) \wedge i = j \\
+    0, & \text{otherwise }
   \end{cases}
   \right\}
 	$$
@@ -187,13 +187,24 @@ As seen in figure (CITE), The large intra-zonal trip counts occur in small metro
 	$$	
 	intermetro_{ij} = \left.
   \begin{cases}
-    mm_{ij}, & \text{if } i \neq j \\
-    0, & \text{otherwise } 0 
+    1 & \text{if } metro(i) \wedge metro(j) \wedge i \neq j \\
+    0, & \text{otherwise } 
+  \end{cases}
+  \right\}
+	$$  
+	
+	$$	
+	intrarural_{ij} = \left.
+  \begin{cases}
+    1 & \text{if } !metro(i) \wedge i = j \\
+    0, & \text{otherwise } 
   \end{cases}
   \right\}
 	$$
 	
-The other zone interaction variables $language_{ij}$  and $rm_{ij}$  are removed in this iteration, as they weren't suitable in the previous model, and the significance of their coefficients did not improve in this iteration when combined with the two new variables $intrametro_{ij}$ and $intrametro_{ij}$. 
+The other zone interaction variables $language_{ij}$  and $rm_{ij}$  are removed in this iteration, as they weren't suitable in the previous model, and the significance of their coefficients did not improve in this iteration when combined with the new variables $intrametro_{ij}$,  $intrametro_{ij}$ and $intrarural_{ij}$.
+
+%TODO explain better the three new variables
 
 % latex table generated in R 3.3.1 by xtable 1.8-2 package
 % Wed Nov 16 14:53:39 2016
@@ -204,32 +215,25 @@ The other zone interaction variables $language_{ij}$  and $rm_{ij}$  are removed
 \begin{tabular}{@{}rlrlrlrl@{}}
   \toprule
  Parameter & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business} &  \\ \midrule
-  $e^{-k\ d_{ij}}$ 	& 4.90 	& *** & 4.90 & *** & 4.44 & *** \\ 
-  $civic_j$ & 0.56 	& *** 	& 0.52 & *** & 0.74 & *** \\ 
-  $intermetro_{ij}$ & -0.08 & *** & -0.89 & *** & 0.56 & *** \\ 
-  $intrametro_{ij}$ & -1.71 & *** & -2.63 & *** & -0.94 & *** \\ 
+  $e^{-k\ d_{ij}}$ 	& 4.83 & *** & 4.75 & *** & 4.19 & *** \\  
+  $civic_j$ & 0.57 & *** & 0.52 & *** & 0.76 & *** \\ 
+  $intermetro_{ij}$ & -0.08 & *** & -0.87 & *** & 0.56 & *** \\ 
+  $intrametro_{ij}$ & -1.68 & *** & -2.56 & *** & -0.89 & *** \\  
+  $intrarural_{ij}$ & 0.39 & *** & 0.85 & *** & 1.66 & *** \\ 
    \bottomrule
 \end{tabular}
 \end{table}
 
-The parameters for the \textit{m3} model are showing in table~\ref{table:m3-coeff}. The are all significant, with the two new variables having differing magnitudes and signs, that make logical sense for the different purposes. Business shows a strong preference for travelling to other metropolitan areas, as expected. Leisure travel is also very strongly influenced by metropolitan connections, but with a negative sign. This replicates the observed explanatory power of the $rm_{ij}$ variable for leisure travel in \textit{m2}, while also working for visit and business trips as well.
+The parameters for the \textit{m3} model are showing in table~\ref{table:m3-coeff}. The are all significant, with the three new variables having differing magnitudes and signs, that make logical sense for the different purposes. Business shows a strong preference for traveling to other metropolitan areas, as expected. Leisure travel is also very strongly influenced by metropolitan connections, but with a negative sign. This replicates the observed explanatory power of the $rm_{ij}$ variable for leisure travel in \textit{m2}, while also working for visit and business trips as well.
 
 In table~\ref{table:model_comparisons} we can see significant improvements throughout the model iterations across all metrics. In figure~ref{figure:m3-errors}, we can also see visually the significant improvements over the gravity model. The errors on OD pairs with small numbers of observed trips are drastically reduced, particularly for visit trips. The trend to under-estimate OD pairs with large numbers of observed trips is still evident, and this problem is tackled in the next section. 
-
-\begin{table}[H]
-\centering
-\caption{Comparison of model iterations}
-\label{table:model_comparisons}
-
-\input{Chapters/model_comparisons_table}
-\end{table}
 
 \subsection{Incorporating LBSN Data}
 
 %TODO: shouldk this be somewhere else?
-As mentioned in the previous section, the traditional socio-economic variables don't reflect \textit{why} people travel to a particular destination. People don't travel to a location purely because many people live there, but because there are more opportunities in that location. Population and employment act as proxy variables for some of these opportunities, but not all. This section incorporates data from LSBNs to improve the destination choice model.  
+The traditional socio-economic variables don't reflect \textit{why} people travel to a particular destination. People don't travel to a location purely because many people live there, but because there are more opportunities in that location. Population and employment act as proxy variables for some of these opportunities, but not all. This section incorporates data from LSBNs to improve the destination choice model.  
 
-As seen in the model results so far, leisure trips. The TSRC data show that activities such as skiing and visiting national parks are commonly performed on long distance trips. Areas where these outdoor activities are performed often have a low population and employment, while providing other attractive features to the traveler.
+The TSRC data show that activities such as skiing and visiting national parks are commonly performed on long distance trips. Areas where these outdoor activities are performed often have a low population and employment, while still providing attractive features to the traveler.
 
 The collection and processing of LSBN data from foursquare was covered in section~\ref{section:data-foursquare}. To summarize briefly, the venues were collected into the following categories for each destination:
 \begin{multicols}{2}
@@ -255,4 +259,12 @@ Different approaches to including the foursquare variables in the model estimati
 
 \subsection{Final Model}
 
+
+\begin{table}[H]
+\centering
+\caption{Comparison of model iterations}
+\label{table:model_comparisons}
+
+\input{Chapters/model_comparisons_table}
+\end{table}
 

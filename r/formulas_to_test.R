@@ -18,16 +18,14 @@ formulas <- c(
 )
 
 #foursquare
-f <- formula(choice ~ dist_exp + I(log(attraction)) + mm_inter + mm_intra + r_intra | incomgr2 + 0 )
-f <-formula(choice ~ choice ~ dist_exp + I(log(attraction)) + mm_inter + mm_intra + log_hotel + I((purpose != "Leisure")*log_medical) + I((purpose == "Leisure")*(season == "summer")*log_outdoors) + log_sightseeing + I((purpose == "Leisure")*(season == "winter")*log_skiing) | 0)
-f <-formula(choice ~ choice ~ dist_exp + I((purpose == "Visit")*log_medical) + I((!mm_intra)*log_hotel) + I((purpose == "Leisure")*(season == "summer")*log_outdoors) + I(mm_inter*log_sightseeing)  + I((purpose == "Leisure")*(alt == 30)*log_sightseeing) + I((purpose == "Leisure")*(season == "winter")*log_skiing) | 0)
+f <-formula(choice ~ choice ~ dist_exp + I(log(attraction)) + mm_inter + mm_intra + I((purpose == "Visit")*log_medical) + I((!mm_intra)*log_hotel) + I((purpose == "Leisure")*(season == "summer")*log_outdoors) + I(mm_inter*log_sightseeing)  + I((purpose == "Leisure")*(alt == 30)*log_sightseeing) + I((purpose == "Leisure")*(season == "winter")*log_skiing) | 0)
+f <-formula(choice ~ choice ~ dist_exp + I(log(attraction)) + mm_inter + mm_intra + r_intra + I((purpose == "Visit")*log_medical) + I((!mm_intra)*log_hotel) + I((purpose == "Leisure")*(season == "summer")*log_outdoors) + I(mm_inter*log_sightseeing)  + I((purpose == "Leisure")*(alt == 30)*log_sightseeing) + I((purpose == "Leisure")*(season == "winter")*log_skiing) | 0)
+f <-formula(choice ~ choice ~ dist_exp + I(log(attraction)) + mm_inter + mm_intra + r_intra + lang.barrier + I((purpose == "Visit")*log_medical) + I((!mm_intra)*log_hotel) + I((purpose == "Leisure")*(season == "summer")*log_outdoors) + I(mm_inter*log_sightseeing)  + I((purpose == "Leisure")*(alt == 30)*log_sightseeing) + I((purpose == "Leisure")*(season == "winter")*log_skiing) | 0)
 
 formulas <- c(
-  formula(choice ~ choice ~ dist_exp + log_fs_arts_entertainment + log_fs_hotel + log_fs_medical + log_fs_outdoor + log_fs_services + log_fs_skiarea | 0),  formula(choice ~ log(fs_arts_entertainment) + log(fs_hotel) + log(fs_medical) + log(fs_outdoor) + log(fs_services) + log(fs_skiarea) | 0),
-  formula(choice ~ choice ~ dist_exp + I(log(attraction)) + mm_inter + mm_intra + log_fs_arts_entertainment + log_fs_hotel + log_fs_medical + log_fs_outdoor + log_fs_services + log_fs_skiarea | 0),
-  formula(choice ~ choice ~ dist_exp + I(log(attraction)) + mm_inter + mm_intra + log_fs_arts_entertainment + log_fs_hotel + log_fs_medical + log_fs_outdoor + log_fs_services + log_fs_skiarea | 0)
+  #formula(choice ~ choice ~ dist_exp + I((purpose == "Visit")*log_medical) + I((!mm_intra)*log_hotel) + I((purpose == "Leisure")*(season == "summer")*log_outdoors) + I(mm_inter*log_sightseeing)  + I((purpose == "Leisure")*(alt == 30)*log_sightseeing) + I((purpose == "Leisure")*(season == "winter")*log_skiing) | 0),
+  formula(choice ~ choice ~ dist_exp + I(log(attraction)) + mm_inter + mm_intra + r_intra + I((purpose == "Visit")*log_medical) + I((!mm_intra)*log_hotel) + I((purpose == "Leisure")*(season == "summer")*log_outdoors) + I(mm_inter*log_sightseeing)  + I((purpose == "Leisure")*(alt == 30)*log_sightseeing) + I((purpose == "Leisure")*(season == "winter")*log_skiing) | 0)
 )
-
 
 #seasons
 

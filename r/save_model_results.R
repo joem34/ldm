@@ -35,7 +35,8 @@ run.results <- data.frame(
   'AIC' = model_summary[['AIC']],
   'params' = nrow(model.coefficients),
   'correlation' = cor(errors$x, errors$ex),
-  'rmse'  = sqrt(mean((errors$x - errors$ex)^2))
+  'rmse'  = sqrt(mean((errors$x - errors$ex)^2)),
+  'nrmse'  = sqrt(mean((errors$x - errors$ex)^2))/sd(errors$ex)
   
 )
 

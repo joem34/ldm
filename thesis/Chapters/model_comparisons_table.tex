@@ -3,26 +3,31 @@
 \toprule
 \textbf{Model} & \multicolumn{1}{c}{\textit{\textbf{m0}}} & \multicolumn{1}{c}{\textit{\textbf{m1}}} & \multicolumn{1}{c}{\textit{\textbf{m2}}} & \multicolumn{1}{c}{\textit{\textbf{m3}}} & \multicolumn{1}{c}{\textit{\textbf{m4}}} & \multicolumn{1}{c}{\textit{\textbf{m5}}} \\
 \midrule
-\textbf{\# Coefficients} & 1     & 2     & 4     & 4     &       &  \\
+\textbf{\# Coefficients} & 1     & 2     & 4     & 5     &   7    & 11 \\
 \midrule
 \textbf{LogLikelyhood} &       &       &       &       &       &  \\
-Business &       & -   21,053 & -   20,930  & -   20,737  &       &  \\
-Leisure &       & -   86,054  & -   84,705  & -   83,837  &       &  \\
-Visit &       & - 117,463  & - 117,441  & - 115,708  &       &  \\
+Business &       & -   21,053 & -   20,930  & -   20,596  & - & -20,114     \\
+Leisure &       & -   86,054  & -   84,705  & -   83,663  & - & -77,926     \\
+Visit &       & - 117,463  & - 117,441  & - 115,666  & -  & -114,363    \\
 \midrule
 \textbf{AIC} &       &       &       &       &       &  \\
-Business &       &      42,110  &      41,870  &      41,482  &       &  \\
-Leisure &       &    172,113  &    169,420  &    167,683  &       &  \\
-Visit &       &    234,931  &    234,893  &    231,424  &       &  \\
+Business &       &      42,110  &      41,870  &  41,201 & - & 40,242     \\
+Leisure &       &    172,113  &    169,420  &    167,337  & - & 155,873    \\
+Visit &       &    234,931  &    234,893  &    231,342  & - & 228,742    \\
 \midrule
 \boldmath{}\textbf{$r^2$}\unboldmath{} &       &       &       &       &       &  \\
-Business & 0.43  & 0.62  & 0.62  & 0.72  &       &  \\
-Leisure & 0.36  & 0.47  & 0.49  & 0.55  &       &  \\
-Visit & 0.52  & 0.69  & 0.69  & 0.80  &       &  \\
+Business & 0.43  & 0.62  & 0.62  & 0.73  &   0.75    & 0.77 \\
+Leisure & 0.36  & 0.47  & 0.49  & 0.56  &   0.78    & 0.80 \\
+Visit & 0.52  & 0.69  & 0.69  & 0.80  &   0.82    &  0.82 \\
 \midrule
 \textbf{RMSE} &       &       &       &       &       &  \\
-Business & 53.45 & 45.95 & 45.75 & 40.05 &       &  \\
-Leisure & 100.72 & 90.05 & 88.85 & 83.14 &       &  \\
-Visit & 103.65 & 87.32 & 87.34 & 69.56 &       &  \\
+Business & 53.45 & 45.95 & 45.75 & 39.53 &   38.05    &  36.84 \\
+Leisure & 100.72 & 90.05 & 88.85 & 82.29 &  61.44     &  60.05 \\
+Visit & 103.65 & 87.32 & 87.34 & 69.07 &   64.37    & 66.71 \\
+\midrule
+\textbf{\%RMSE} &       &       &       &       &       &  \\
+Business & 0.94 & 0.81 & 0.80 & 0.70 &   0.67    & 0.65 \\
+Leisure & 1.03 & 0.92 & 0.91 & 0.84 &  0.63     & 0.61  \\
+Visit & 0.93 & 0.78 & 0.78 & 0.62 &    0.58   &  0.60 \\
 \bottomrule
 \end{tabular}%
