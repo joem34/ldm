@@ -2,16 +2,27 @@ library(data.table)
 library(dplyr)
 library(ggplot2)
 library(reshape2)
+require("RPostgreSQL")
 
-zone.venue.counts <- fread("C:/Users/Joe/canada/data/foursquare/zone_lvl2_venue_counts.csv")
+# loads the PostgreSQL driver
+drv <- dbDriver("PostgreSQL")
+# creates a connection to the postgres database
+# note that "con" will be used later in each connection to the database
+con <- dbConnect(drv, dbname = "canada",
+                 host = "localhost", port = 5432,
+                 user = "postgres", password = 'postgres')
+
+zone.venue.counts <-  dbGetQuery(con, "select id, pruid, category, 
+                                 count as num_venues, 
+                                 sum as checkins 
+                                 from foursquare.zone_category_counts;")
 
 #filter categories
 zone.venue.counts.wide <- zone.venue.counts %>% 
-  filter (search_cat_name %in% c('outdoors', 'ski area', 'arts and entertainment', 
-                                 'shops and services', 'Medical Center and services','Hotel and services')) %>%
-  group_by(id, search_cat_name) %>%
+  group_by(id, category) %>%
   summarize(checkins = sum(checkins)) %>%
-  dcast(id ~ search_cat_name, value.var = 'checkins')
+  dcast(id ~ category, value.var = 'checkins', fill = 0)
+
 
 write.csv(zone.venue.counts.wide, 
           "C:/Users/Joe/canada/data/foursquare/zone_lvl2_venue_counts_wide.csv", 
