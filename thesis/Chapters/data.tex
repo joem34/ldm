@@ -169,7 +169,7 @@ Figure~\ref{fig:zoning} illustrates the difference between these methods. When o
 This third method has another advantage, in that the a distinction between urban and rural areas is now encoded into the zone system. This will be important in the estimation process as 51.5\% of trips in the filtered TSRC survey originated in a CMA, and 48.3\% had destination recorded as a CMA. Not only is it clear that urban areas are important drivers of long distance travel, but that, interestingly, CMAs are more likely to be origins than destinations.
 
 \section{Aggregating of Zonal Data}
-All the data on distances, population and employment was provided at the TAZ level. This section describes how they were allocated to the zone system. The TAZs themselves were assigned to the zone which intersected their centroid. Where the centroid of the TAZ didn't intersect any zones, the first intersecting zone was used. When the TAZ did not intersect with any part of the Canadian census boundaries at all, it was assigned manually to the nearest zone.
+All the data on distances, population and employment was provided at the TAZ level. This section describes how they were allocated to the zone system. The TAZs themselves were assigned to the zone which intersected their centroid. Where the centroid of the TAZ didn't intersect any zones, the first intersecting zone was used. When the TAZ did not intersect with any part of the Canadian census boundaries at all, it was assigned manually to the nearest zone using GIS software.
 
 Socio-economic variables, namely population and employment were aggregated from the TAZ level to the zone system using a summation.
 
@@ -182,5 +182,7 @@ $$ d_{ij} =
 \sum_{k \in i, l \in j} p_k \cdot p_l
 } 
 $$
+
+%TODO fill this out a bit
 
 \input{Chapters/foursquare}
