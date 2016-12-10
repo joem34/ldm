@@ -56,7 +56,7 @@ Model & Trips & $\bar{d}$ & $d$ & $k$ & RMSE & $r^2$ \\ \midrule
 \section{Results}
 Figure~\ref{fig:gravity-residuals} presents an error plot, with the observed trips on the x axis, and difference between the observed and predicted on the y axis. While the three purposes cannot be compared with each other, due to the differing sample sizes, it is clear that all three models have serious errors, and are almost unusable. The predicted values should fall roughly above and below the dotted line. There is a definite pattern in the observed data, indicating that important OD pairs, ones with large numbers of trips, are strongly underestimated. The numerous OD pairs with small numbers of trips dominate the calibration to the observed average trip distance. However, this comes at the expense of model accuracy for large, important connections.
 
-Figure~\ref{fig:gravity-errors} gives a better indication of how the model fits these important zones. On the x axis is the absolute error $|x - E(x)|$, and on the y axis, a variant of the relative error, which we call maximum relative error is plotted. 
+Figure~\ref{fig:gravity-residuals} gives a better indication of how the model fits these important zones. On the x axis is the absolute error $|x - E(x)|$, and on the y axis, a variant of the relative error, which we call maximum relative error is plotted. 
 
 $$\frac{|x-E(x)|}{\min(x, E(x))}$$
 
@@ -168,7 +168,7 @@ Comparing figures~\ref{fig:gravity-residuals} and ~\ref{fig:m2_residuals}, many 
 \centering
 \includegraphics[width=\textwidth]{m2_residuals}
 \caption{\textit{m2} model errors by observed trip count for OD pairs by trip purpose}
-\label{fig:m2-residuals}
+\label{fig:m2_residuals}
 \end{figure}
 
 %Model m3
@@ -228,13 +228,14 @@ The parameters for the \textit{m3} model are showing in table~\ref{table:m3-coef
 \end{tabular}
 \end{table}
 
-%TODO move to discussion?
-In table~\ref{table:model_comparisons} we can see significant improvements throughout the model iterations across all metrics. In figure~\ref{figure:m3-errors}, we can also see visually the significant improvements over the gravity model. The errors on OD pairs with small numbers of observed trips are drastically reduced, particularly for visit trips. The trend to under-estimate OD pairs with large numbers of observed trips is still evident (see figure~\ref{fig:m3-residuals}, and this problem is tackled in the next section. 
+%TODO move to discussion?, how to visually compare both?
+%TODO should the m3 residuals graph be here or in the appendix?
+In table~\ref{table:model_comparisons} we can see significant improvements throughout the model iterations across all metrics. In figure~\ref{fig:m3_residuals}, we can also see visually the significant improvements over the gravity model. The errors on OD pairs with small numbers of observed trips are drastically reduced, particularly for visit trips. The trend to under-estimate OD pairs with large numbers of observed trips is still evident (see figure~\ref{fig:m3_residuals}), and this problem is tackled in the next section. 
 
 
 \subsection{Incorporating LBSN Data}
 
-%TODO: shouldk this be somewhere else?
+%TODO shouldk this be somewhere else?
 The traditional socio-economic variables don't reflect why people travel to a particular destination. People don't travel to a location purely because many people live there, but because there are opportunities to perform certain activities in that location. Population and employment act as proxy variables for some of these opportunities, but not all. This section incorporates data from LSBNs to improve the destination choice model, particularly for leisure trips.  
 
 The TSRC data show that activities such as skiing and visiting national parks are commonly performed on long distance trips. Areas where these outdoor activities are performed often have a low population and employment, while still providing attractive features to the traveler.
@@ -254,7 +255,7 @@ The collection and processing of LSBN data from foursquare was covered in sectio
 \end{multicols}
 
 
-Different multinomial logit models utilizing the foursquare data were created, to explore the suitability of different categories, and whether they had different explanatory effects for different trip purposes. For each venue, two metrics were available for representing destination attractiveness; the number of venues, and the total number of checkins across all venues.
+Different multinomial logit models utilizing the foursquare data were created, to explore the suitability of different categories, and whether they had different explanatory effects for different trip purposes. For each destination, two metrics were available for representing destination attractiveness; the number of venues, and the total number of checkins across all venues.
 It was found that the best approach involved taking the natural log of the check-in count for each category. This gave the highest level of significance, as it corrected for the long right-hand tail present in the checkin counts for each category.
 
 Certain categories were found to be significant for particular trip purposes. For example, the outdoor category was only significant for leisure trips, and the Medical category was only significant for visit trips. As would be reasonably expected, the number of hotel checkins was a significant variable across all trip purposes for long distance travel.
@@ -263,7 +264,7 @@ After exploring different combinations of the foursquare categories as parameter
 
 The main objective of including foursquare data was to investigate how the modeling of leisure destination choice can be improved. To this end, The common summer leisure activity, outdoor recreation, and the classic winter activity, skiing, were represented though categories containing the types of venues commonly visited to perform these activities. Hence, two variables were added only for the leisure model strata. One for outdoor venues, and one for skiing areas. These two variables were found to be significant only when they were estimated for trips occurring in the season in which their respective activities are normally performed.
 
-In model \textit{m3}, it was observed that leisure trips to the zone containing Niagara falls were underestimated by 85\%. The particular important case was additionally controlled for by the addition of an extra variable using the sightseeing category, that is only considered for trips of the leisure purpose to the Niagara zone. The sightseeing category was also evaluated across all trip purposes as its own variable.
+In model \textit{m3}, it was observed that leisure trips to the zone containing Niagara Falls were underestimated by 85\%. The particular important case was additionally controlled for by the addition of an extra variable using the sightseeing category, that is only considered for trips of the leisure purpose to the Niagara zone. The sightseeing category was also evaluated across all trip purposes as its own variable.
 
 The foursquare variables were included into the multinomial logit model as the following. 
 \begin{flalign*}
