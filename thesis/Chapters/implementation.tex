@@ -3,7 +3,7 @@
 The Destination Choice model described in this thesis was designed as a component of a a larger long distance model for the Ministry of Transportation, Ontario. This long distance model is being developed in the JAVA programming language as a traditional 4-step model. 
 
 \subsection{Algorithm}
-In the first step, a list trips (without destinations) is generated for a synthetic population of households and persons. For each of these trips, the destination choice model is run, returning a predicted destination for that trip. The algorithm works as followed, with step~\ref{item:trip} being performed in parallel using Java8 streams. (TODO: CITE?)
+In the trip generation phase, a list of trips without destinations is generated for a synthetic population of households and persons. These trips are then passed into the destination choice model, which assigns a destination for each trip. For each trip the destination choice model is run, returning a predicted destination for that trip. The algorithm works as followed, with step~\ref{item:trip} being performed across the list of trips in parallel.
 \begin{enumerate}
 \item A Destination Choice Model is initialized with the following:
 	\begin{itemize}

@@ -147,7 +147,7 @@
 \newcommand*{\keywords}[1]{\def\keywordnames{#1}}
 \supervisor  {Prof. Dr.-Ing. Rolf Moeckel}
 \examiner    {}
-\degree      {M. Sc. Transport Systems}
+\degree      {Master of Science}
 \authors     {Joseph Molloy}
 \university  {Technical University of Munich}
 \UNIVERSITY  {Technical University of Munich}

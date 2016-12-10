@@ -1,5 +1,6 @@
-\chapter{Appendix}
+\chapter{}
 
+%TODO include maps of zones, and tables of population and empoyment values etc
 
 \begin{figure}[H]
 \centering
@@ -48,37 +49,21 @@
 \end{tabular}
 \end{table}
 
-
-\afterpage{%
-    \clearpage% Flush earlier floats (otherwise order might not be correct)
-    \thispagestyle{empty}% empty page style (?)
-    \begin{landscape}% Landscape page
-
-% Please add the following required packages to your document preamble:
-% \usepackage{booktabs}
-\begin{table}[]
+\begin{figure}[H]
 \centering
-\caption{foursquare venue categories}
-\label{table:foursquare_categories}
+\includegraphics[width=\textwidth]{intrazonal_errors}
+\caption{Intrazonal errors produced by the \textit{m2} model}
+\label{fig:m2-intrazonal}
+\end{figure}
 
-\centering % Center table
+\chapter{}
 
-\begin{tabular}{@{}l|lllll|c|c@{}}
-\toprule
-Search Category             & \multicolumn{5}{c|}{Venue Categories}                                                                  & Venues & Check-ins \\ \midrule
-Medical & Dentist's Office    & Doctor's Office       & Hospital         & Medical Center       & Veterinarian   & 100000            & 1,000,000,000               \\
-Stadium                     & Baseball Stadium    & Basketball Stadium    & Football Stadium & Hockey Arena         & Stadium        & 0            & 0               \\
-Ski Area                    & Ski Area            & Ski Chairlift         & Ski Chalet       & Ski Lodge            & Ski Trail      & 0            & 0               \\
-Airport        & Airport             & Airport Gate          & Airport Lounge   & Airport Terminal     & Plane          & 0            & 0               \\
-Hotel          & Bed \& Breakfast    & Hostel                & Hotel            & Motel                & Resort         & 0            & 0               \\
-Arts      & Art Gallery         & General Entertainment & Historic Site    & History Museum       & Movie Theater  & 0            & 0               \\
-Nightlife                   & Bar                 & Brewery               & Dive Bar         & Pub                  & Sports Bar     & 0            & 0               \\
-Outdoors                    & National Park       & Campground            & Nature Preserve  & Other Great Outdoors & Scenic Lookout & 0            & 0               \\ \midrule
-Grand Totals             & \multicolumn{5}{c|}{}                                                        & 1.5 million & ?? million \\ \bottomrule
-\end{tabular}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{m3_residuals}
+\caption{\textit{m3} model errors by observed trip count for OD pairs by trip purpose}
+\label{fig:m3-residuals}
+\end{figure}
 
-\end{table}
 
-\end{landscape}
-\clearpage% Flush page
-}
+
