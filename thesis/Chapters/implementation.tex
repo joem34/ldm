@@ -28,4 +28,43 @@ In the trip generation phase, a list of trips without destinations is generated 
 
 \section{Calibration}
 
-\section{Validation - Case study of a new Ski Resort}
+\section{Sensitivity Analysis - Case study of a new Ski Resort}
+
+
+
+%TODO compare models m3 and m5 and thier representation of the impact of the new model?
+
+This section presents a hypothetical application of the developed destination choice model. For any large scale land use planning or development, it is important to model the impacts that such development will have on the transport network. As an example of this, a hypothetical scenario of the development of a large new ski resort is presented. Such resorts not only provide infrastructure for skiing and other snow-based activities, but require the development of multiple new hotels, employee housing, and retail infrastructure. In the winter months, ski resorts can generate significant demands on the transport network, and this needs to be taken account when considering such a development.
+
+In the hypothetical scenario, a new resort is proposed for the highlands area north of Toronto (see figure~\ref{figure:ontario-dem}. The higher elevation ensures good snowfall, and the elevation difference makes for exciting riders for snow sports enthusiasts. Two sites are being considered, one to the west of the range, and one to the east, closer to Ottawa. While this resort can naturally not be the size of mega resorts in British Columbia or Alberta, its development is expected to bring similar numbers of visitors as other resorts in Ontario. Two average sized hotels will also be built at the base of the resort to accommodate guests. In the summer, the resort will attract visitors by providing mountain biking facilities and hiking. Additional housing for 400 new residents will be required to support 300 jobs.
+
+This somewhat contrived scenario assumes that other policy and development considerations, such as site location and transport access have all been dealt with. The design of the scenario presents the opportunity to investigate the sensitivity of the  variables based on the foursquare data. The variables concerned are hotels, skiing and outdoor. The impact of the new development is estimated through adjusting these variables for the zone in which the development will take place. The un-aggregated foursquare data, filtered by venues in Ontario, is used to estimate probable adjustments for each of the categories. The following adjustments are made for the respective zones, and their values are displayed in table~\ref{table:scenario-inputs}.
+
+\begin{itemize}
+\item Skiing: The average number of checkins for ski areas
+\item Hotel: Twice the average number of checkins for hotels
+\item Outdoor: The average number of checkins per outdoor venue
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\caption{Inputs for sensitivity analysis scenario}
+\label{table:scenario-inputs}
+\begin{tabular}{@{}rllll@{}}
+  \toprule
+ Parameter & Old Value & Adjustment & New Value & Increase \% \\ \midrule
+  $civic_{ij}$ &  & 700 &  & \\ 
+  $hotel_j$ &  &  &  & \\ 
+  $outdoors_j$  &  &  &  \\ 
+  $skiing_j$   &  &  & \\ 
+   \bottomrule
+\end{tabular}
+\end{table}
+
+%present results
+%number of extra trips. origin with largest increase
+
+
+%TODO cite https://www.ontario.ca/data/provincial-digital-elevation-model-version-30
+
+

@@ -1,15 +1,44 @@
 \chapter{Discussion}
-overview of results
+%overview of results
+In this section, a discussion of the results is presented, and framed in the context of other work in the field. Firstly, a brief overview of the different models is presented. Chapter~\ref{section:estimation} on estimation explores the models in more detail. The importance and relevance of the work is then discussed. Finally, the limitations of the work are presented and areas where future work is required are detailed.
 
-what your findings might mean
+\section{Overview of results}
+In the estimation process, it was found that the output from the calibrated gravity model  was unrealistic to the point of being almost unusable. The correlation of between 0.36 and 0.52 across trip purposes was very low. The calibrated impedance coefficients from the gravity model were retained to build a simple discrete choice model incorporating distance, population and employment. Essentially using the same variables as the gravity model, this first destination choice model performed significantly better across all trip purposes. Further models, incorporating interactions between the origin and destination, such as metropolitan/regional connections further improved the model results. Not all interactions were found to be significant. In particular, the barrier between English and French speaking parts of Canada had only a limited impact. 
 
-how valuable they are
+The next iteration improved the estimation of intra-zonal trips in smaller metropolitan zones. It was discovered that to properly account for intra-zonal behavior, separate parameters were needed for rural and metropolitan origins. The coefficients for these two parameters were of opposite sign, logically indicating that intra-zonal long distance travel is more likely in larger rural zones, but unlikely in metropolitan zones that are barely large enough to support an internal long distance trip. The accuracy of the model for leisure trips was noticeably weaker than for the other two models, and it was hypothesized that better modeling of the destination attractiveness for leisure activities would improve the results.
 
-why
+%TODO more detail on actual results?
 
-limitations
+The LBSN based models demonstrated how venue checkin data from foursquare could be incorporated into a destination choice model. As hypothesized, the foursquare data dramatically improved the estimation of leisure trips. It also performed well for visit and business trips. Even with all other variables excluded except for distance, the model (\textit{m4}) performed comparably to the basic \textit{m1} model. When the foursquare data was combined with the variables from previous iterations, a very agreeable model was produced. 
 
-future work
+%TODO
+Scenario Analysis
 
-%\section{Future Work}
+
+%what your findings might mean
+\section{contributions}
+This thesis provides multiple contributions to the field. As a completed and calibrated domestic destination choice model, it presents a significant amount of work towards a completed long distance transport model for Ontario. The superior performance of the destination choice models over the gravity model validates the work of others in this area (CITE)  %TODO 
+and adds further weight to the argument that such discrete methods, despite the additional effort required, are the way forward transport modeling. The challenges of intra-zonal trips in transport modeling have been explored by multiple researchers (CITE), and the investigations in this paper into origin-destination interactions highlight some novel ways to adjust for these in long distance modeling.
+
+Big data already presents both exciting opportunities, and daunting challenges to transportation modeling. It is predicted that by 2020, 6.1 billion people will be owning and using a smartphone(CITE Ericsson Mobility Report June 2016). With GPS already standard on mobile devices, data is already being collected, in real time and at an unprecedented spatial resolution, that tracks individuals as they travel and interact with their environment. People are also choosing to share more about their behaviour, and foursquare is just one one example of a platform that enables this. The results of the estimation process and sensitvity analysis in this thesis show how even a limited application of such data can dramatically improve destination choice models for leisure travel. The capability to model many aspects of destination attractiveness is particularly useful for leisure travel.
+
+Traditional mobility surveys such as the TSRC still have an important role to play in transportation modeling. They track the same individuals over time, and provide the socioeconomic characteristics of the individual, which have been repeatedly shown to be important determinants of travel behavior (CITE). However, they also have shortcomings; they normally rely on the recall ability of the participant, and are limited in both their spatial and temporal resolutions (CITE?). The TSRC data exhibited this second shortcoming, which influenced the decisions around spatial resolution in the destination choice model. Most sources of big data collect information from the individual in real time (GPS, GPRS), or rely on location tracking services to verify the checkin (foursquare) to an accuracy of meters.
+
+While a higher spatial resolution in the observed trip records would allow for a more detailed destination choice model, it would require a more detailed consideration of another issue, the choice set selection. With only 69 destinations, as used in thesis, it isn't essential to restrict the choice set for an individual. However, should the number of alternatives be very large, the choice set presented to each individual needs to be reduced for each individual. Realistically, an individual is not capable of evaluating thousands of possible alternatives when selecting a destination. And any model that assumes this would be unrealistic. This has been investigated by numerous researchers (CITE). In particular, (CITE) found that the the size and selection of the choice set impacts the model accuracy.
+
+The venue data for each zone essentially acts as database of the points of interest (POI) at a particular destination. (CITE axhausen) investigated how POIs influence destination attractiveness. POI data is available from many sources, such as Open Street Maps. However, LBSNs such as foursquare take this POI database one step further, by measuring the popularity of each POI. In the case of foursquare, as discussed in section~\ref{section:foursquare}, when summed together, checkins measure the intensity of activity at each POI. A measure of importance was clearly beneficial in the model, as parameters based on the number of checkins led to more accurate models than simple venue tallys.
+
+The incorporation of foursquare data into a discrete choice model just touches the surface of what is possible with big data. 
+Many dimensions to the data which were not explored in this thesis,  particularly the temporal aspect. Through public services such as twitter, Panel data can be collected by associating checkins over time with an individual. (CITE) used such a method to identify mobility patterns. In future work utilizing more detailed foursquare data, checkins could be filtered for those performed by residents of Canada, or grouped by season to further improve the modeling of different trip purposes.
+
+%TODO another paragraph on how big data is changing transport modelling?
+
+%limitations
+\section{Limitations and future work}
+One of the benefits of designing a model based on traditional socioeconomic variables is the ability to run the model for future years and model the impacts of demographic change. This is difficult for the foursquare checkin counts. Not only is it hard to predict the how the popularity of certain venues will grow or decline in future years, but the quantity of checkins depends on uptake of the foursquare platform. Further study of the demographics of foursquare users and their distribution in relation to the population. Foursquare data also has thematic limitations in its applicability to destination choice modeling. 
+In study on why people use foursquare, (CITE livquinst) found that ``Participants expressed reluctance to check-in at home, work, and other places that one might expect them to be at". This suggests that there at limits to how effectively foursquare can model travel behavior. A potential alternative would be to use foursquare or a similar LSBN as a POI database, but use GPS traces to identify the intensity of activity at these locations, thereby avoiding the selective reporting behavior evident in foursquare usage.
+
+%future work\
+This thesis presents an operational model for domestic travel to and from Ontario. The U.S.-Ontario border is an important source of incoming trips to Ontario, and external trips that pass through to other parts of Canada. Further work is needed to extend the model to include firstly continental travel to the United States, and then also intercontinental travel. The Canadian International Travel Survey (ITS) provides trip records that can be used to estimate such a model, although it does not include socioeconomic data for travelers. 
+
 \chapter{Conclusions}
