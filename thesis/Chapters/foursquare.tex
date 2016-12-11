@@ -1,8 +1,8 @@
 \section{Foursquare}
 \label{section:data-foursquare}
-Trip distribution models that consider only population and employment, while common, have a significant flaw. They fail to account for landmarks and attractions, such as National Parks that attract large numbers of people, yet have low population or employment. Destination choice modeling provides the opportunity to incorporate parameters that reflect these drivers of travel demand. 
+Trip distribution models that consider only population and employment have a significant flaw. They fail to account for points of interest (POI), such as National Parks that attract large numbers of people, yet exist in areas of low population and employment. Discrete choice modeling provides the opportunity to incorporate parameters that reflect these drivers of travel demand. 
 	
-Leisure travel is a particular case where socio-economic metrics don't always reflect the attractiveness of a destination. Areas such as as lakes, national parks and ski resorts are popular long recreational destinations in the summer and winter respectively, yet have small populations and employment. 
+Leisure travel is a particular case where socioeconomic metrics don't always reflect the attractiveness of a destination. Areas such as as lakes, national parks and ski resorts are popular long distance recreational destinations in the summer and winter respectively, yet have small populations and employment. 
 	
 The TSRC microfile records the activities performed on each recorded trip and destination visited during a trip. When aggregated by trip destination, these activities give an indication of which zones provide particular attractions such as national parks or ski areas. The number of trips with each recorded activity can also be used to identify the importance of a particular activity for each zone. However, there are two key problems with this approach:
 
@@ -13,19 +13,18 @@ The TSRC microfile records the activities performed on each recorded trip and de
 In this section, we describe how the collection and processing of foursquare check-in data was performed in order to build destination utility variables.
 
 \subsection{Foursquare Venue Search API}
-Foursquare collects a wealth of data, on where and when users check-in. Users and their behavior can be tracked over time using twitter as a proxy, however the time-frame for this thesis prevented this method. Instead the public venue API was used, which is much more limited in its scope. For a search area and criteria, the API returns a list of venues in JSON format. Each venue record provides the following relevant information:
+Foursquare collects a wealth of data, on where and when users check-in. Users and their behavior can be tracked over time using twitter as a proxy, however the time-frame for this thesis made this method unfeasible. Instead, the public venue API was used, which is much more limited in its scope, only providing a cross-sectional dataset of POIs within the search area. For a search area and criteria, the API returns a list of venues in JSON format. Each venue record provides the following relevant information:
 \begin{itemize}
 \item Name
 \item Venue category
 \item Geo-referenced location
 \item Number of unique visitors
-\item Number of recommendations
 \item Number of total check-ins
 \end{itemize}
 
-Each request is limited to roughly 1 square degree in search area, and only the top 50 venues for that search are returned. A limit of 5000 requests per hour is also enforced. Search results are returned based on the popularity of the venues. How the rank of returned venues is determined by foursquare is not specified. 
+Each request is limited to roughly 1 square degree of longitude and latitude in search area, and only the top 50 venues for that search are returned. A limit of 5000 requests per hour is also enforced. Search results are returned based on the popularity of the venues. How the rank of returned venues is determined by foursquare is not specified. 
 
-The API doesn't return check-in counts by date, so it can only be used to generate a total historical metric of activity for each venue. For the forecasting of trips to individual venues, this would present a significant obstacle. However, in this thesis, the foursquare metrics are only used for identifying the intensity of activity in zones for significant attractions that can't be reflected in socio-economic variables. Check-in counts also can't be filtered by origin country or state. This capability would, in a larger model, also allow us to identify US destinations that are commonly visited by Canadian travelers.
+The API does not return check-in counts by date, so it can only be used to generate a total metric of activity for each venue, up to the time of the search. For the forecasting of trips to individual venues, this would present a significant obstacle. In this thesis, however, the foursquare metrics are only used for identifying the intensity of activity in zones that may not be reflected in socioeconomic variables. Check-in counts also can not be filtered by origin country or state. This capability would, in a larger model, also allow us to identify U.S. destinations that are commonly visited by Canadian travelers, as opposed to all users of foursquare.
 
 \subsection{Demographic Bias}
 While the use of social networks is becoming more ubiquitous throughout the general population, LSBNs such as foursquare still have a particular user demographic, which should be taken into account when working with social network based data. The data retrieved from the foursquare API does not provide any demographic information that can be used to weight the retrieved data.
@@ -36,13 +35,13 @@ In this thesis, the potential impact of bias is minimized, as only the intensity
 To collect the venue data from the Foursquare API, the following procedure was followed:
 \begin{enumerate}
 
-\item A developer account was set up which allowed access to the API. The maximum search area allowed is smaller than most external zones, so a search grid of 1 degree raster cells was generated for all of Canada. 
+\item A developer account was set up which allowed access to the API. The maximum search area allowed is smaller than most external zones, so a search grid of 1 degree raster cells was generated for the study area. 
 
-\item Using the activities specified in the TSRC as a reference, a selection of potentially important venue categories was curated. 
+\item Using the activities specified in the TSRC as a reference, a selection of potentially important venue categories was curated (see table~\ref{table:foursquare_categories}).
 
-\item Each category was mapped to at most 5 main foursquare venue categories, on which the search was performed. This is necessary to exclude venue categories that such \textit{States \& Municipalities}.
+\item Each category was mapped to at most 5 main foursquare venue categories, on which the search was performed. This is necessary to exclude venue categories such as ``States \& Municipalities".
 
-\item A python script was written to query the foursquare API for each raster cell and category, returning the top 50 venues, while adhering to the rate limit of 5000 requests per hour. The request is structured as:
+\item A python script was written to query the foursquare API for each raster cell and category, returning the top 50 venues, while adhering to the rate limit of 5000 requests per hour. Calls to the api had to be structured as:
 \begin{verbatim}
 https://api.foursquare.com/v2/venues/search?intent=browse
     &limit=50&sw={sw}&ne={nw}& categoryId={categories}
@@ -53,11 +52,11 @@ where
 \item categories is a comma separated list of venue ids.
 \end{itemize}
 
-\item Unique Venues were then stored in the PostGIS database, and tagged with the zone to which it geographically belongs.
-\item Venue and check-in counts by category were aggregated for each zone.
+\item Unique venues were then stored in the PostGIS database, and each tagged with the zone to which it geographically belongs.
+\item Two attributes were then calculated for each zone and category; the number of venues of that category in the zone, and the number of check-ins for each category and zone.
 \end{enumerate}
 
-In table~\ref{table:foursquare_categories}, the number of venues and check-ins per category are presented. In total, 34,041 unique venues and 7,981,458 check-ins were collected for the different categories.
+The foursquare API provides data at a higher spatial resolution than the TSRC microfile, but without the temporal detail. In table~\ref{table:foursquare_categories}, the number of venues and check-ins per category are presented. In total, 34,041 unique venues and 7,981,458 check-ins were collected for the different categories.
 
 %\afterpage{%
 %    \clearpage% Flush earlier floats (otherwise order might not be correct)
@@ -95,7 +94,3 @@ Total &       &       &       &       &       &       34,041  &          7,981,4
 %\end{landscape}
 %\clearpage% Flush page
 
-
-%TODO move to future work
-\subsection{Summary}
-In conclusion, the foursquare API provides data at a higher spatial resolution than the TSRC microfile, but without the temporal detail. While more temporal detail could naturally improve the model, The ranking and total check-in counts for each venue still provide very useful indicators for the intensity of activity in many zones. These metrics are particularly useful for identifying destinations in non-metropolitan areas.
