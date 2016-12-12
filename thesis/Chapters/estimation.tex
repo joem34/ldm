@@ -7,17 +7,17 @@ As discussed in section~\ref{section:lit-review}, the Gravity model is still the
 The gravity model is singly constrained on the origin, with the size of each zone being the sum of population and employment. The gravity model was implemented in Java, and is specified as followed:
 
 $$ 
-T_{ij} = \frac{A_j \cdot e^{-k \cdot d_{ij}}}{\sum_j^J A_j \cdot e^{-k \cdot d_{ij}}} \cdot P_i $$
+T_{ij} = \frac{A_j \cdot e^{-\alpha \cdot d_{ij}}}{\sum_j^J A_j \cdot e^{-\alpha \cdot d_{ij}}} \cdot P_i $$
 
 Where \\
 $T_{ij}$ is the number of trips between zones $i$, $j$. \\
 $P_j$ is the number of trips produced in origin zone $i$.\\
 $A_j$ is the attraction at destination zone $j$.\\
-$k$ is the impedance factor, calibrated with the average trip distance.\\
+$\alpha$ is the impedance factor, calibrated with the average trip distance.\\
 $d_{ij}$ is the distance between zones $i$, $j$.\\
 
 \section{Model Strata}
-It is common practice to design a transport model that is in reality, a collection of separate models for heterogeneous groups of travelers, and trips. The most common attribute to categorize by is trip purpose. The cateogies recorded for each trip by the TSRC, our sample of trip records is split into 4 categories, Business, Visit, Leisure and Other, of which only the first three are used. In figure~\ref{table:purpose-counts}, the number of trips for each category by year in the TSRC is shown. A model is then estimated for each trip purpose, and the results of the model strata combined into the final model. Each purpose, when multiple years are combined in one dataset, has a suitably large sample size to support model estimation. 
+It is common practice to design a transport model that is in reality, a collection of separate models for heterogeneous groups of travelers, and trips. The most common attribute to categorize by is trip purpose. The categories recorded for each trip by the TSRC, our sample of trip records is split into 4 categories, Business, Visit, Leisure and Other, of which only the first three are used. In figure~\ref{table:purpose-counts}, the number of trips for each category by year in the TSRC is shown. A model is then estimated for each trip purpose, and the results of the model strata combined into the final model. Each purpose, when multiple years are combined in one dataset, has a suitably large sample size to support model estimation. 
 
 \begin{table}[H]
 \centering
@@ -47,7 +47,7 @@ A separate model was created for each trip purpose, and calibrated to match the 
 \label{table:gravity-calibration}
 \begin{tabular}{@{}lllll|lll@{}}
 \toprule
-Model & Trips & $\bar{d}$ & $d$ & $k$ & $r^2$ & RMSE & NRMSE \\ \midrule
+Model & Trips & $\bar{d}$ & $d$ & $\alpha$ & $r^2$ & RMSE & NRMSE \\ \midrule
    Business  & 34,229.43  &     244     &  243.20   & 0.0013  & 0.42 & 53.45 & 0.94 \\
    Leisure   & 83,357.94  &     149     &  148.13   & 0.0035  & 0.36 & 100.72 & 1.03 \\
    Visit     & 129,843.18 &     163     &  164.77   & 0.0030 & 0.52 & 103.65 & 0.93 \\ \bottomrule
@@ -100,6 +100,7 @@ These $\beta$, the coefficients of the model, need to be calibrated using some o
 Firstly, the data must be transformed into the correct input structure, this process was also described in section~\ref{section:mnlogit-structure}. The next step is estimation. The estimation of a discrete choice model for destination choice is much more involved than the construction of a gravity model, since modeler has almost infinite possible permutations of variables at his or her disposal. Divining the best variables is part art, part science. Some variables may be statistically significant, while adding little useful explanatory power to the model. Others may only be significant when paired with certain other variables. Rather than just present a final model, this next section elaborates on the model development process, covering the estimation, validation and implementation stages.
 
 \section{Estimation}
+\label{section:estimation}
 In this section, the evolution of a destination choice model is presented. in \textit{m1}, a simple model based on the gravity model is presented. \textit{m2} and \textit{m3} add further interaction variables between origin and destinations. \textit{m4} and \textit{m5} explore the potential of LSBN data to improve destination choice models when incorporated into the calculation of destination utility.
 
 \subsection{Socioeconomic Variables}
@@ -111,7 +112,7 @@ Metropolitan areas are not homogeneous in land use patterns. There exists reside
 $$ civic_j = \log\left( p_j + emp_j \right) $$
 
 The resulting model \textit{m1}, is defined by the utility $u$ of destination $j$ for a traveler in origin $i$: 
-$$ u_{ij} = \beta_1~e^{-k d_{ij}} + \beta_2~civic_j $$
+$$ u_{ij} = \beta_1~e^{-\alpha \cdot d_{ij}} + \beta_2~civic_j $$
 
 where $\beta_n$ are the coefficients to be estimated by the mnlogit package. 
 
@@ -122,22 +123,22 @@ The employment data is classified by NAICS category, and models were tested that
 \centering
 \caption{\textit{m1} model coefficients}
 \label{table:m1-coeff}
-\begin{tabular}{@{}rlrlrlrl@{}}
+\begin{tabular}{@{}rrlrlrl@{}}
   \toprule
- Parameter & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business} &  \\ \midrule
-  $e^{-k\ d_{ij}}$ 	& 4.29 & *** & 3.86 & *** & 4.21 & *** \\ 
+ Parameter & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business} \\ \midrule
+  $e^{-\alpha \cdot d_{ij}}$ 	& 4.29 & *** & 3.86 & *** & 4.21 & *** \\ 
   $civic_j$ 		& 0.51 & *** & 0.35 & *** & 0.76 & *** \\   
    \bottomrule
 \end{tabular}
 \end{table}
 
-The parameters of this model \textit{m1} (see table~\ref{table:m1-coeff}encouraging. All the signs are as expected, and differences in the coefficients across trip purposes are evident. A leisure trip is less likely to go towards areas of civic importance than visits or business, and the trip distance is naturally less important for business travelers. For each trip purpose, the basic multinomial logit model already performs better than the gravity model, as evident in the higher correlation and lower RMSE values in table~\ref{table:model_comparisons}. 
+The parameters of this model \textit{m1} (see table~\ref{table:m1-coeff}) are encouraging. All the signs are as expected, and differences in the coefficients across trip purposes are evident. A leisure trip is less likely to go towards areas of civic importance than visits or business, and the trip distance is naturally less important for business travelers. For each trip purpose, the basic multinomial logit model already performs better than the gravity model, as evident in the higher correlation and lower RMSE values in table~\ref{table:model_comparisons}. 
 
 
 \subsection{Origin-Destination Interactions}
 In this section, the model is extended to reflect the relationship between the origin and destination that might affect the choice of destination. Model \textit{m2} is specified by the utility function
 \begin{align*}
-u_{ij} = \beta_1~e^{-k\ d_{ij}} + \beta_2~civic_j + \beta_3~language_{ij}+ \beta_4~mm_{ij} + \beta_5~rm_{ij}
+u_{ij} = \beta_1~e^{-\alpha \cdot d_{ij}} + \beta_2~civic_j + \beta_3~language_{ij}+ \beta_4~mm_{ij} + \beta_5~rm_{ij}
 \intertext{where}
 language_{ij} = language(i) \neq language(j)\\
 mm_{ij} = metro(i)~\wedge~metro(j)\\
@@ -157,10 +158,10 @@ $mm_{ij}$  works well for each trip purpose, with visit and leisure trips more l
 \centering
 \caption{\textit{m2} model coefficients}
 \label{table:m2-coeff}
-\begin{tabular}{@{}rlrlrlrl@{}}
+\begin{tabular}{@{}rrlrlrl@{}}
   \toprule
- Parameter & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business} &  \\ \midrule
-  $e^{-k\ d_{ij}}$ 	& 4.35 & *** & 4.57 & *** & 3.81 & *** \\  
+ Parameter & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business} \\ \midrule
+  $e^{-\alpha  \cdot d_{ij}}$ 	& 4.35 & *** & 4.57 & *** & 3.81 & *** \\  
   $civic_j$ 		& 0.52 	& *** & 0.48 & *** & 0.73 & *** \\  
   $language_{ij}$ 	& 0.05 & * & 0.58 & *** & -0.44 & *** \\ 
   $mm_{ij}$  		& -0.10 & *** & -0.99 & *** & 0.55 & *** \\ 
@@ -228,10 +229,10 @@ The parameters for the \textit{m3} model are showing in table~\ref{table:m3-coef
 \centering
 \caption{\textit{m3} model coefficients}
 \label{table:m3-coeff}
-\begin{tabular}{@{}rlrlrlrl@{}}
+\begin{tabular}{@{}rrlrlrl@{}}
   \toprule
- Parameter & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business} &  \\ \midrule
-  $e^{-k\ d_{ij}}$ 	& 4.83 & *** & 4.75 & *** & 4.19 & *** \\  
+ Parameter & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business} \\ \midrule
+  $e^{-\alpha \cdot d_{ij}}$ 	& 4.83 & *** & 4.75 & *** & 4.19 & *** \\  
   $civic_j$ & 0.57 & *** & 0.52 & *** & 0.76 & *** \\ 
   $intermetro_{ij}$ & -0.08 & *** & -0.87 & *** & 0.56 & *** \\ 
   $intrametro_{ij}$ & -1.68 & *** & -2.56 & *** & -0.89 & *** \\  
@@ -283,7 +284,7 @@ The foursquare variables were included into the multinomial logit model as the f
 medical_j = & (purpose == ``visit") \cdot \log(medical_j) &\\
 hotel_j = & \log(hotel_j) &\\
 sightseeing_j = & \log(sightseeing_j) &\\
-naigara_j = & (purpose == ``leisure") \cdot (j == 30) \cdot \log(sightseeing_j) &\\
+naigara_j = & (purpose == ``leisure") \cdot (j == ``niagara") \cdot \log(sightseeing_j) &\\
 outdoors_j = & (purpose == ``leisure") \cdot (season == ``summer") \cdot \log(outdoors_j) &\\
 skiing_j = & (purpose == ``leisure") \cdot (season == ``winter") \cdot \log(skiing_j) &\\
 \end{flalign*}
@@ -298,10 +299,10 @@ We can see that the popularity of hotels and sightseeing venues is particularly 
 \centering
 \caption{\textit{m4} model coefficients}
 \label{table:m4-coeff}
-\begin{tabular}{@{}rlrlrlrl@{}}
+\begin{tabular}{@{}rrlrlrl@{}}
   \toprule
- Parameter & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business} &  \\ \midrule
-  $e^{-k\ d_{ij}}$  & 4.41 & *** & 4.11 & *** & 4.43 & *** \\ 
+ Parameter & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business} \\ \midrule
+  $e^{-\alpha  \cdot d_{ij}}$  & 4.41 & *** & 4.11 & *** & 4.43 & *** \\ 
   $hotel_j$ & 0.09 & *** & 0.21 & *** & 0.20 & *** \\ 
   $sightseeing_j$ & 0.08 & *** & 0.02 & *** & 0.24 & *** \\ 
   $niagara_j$  &  &  & 0.12 & *** &  &  \\ 
@@ -319,10 +320,10 @@ We can see that the popularity of hotels and sightseeing venues is particularly 
 \centering
 \caption{\textit{m5} model coefficients}
 \label{table:m5-coeff}
-\begin{tabular}{@{}rlrlrlrl@{}}
+\begin{tabular}{@{}rrlrlrl@{}}
   \toprule
- Parameter & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business} &  \\ \midrule
-  $e^{-k\ d_{ij}}$ & 5.00 & *** & 5.35 & *** & 4.37 & *** \\ 
+ Parameter & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business} \\ \midrule
+  $e^{-\alpha \cdot d_{ij}}$ & 5.00 & *** & 5.35 & *** & 4.37 & *** \\ 
   $civic_j$ & 0.21 & *** & -0.15 & *** & 0.36 & *** \\ 
   $intermetro_{ij}$ &  &  & -0.81 & *** & 0.72 & *** \\ 
   $intrametro_{ij}$  & -1.75 & *** & -2.88 & *** & -0.87 & *** \\   
@@ -348,8 +349,81 @@ Overall, this model performs better across all trip purposes than the \textit{m3
 
 
 \subsection{Income Strata}
+The importance of income as an explanatory variable when modeling is widely recognized (CITE). Since income is a characteristic of the individual, it doesn't vary between alternatives. However the income of the traveler may influence his or her perception of the utility of each alternative. Including income as a variable in the destination choice model requires at a minimum, one separate coefficient for each of the 117 alternatives. Since the income is stored as a ordinal variable, realistically, a dummy variable for each income category would be required. Tried in the model, this resulted in significant coefficients for some zones, but not others, with no appreciable pattern. This approach was discarded due to the lack of overall significance, and large number of coefficients required. 
+
+An alternative approach is to strata the destination choice model by income categories. This approach was tried with numerous permutations. First with the 4 individual categories, secondly, with two categories: low income (1,2) and high income(3,4), and third, with the income categories grouped as {1,2,3} and {4}. Table~\ref{table:income-strata-coeff} shows the parameters of the models for the groupings of {1,2} and {3,4} against the non-strata model. A visual inspection shows that the parameters are mostly consistent between the models. The $distance$ variable does show variation between the two strata, but other variables are mostly consistent across the strata. Where a coefficient is different between the strata, such as $intermetro$ for visit travel for the low income strata, it is no longer significant. In all scenarios, the performance of the models with income strata, according to the $r^2$ and $NRMSE$ metrics, is almost identical compared to the non-strata model (see table~\ref{table:income-strata-results}). Although there are surely model permutations where variables based on income are more significant, based on the lack of difference between the strata coefficients, income was not included in this destination choice model.
 
 
+\begin{table}[H]
+\centering
+\caption{Income-strata model coefficients (high \& low income groupings)}
+\label{table:income-strata-coeff}
+\begin{tabular}{@{}r|rlrlrl|rlrlrl@{}}
+  \toprule
+ Parameter & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business} & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business}  \\ \midrule
+  $e^{-\alpha \cdot d_{ij}}$ & 5.23 & *** & 5.41 & *** & 5.95 & ***   & 4.83 & *** & 5.39 & *** & 3.87 & *** \\ 
+  $civic_j$  & 0.23 & *** & -0.17 & *** & 0.31 & ***  & 0.23 & *** & -0.14 & *** & 0.40 & *** \\  
+  $intermetro_{ij}$  & 0.00 &   & -0.68 & *** & 0.83 & *** & -0.11 & *** & -0.91 & *** & 0.71 & *** \\ 
+  $intrametro_{ij}$ & -1.66 & *** & -2.62 & *** & -1.49 & *** & -2.29 & *** & -3.00 & *** & -1.00 & *** \\  
+  $intrarural_{ij}$  & 0.25 & *** & 0.51 & *** & 1.57 & *** & 0.07 &   & 0.47 & *** & 1.38 & *** \\ 
+  $hotel_j$ & 0.10 & *** & 0.28 & *** & 0.23 & ***  & 0.13 & *** & 0.25 & *** & 0.18 & *** \\  
+  $sightseeing_j$  & 0.06 & *** & 0.15 & *** & 0.02 &  & 0.01 &   & 0.14 & *** & 0.08 & *** \\ 
+  $niagara_j$ &  &  & 0.13 & *** &  &   &  &  & 0.13 & *** &  &  \\ 
+  $outdoors_j$  &  &  & 0.00 &   &  &  &  &  & 0.04 & *** &  &  \\  
+  $skiing_j$ &  &  & 0.09 & *** &  &  &  &  & 0.10 & *** &  &  \\  
+  $medical_j$ & 0.02 & . &  &  &  &   & 0.12 & *** &  &  &  &  \\ 
+   \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[]
+\centering
+\caption{My caption}
+\label{my-label}
+\begin{tabular}{r|rl|rl|rl|rl|rl|rl}
+\multicolumn{1}{c}{} & \multicolumn{4}{c}{Visit} & \multicolumn{4}{c}{Leisure} & \multicolumn{4}{c}{Business} \\ \hline
+Income-strata & low &  & high &  & low &  & high &  & low &  & high &  \\ \hline
+$e^{-\alpha \cdot d_{ij}}$ & \multicolumn{1}{r}{5.23} & *** & 4.83 & *** & 5.41 & *** & \multicolumn{1}{l}{5.39} & *** & 5.95 & *** & 3.87 & *** \\
+$civic_j$ & \multicolumn{1}{r}{0.23} & *** & 0.23 & *** & -0.17 & *** & \multicolumn{1}{l}{-0.14} & *** & 0.31 & *** & 0.4 & *** \\
+$intermetro_{ij}$ & \multicolumn{1}{r}{0} &  & -0.11 & *** & -0.68 & *** & \multicolumn{1}{l}{-0.91} & *** & 0.83 & *** & 0.71 & *** \\
+$intrametro_{ij}$ & \multicolumn{1}{r}{-1.66} & *** & -2.29 & *** & -2.62 & *** & \multicolumn{1}{l}{-3} & *** & -1.49 & *** & -1 & *** \\
+$intrarural_{ij}$ & \multicolumn{1}{r}{0.25} & *** & 0.07 &  & 0.51 & *** & \multicolumn{1}{l}{0.47} & *** & 1.57 & *** & 1.38 & *** \\
+$hotel_j$ & \multicolumn{1}{r}{0.1} & *** & 0.13 & *** & 0.28 & *** & \multicolumn{1}{l}{0.25} & *** & 0.23 & *** & 0.18 & *** \\
+$sightseeing_j$ & \multicolumn{1}{r}{0.06} & *** & 0.01 &  & 0.15 & *** & \multicolumn{1}{l}{0.14} & *** & 0.02 &  & 0.08 & *** \\
+$niagara_j$ & \multicolumn{1}{r}{} &  &  &  & 0.13 & *** & \multicolumn{1}{l}{0.13} & *** &  &  &  &  \\
+$outdoors_j$ & \multicolumn{1}{r}{} &  &  &  & 0 &  & \multicolumn{1}{l}{0.04} & *** &  &  &  &  \\
+$skiing_j$ & \multicolumn{1}{r}{} &  &  &  & 0.09 & *** & \multicolumn{1}{l}{0.1} & *** &  &  &  &  \\
+$medical_j$ & \multicolumn{1}{r}{0.02} & . & 0.12 & *** &  &  & \multicolumn{1}{l}{} &  &  &  &  &  \\ \hline
+\end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\caption{Income-strata model results}
+\label{table:income-strata-results}
+% Table generated by Excel2LaTeX from sheet 'Sheet1'
+\begin{tabular}{lrr}
+\toprule
+\textbf{Model} & \textit{\textbf{m5}} & \textit{\textbf{income-strata}} \\
+\midrule
+\boldmath{}\textbf{$r^2$}\unboldmath{} &       &   \\
+Business & 0.77 & 0.78 \\
+Leisure & 0.80 & 0.80\\
+Visit  &  0.82 & 0.81\\
+\midrule
+% \textbf{RMSE} &       &  \\
+% Business &  37.26 & 34.09 \\
+% Leisure  &  59.61 & 53.05 \\
+% Visit & 65.95 & 58.21 \\
+% \midrule
+\textbf{NRMSE (\%)} & & \\
+Business  & 0.66 & 0.65 \\
+Leisure & 0.61 & 0.60 \\
+Visit &  0.59 & 0.59\\
+\bottomrule
+\end{tabular}%
+\end{table}
 
 \subsection{Estimation Results}
 Table~\ref{table:model_comparisons} contains various statistical measures that measure the the iterative improvements throughout the model estimation process. An increase in the loglikelyhood indicates an higher probability that the model reflects the reality, assuming that the input data remains the same. $r^2$ is the correlation between the predicted and observed trip counts for each OD pair. Likewise, RMSE, or root mean square error another measure of the differences between predicted an observed values. In this case, lower is better. Finally, the NRMSE is an alternative measure of the RMSE, normalized by the standard deviation of the observed trip counts. This last measure allows for a better comparison of model performance between trip purposes, as they have different sample sizes in the observed data. 

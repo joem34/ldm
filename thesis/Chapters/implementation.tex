@@ -2,7 +2,6 @@
 \label{section:implementation}
 The Destination Choice model described in this thesis was designed as a component of a a larger long distance model for the Ministry of Transportation, Ontario. This long distance model is being developed in the JAVA programming language as a traditional 4-step model. 
 
-\subsection{Algorithm}
 In the trip generation phase, a list of trips without destinations is generated for a synthetic population of households and persons. These trips are then passed into the destination choice model, which assigns a destination for each trip. For each trip the destination choice model is run, returning a predicted destination for that trip. The algorithm works as followed, with step~\ref{item:trip} being performed across the list of trips in parallel.
 \begin{enumerate}
 \item A Destination Choice Model is initialized with the following:
@@ -13,7 +12,7 @@ In the trip generation phase, a list of trips without destinations is generated 
 	\end{itemize}
 \item \label{item:trip} For each trip:
 	\begin{enumerate}
-	\item Calculate the utility of each destination $j$, using the relevant stored coefficients.
+	\item Calculate the utility $u_j$ for each destination $j$, using the relevant stored coefficients.
 	\item \label{item:denom} calculate the denominator of the logit equation $q = {\sum_{j=1}^{J} e^{u_j}}
 	$
 	\item Calculate the probability of each destination $j$, $P(j) = e^{u_j} / q $

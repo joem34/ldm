@@ -198,7 +198,7 @@
       {\LARGE \authornames \par}
       \vfill
       {\large A thesis submitted in partial fulfillment for the \par}
-      {\large degree of Master of Science in Transport Systems \par}
+      {\large degree of Master of Science \par}
       \bigskip
       \bigskip
       {\large in the \par}
@@ -241,7 +241,7 @@
     {\normalsize \facname \par}
     {\normalsize \deptname \par}
     \bigskip
-    {\normalsize Master of Science in Transport Systems\par}
+    {\normalsize Master of Science\par}
     \bigskip
     {\normalsize\bf \@title \par}
     \medskip
