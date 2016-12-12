@@ -1,4 +1,4 @@
-income.errors <- as.data.frame(fread("canada/data/mnlogit/runs/income_errors_12_34/model_errors.csv"))
+income.errors <- as.data.frame(fread("canada/data/mnlogit/runs/model_errors_income.csv"))
 
 
 income.errors <- as.data.frame(fread("canada/data/mnlogit/runs/good/model_2016-11-17-090455/model_errors.csv"))

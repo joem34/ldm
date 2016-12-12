@@ -15,7 +15,7 @@ class.columns <- list("purpose" = list("Visit", "Leisure", "Business"))
 class.k = c('Leisure' = 0.0035, 'Visit' = 0.0030, 'Business' = 0.0013)
 
 #filter by income
-#all_trips <- all_trips %>% filter(incomgr2 < 4)
+all_trips <- all_trips %>% filter(incomgr2 < 3)
 
 #set up model inputs for each class
 for (class.column in names(class.columns)) {

@@ -20,7 +20,7 @@ observed.trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_trips_no_intr
     distance = get_dist_v(origin, dest)
     
   )  %>% 
-  filter (!(origin == dest & origin >= 70)) %>% 
+  #filter (!(origin == dest & origin >= 70)) %>% 
   filter (origin < 70 | dest < 70)
 
 #model run
@@ -34,7 +34,7 @@ predicted.trips <- as.data.frame(fread("C:/models/mto/output/trips.csv")) %>%
     
   ) %>%
   filter (origin < 70 | dest < 70) %>%
-  #filter (origin < 70 & dest < 70) %>%
+  filter (origin < 70 & dest < 70) %>%
   filter (!(origin == dest & origin >= 70)) 
 #filter (!(origin == dest))
 
@@ -42,7 +42,12 @@ predicted.trips <- as.data.frame(fread("C:/models/mto/output/trips.csv")) %>%
 sum((observed.trips %>% filter(origin == dest))$wtep)
 nrow(predicted.trips %>% filter(origin == dest))
 
-observed.label = paste("Observed (", mean.obs, ")")
+mean.obs <- weighted.mean(observed.trips$distance, observed.trips$wtep)
+mean.pred <- mean(predicted.trips$distance)
+
+
+observed.label <- paste0("Observed (", round(mean.obs, 2), ")")
+predicted.label <- paste0("Predicted (", round(mean.pred, 2), ")")
 
 ggplot() + 
   stat_density(aes(distance, linetype="Predicted",  color = "Predicted"), size=1.3,  geom="line", position="identity", data=predicted.trips) +
@@ -52,11 +57,11 @@ ggplot() +
   #scale_x_log10() +
   #xlim(c(0,200)) +
   scale_colour_manual(name = "Legend",
-                                      labels = c("Observed", "Predicted"),
+                                      labels = c(observed.label, predicted.label),
                                       values = c(1,2)
                                       ) +   
   scale_linetype_manual(name = "Legend",
-                     labels = c("Observed", "Predicted"),
+                     labels = c(observed.label, predicted.label),
                      values = c("solid", "dashed"))
 
 ggsave(file="canada/thesis\\Figures/pre_calibration.png", width = 10, height = 5)
