@@ -19,9 +19,10 @@ observed.trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_trips_no_intr
     weight = wtep/sum(wtep),
     distance = get_dist_v(origin, dest)
     
-  )  %>% 
+  ) # %>% 
   #filter (!(origin == dest & origin >= 70)) %>% 
-  filter (origin < 70 | dest < 70)
+  #filter (origin < 70 | dest < 70) %>%
+  #filter (distance >= 40)
 
 #model run
 predicted.trips <- as.data.frame(fread("C:/models/mto/output/trips.csv")) %>% 
@@ -32,19 +33,14 @@ predicted.trips <- as.data.frame(fread("C:/models/mto/output/trips.csv")) %>%
     dest = tripDestCombinedZone,
     distance = get_dist_v(origin, dest)
     
-  ) %>%
-  filter (origin < 70 | dest < 70) %>%
-  filter (origin < 70 & dest < 70) %>%
-  filter (!(origin == dest & origin >= 70)) 
+  ) # %>%
+  # filter (origin < 70 | dest < 70) #%>%
+  #filter (origin < 70 & dest < 70) %>%
+  #filter (!(origin == dest & origin >= 70)) #no intrazonal external trips
 #filter (!(origin == dest))
-
-
-sum((observed.trips %>% filter(origin == dest))$wtep)
-nrow(predicted.trips %>% filter(origin == dest))
 
 mean.obs <- weighted.mean(observed.trips$distance, observed.trips$wtep)
 mean.pred <- mean(predicted.trips$distance)
-
 
 observed.label <- paste0("Observed (", round(mean.obs, 2), ")")
 predicted.label <- paste0("Predicted (", round(mean.pred, 2), ")")
@@ -62,7 +58,12 @@ ggplot() +
                                       ) +   
   scale_linetype_manual(name = "Legend",
                      labels = c(observed.label, predicted.label),
-                     values = c("solid", "dashed"))
+                     values = c("solid", "dashed")) 
+
+
+
+
+
 
 ggsave(file="canada/thesis\\Figures/pre_calibration.png", width = 10, height = 5)
 
@@ -71,7 +72,7 @@ weighted.mean(observed.trips$distance, observed.trips$wtep)
 
 #get outliers above 3000km
 predicted.trips %>% 
-  filter (distance > 3000) %>% 
+  filter (distance > 500 & distance < 1000) %>% 
   group_by(pmax(origin, dest)) %>% 
   summarize(n = n()) %>% ungroup() %>% 
   mutate(pc = n/sum(n)) %>% 
