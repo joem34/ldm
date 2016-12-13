@@ -10,6 +10,18 @@ b <- a %>% dcast(parameter ~ class, value.var=c("coef", "p")) %>%
             Business = signif(coef_Business, 3), business_p = p_business)
 write.csv(b, file.path(current.run.folder, "model_coefficients.csv"), row.names = FALSE)
 
+k_values <- data.frame(c(as.list(class.k),list("parameter" = "alpha")))
+
+implementation.input <- b %>% 
+  bind_rows(k_values) %>%
+  transmute(parameter, visit = Visit, leisure = Leisure, business = Business) %>%
+  mutate_each(funs(ifelse(is.na(.),0,.))) 
+
+#na to zero
+
+write.csv(implementation.input , file.path(current.run.folder, "destinationChoiceCoefficients.csv"), row.names = FALSE)
+
+
 print.xtable(
   xtable(b), 
   type="latex", 

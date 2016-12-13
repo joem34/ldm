@@ -34,8 +34,17 @@ build_long_trips <- function (a,t) {
   mutate(
     choice = lvl2_dest == alt,
     dist = get_dist_v(lvl2_orig, alt),
+    
     dist_exp = exp(-class.k[purpose]*dist),
-    pop_log = log(pop),
+    dist_exp_0 = (dist < 1000)* dist_exp,
+    dist_exp_1000 = (dist >= 1000 & dist < 3000)* dist_exp,
+    dist_exp_3000 = (dist >= 3000)* dist_exp,
+    
+    dist_log = log(dist),
+    dist_log_0 = (dist < 1000)* dist_log,
+    dist_log_1000 = (dist >= 1000 & dist < 3000)* dist_log,
+    dist_log_3000 = (dist >= 3000)* dist_log,
+    
     lang.barrier = (o.lang+d.lang)%%2, #calculate if the origin and dest have different languages
     mm = orig_is_metro * alt_is_metro,
     intra = (lvl2_orig == alt),
@@ -46,18 +55,32 @@ build_long_trips <- function (a,t) {
     mr = (1-alt_is_metro)*orig_is_metro,
     rr = (1-alt_is_metro)*(1-orig_is_metro),
     attraction = attraction,
+    civic = (dist <= 3000) * log(attraction),
+    
+    civic_0 = (dist < 1000)* log(attraction),    
+    civic_1000 = (dist >= 1000 & dist < 3000)* log(attraction),    
+    civic_3000 = (dist > 3000)* log(attraction),
+    
     log_airport = log(airport),
     log_hotel = log(hotel),
     log_medical = log(medical),
     log_nightlife = log(nightlife),
     log_outdoors = log(outdoors),
     log_sightseeing = log(sightseeing),
-    log_skiing = log(skiing)
+    log_skiing = log(skiing),
+    
+    mm_inter_no_visit = (purpose != "Visit")*mm_inter,
+    visit_log_medical = (purpose == "Visit")*log_medical,
+    summer_log_outdoors = (purpose == "Leisure")*(season == "summer")*log_outdoors,
+    niagara = (purpose == "Leisure")*(alt == 30)*log_sightseeing,
+    winter_log_skiing = (purpose == "Leisure")*(season == "winter")*log_skiing
+  
   ) 
   for (j in 1:ncol(dt)) set(dt, which(is.infinite(dt[[j]])), j, 0)
   for (j in 1:ncol(dt)) set(dt, which(is.nan(dt[[j]])), j, 0)
   dt
 }
+
 
 #need to build list of alternative choices for each category: one for each trip, and every alternative
 model.inputs[[class]] <- build_long_trips(valid.alternatives, trips[[class]])

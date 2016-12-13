@@ -12,10 +12,10 @@ purpose_season_options <- p.s.uq[-grep("^other.*", p.s.uq)]
 
 class.columns <- list("purpose" = list("Visit", "Leisure", "Business"))
 
-class.k = c('Leisure' = 0.0035, 'Visit' = 0.0030, 'Business' = 0.0013)
+class.k = c('Visit' = 0.0030, 'Leisure' = 0.0035, 'Business' = 0.0013)
 
 #filter by income
-all_trips <- all_trips %>% filter(incomgr2 < 3)
+#all_trips <- all_trips %>% filter(incomgr2 >= 3 & incomgr2 <= 4)
 
 #set up model inputs for each class
 for (class.column in names(class.columns)) {
