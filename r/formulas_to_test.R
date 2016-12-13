@@ -27,7 +27,7 @@ formulas <- c(
   #formula(choice ~ dist_exp + dist_2 + civic + mm_inter_no_visit + mm_intra + r_intra + visit_log_medical + log_hotel + summer_log_outdoors + log_sightseeing  + niagara + winter_log_skiing | 0),
   #formula(choice ~ dist_exp + dist_2 + dist_3 + civic + mm_inter_no_visit + mm_intra + r_intra + visit_log_medical + log_hotel + summer_log_outdoors + log_sightseeing  + niagara + winter_log_skiing | 0),
   #formula(choice ~ dist_exp + dist_2 + dist_3 + dist_log + civic + mm_inter_no_visit + mm_intra + r_intra + visit_log_medical + log_hotel + summer_log_outdoors + log_sightseeing  + niagara + winter_log_skiing | 0),
-  formula(choice ~ dist_exp + dist_exp_1000 + dist_log_0 + dist_log_1000  + dist_log_3000 + civic_0 + civic_1000 + civic_3000 + mm_inter_no_visit + mm_intra + r_intra + visit_log_medical + log_hotel + log_outdoors + log_sightseeing  + niagara + log_skiing | 0)
+  formula(choice ~ dist_exp + dist_log_1000 + dist_log_1000_3000 + dist_log_3000  + civic_1000 + civic_1000_3000 + civic_3000 + mm_inter_no_visit + mm_intra + r_intra + visit_log_medical + log_hotel + log_sightseeing  + niagara + leisure_log_outdoors + leisure_log_skiing | 0)
   
   )
 
