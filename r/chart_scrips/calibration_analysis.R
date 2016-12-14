@@ -11,6 +11,7 @@ get_dist_v <- Vectorize(function(o,d) { cd_tt[o, d] })
 
 #TSRC
 observed.trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_trips_no_intra_province.csv")) %>%
+  #filter ((lvl2_orig > 70 | dest > 70)) %>%
   transmute (
     trip.purpose = purpose,
     origin = lvl2_orig,
@@ -33,9 +34,13 @@ predicted.trips <- as.data.frame(fread("C:/models/mto/output/trips.csv")) %>%
     dest = tripDestCombinedZone,
     distance = get_dist_v(origin, dest)
     
-  ) # %>%
-  # filter (origin < 70 | dest < 70) #%>%
-  #filter (origin < 70 & dest < 70) %>%
+  ) 
+   
+predicted.trips <- predicted.trips %>% filter (origin < 70) #%>%
+
+
+#predicted.trips <- predicted.trips %>% filter ((origin < 70 | dest > 70) | (origin < 70 & dest < 70)) #%>%
+#filter (origin < 70 & dest < 70) %>%
   #filter (!(origin == dest & origin >= 70)) #no intrazonal external trips
 #filter (!(origin == dest))
 
@@ -46,8 +51,8 @@ observed.label <- paste0("Observed (", round(mean.obs, 2), ")")
 predicted.label <- paste0("Predicted (", round(mean.pred, 2), ")")
 
 ggplot() + 
-  stat_density(aes(distance, linetype="Predicted",  color = "Predicted"), size=1.3,  geom="line", position="identity", data=predicted.trips) +
   stat_density(aes(distance, weight=weight, linetype="Observed",  color = "Observed"), size=1.3,  geom="line", position="identity", data=observed.trips) +
+  stat_density(aes(distance, linetype="Predicted",  color = "Predicted"), size=1.3,  geom="line", position="identity", data=predicted.trips) +
   theme_bw() +
   xlab ("log(distance)") +
   #scale_x_log10() +
@@ -72,11 +77,12 @@ weighted.mean(observed.trips$distance, observed.trips$wtep)
 
 #get outliers above 3000km
 predicted.trips %>% 
-  filter (distance > 500 & distance < 1000) %>% 
-  group_by(pmax(origin, dest)) %>% 
+  filter (distance > 3000) %>% 
+  group_by(origin, dest) %>% 
   summarize(n = n()) %>% ungroup() %>% 
   mutate(pc = n/sum(n)) %>% 
   arrange(desc(pc))
 
 
+predicted.trips %>% filter(origin >= 70) %>% summarize(n())
 

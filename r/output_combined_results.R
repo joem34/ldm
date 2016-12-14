@@ -54,3 +54,34 @@ g2 <- ggplot(all.errors) +
   geom_abline(intercept = 0, slope = 0, linetype="dashed")
 g2
 ggsave(file=file.path(chart_folder, "all_model_residuals.png"), width = 10, height = 5)
+
+#average trip length comparison
+density.errors <- all.errors %>% transmute(origin, dest, distance = get_dist_v(origin, dest), predicted = x/sum(x), observed =ex/sum(ex))
+
+mean.obs <- weighted.mean(density.errors$distance, density.errors$observed)
+mean.pred <- weighted.mean(density.errors$distance, density.errors$predicted)
+
+observed.label <- paste0("observed (", round(mean.obs, 2), ")")
+predicted.label <- paste0("predicted (", round(mean.pred, 2), ")")
+
+
+#calibration plots against trip length
+density.errors <- all.errors %>% transmute(origin, dest, distance = get_dist_v(origin, dest), predicted = x/sum(x), observed =ex/sum(ex))
+ggplot(density.errors) + 
+  stat_density(aes(distance, linetype="Predicted",  color = "Predicted", weight=predicted), size=1.3,  geom="line", position="identity") +
+  stat_density(aes(distance, linetype="Observed",  color = "Observed", weight=observed), size=1.3,  geom="line", position="identity") +
+  theme_bw() +
+  xlab ("distance (km)") +
+  #scale_x_log10() +
+  #xlim(c(0,200)) +
+  scale_colour_manual(name = "mean trip length (km)",
+                      labels = c(observed.label, predicted.label),
+                      values = c("darkgrey", "black")
+  ) +   
+  scale_linetype_manual(name = "mean trip length (km)",
+                        labels = c(observed.label, predicted.label),
+                        values = c("solid", "dotted"))   
+
+ggsave(file=file.path(chart_folder, "density.png"), width = 10, height = 5)
+
+

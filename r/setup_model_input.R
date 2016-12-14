@@ -56,12 +56,7 @@ build_long_trips <- function (a,t) {
     
     attraction = attraction,
     civic = log(attraction),
-    civic_lt_40000 = (attraction < 40000) * log(attraction),
-    civic_gt_40000 = (attraction > 40000) * log(attraction),
-    civic_1000 = (dist < 1000)* log(attraction),    
-    civic_1000_x = (dist >= 1000)* log(attraction),    
-    civic_1000_3000 = (dist >= 1000 & dist < 3000)* log(attraction),    
-    civic_3000 = (dist >= 3000)* log(attraction),    
+    civic_40 = (dist < 40) * dist * civic,
     
     log_airport = log(airport),
     log_hotel = log(hotel),
