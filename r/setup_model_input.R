@@ -67,6 +67,7 @@ build_long_trips <- function (a,t) {
     log_skiing = log(skiing),
     
     mm_inter_no_visit = (purpose != "Visit")*mm_inter,
+    mm_intra_no_business = (purpose != "Business")*mm_intra,
     visit_log_medical = (purpose == "Visit")*log_medical,
     niagara = (purpose == "Leisure")*(alt == 30)*log_sightseeing,
     

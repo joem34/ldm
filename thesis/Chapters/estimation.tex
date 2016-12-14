@@ -403,6 +403,18 @@ Visit &  0.59 & 0.59\\
 \end{tabular}%
 \end{table}
 
+\subsection{Refinement after considering trip length}
+A distribution of the trip lengths produced by the model was used to evaluate the accuracy of the estimated MNL model. The observed average trip length is different to those in the gravity model, as for the gravity model, the recorded distances from the TSRC were used. For the Destination Choice model, the length of each trip was calculated using the zonal skim matrix.
+
+Figure~\ref{fig:trip_length_m5} shows an excellent fit to the observed data, however, the average trip length of 214.84~km is low. The general shape of the distribution also an overestimation of shorter trips. To compensate for this, the logarithm of distance was added as a parameter. With the second distance term, the average trip distance of the overall predicted model was reduced to 3.1\% of the observed average trip length. Including the logarithm of distance also slightly improves the accuracy across trip purposes, most noticeably for visitation trips. This model is presented as the final estimated model \textit{m6}. With so little difference in the overall average trip length between the observed and predicted models, no further calibration is needed.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{calibration/density_exp_dist}
+\caption{Trip length distribution of model \textit{m5}}
+\label{fig:trip_length_m5}
+\end{figure}
+
 \subsection{Estimation Results}
 Table~\ref{table:model_comparisons} contains various statistical measures that measure the the iterative improvements throughout the model estimation process. An increase in the loglikelyhood indicates an higher probability that the model reflects the reality, assuming that the input data remains the same. $r^2$ is the correlation between the predicted and observed trip counts for each OD pair. Likewise, RMSE, or root mean square error another measure of the differences between predicted an observed values. In this case, lower is better. Finally, the NRMSE is an alternative measure of the RMSE, normalized by the standard deviation of the observed trip counts. This last measure allows for a better comparison of model performance between trip purposes, as they have different sample sizes in the observed data. 
 

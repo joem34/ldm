@@ -27,6 +27,11 @@ In the trip generation phase, a list of trips without destinations is generated 
 
 \section{Calibration}
 
+ %As mentioned in~\ref{section:__}, external intra-zonal trips were excluded during the estimation of the destination choice model. Because the trip generation module currently includes external intra-zonal trips, and needs to be updated to match the new assumptions, the model was not ca
+
+The model was calibrated against the original input data to the estimation
+
+
 \section{Sensitivity Analysis - Case study of a new Ski Resort}
 
 
@@ -37,7 +42,7 @@ This section presents a hypothetical application of the developed destination ch
 
 In the hypothetical scenario, a new resort is proposed for the highlands area north of Toronto (see figure~\ref{figure:ontario-dem}. The higher elevation ensures good snowfall, and the elevation difference makes for exciting riders for snow sports enthusiasts. Two sites are being considered, one to the west of the range, and one to the east, closer to Ottawa. While this resort can naturally not be the size of mega resorts in British Columbia or Alberta, its development is expected to bring similar numbers of visitors as other resorts in Ontario. Two average sized hotels will also be built at the base of the resort to accommodate guests. In the summer, the resort will attract visitors by providing mountain biking facilities and hiking. Additional housing for 400 new residents will be required to support 300 jobs.
 
-This somewhat contrived scenario assumes that other policy and development considerations, such as site location and transport access have all been dealt with. The design of the scenario presents the opportunity to investigate the sensitivity of the  variables based on the foursquare data. The variables concerned are hotels, skiing and outdoor. The impact of the new development is estimated through adjusting these variables for the zone in which the development will take place. The un-aggregated foursquare data, filtered by venues in Ontario, is used to estimate probable adjustments for each of the categories. The following adjustments are made for the respective zones, and their values are displayed in table~\ref{table:scenario-inputs}.
+This somewhat contrived scenario assumes that other policy and development considerations, such as site location and transport access have all been dealt with. The design of the scenario presents the opportunity to investigate the sensitivity of the  variables based on the foursquare data. The variables concerned are hotels, skiing and outdoor. The impact of the new development is estimated through adjusting these variables for the zone in which the development will take place. The foursquare POI database developed in section~\ref{section:foursquare} was used to estimate adjustments for each of the categories. Taking all venues in Ontario, the average number of checkins per venue for each search category was calculated. The following adjustments are made for the respective zones, and their values are displayed in table~\ref{table:scenario-inputs}.
 
 \begin{itemize}
 \item Skiing: The average number of checkins for ski areas
@@ -45,6 +50,8 @@ This somewhat contrived scenario assumes that other policy and development consi
 \item Outdoor: The average number of checkins per outdoor venue
 \end{itemize}
 
+
+%TODO zone 
 \begin{table}[H]
 \centering
 \caption{Inputs for sensitivity analysis scenario}
@@ -52,13 +59,17 @@ This somewhat contrived scenario assumes that other policy and development consi
 \begin{tabular}{@{}rllll@{}}
   \toprule
  Parameter & Old Value & Adjustment & New Value & Increase \% \\ \midrule
-  $civic_{ij}$ &  & 700 &  & \\ 
-  $hotel_j$ &  &  &  & \\ 
-  $outdoors_j$  &  &  &  \\ 
-  $skiing_j$   &  &  & \\ 
+  $civic_{ij}$ & 42216 & 700 & 42916 & \\ 
+  $hotel_j$ & 1393  & 8304 & 9697 & \\ 
+  $outdoors_j$  & 1 & 3389 & 3390 & \\ 
+  $skiing_j$ 40  & 3550 &  & 3590 &\\ 
    \bottomrule
 \end{tabular}
 \end{table}
+
+%business & 149.46 &
+%leisure & 508.85 &
+%visit & 719.05 &
 
 %present results
 %number of extra trips. origin with largest increase
@@ -66,4 +77,8 @@ This somewhat contrived scenario assumes that other policy and development consi
 
 %TODO cite https://www.ontario.ca/data/provincial-digital-elevation-model-version-30
 
-
+\section{Notes on further work in disaggregating trip ends to TAZs}
+%train dest choice log
+For a fully functional transport model, the trip ends of the completely specified trips will have to be allocated to the higher resolution TAZs before route assignment can take place. This can happen before or after mode choice. \textcite{Train2009} discusses the issue of geographical aggregation, specifically in regards to destination choice in chapter 3 of \textit{Discrete Choice Methods with Simulation}. 
+``to specify a destination choice model that is not sensitive to the level of zonal aggregation, representative utility needs to be specified with parameters inside a log operation."
+As all parameters that actually represent destination utility (population and employment, and foursquare categorical variables) have been transformed with a logarithmic function, The model should be insensitive to the resolution of the zone system, and the estimated coefficients transferable to a an choice set of alternatives based on the TAZs of the larger transport model.
