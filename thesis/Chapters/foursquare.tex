@@ -1,14 +1,13 @@
 \section{Foursquare}
 \label{section:data-foursquare}
-Trip distribution models that consider only population and employment have a significant flaw. They fail to account for points of interest (POI), such as National Parks that attract large numbers of people, yet exist in areas of low population and employment. Discrete choice modeling provides the opportunity to incorporate parameters that reflect these drivers of travel demand. 
+Trip distribution models that consider only population and employment have a significant flaw. They fail to account attractions, such as national parks that draw large numbers of people, yet exist in areas of low population and employment. Discrete choice modeling provides the opportunity to incorporate parameters that reflect these drivers of travel demand. 
 	
 Leisure travel is a particular case where socioeconomic metrics don't always reflect the attractiveness of a destination. Areas such as as lakes, national parks and ski resorts are popular long distance recreational destinations in the summer and winter respectively, yet have small populations and employment. 
-\textcite{simma2001destination} developed a destination choice model for leisure travel in Switzerland that considered many variables of destination attractiveness such as the number of swimming pools, ski area qualities and land use attributes. They found that while
 	
 The TSRC microfile records the activities performed on each recorded trip and destination visited during a trip. When aggregated by trip destination, these activities give an indication of which zones provide particular attractions such as national parks or ski areas. The number of trips with each recorded activity can also be used to identify the importance of a particular activity for each zone. However, there are two key problems with this approach:
 
 \begin{itemize}
-\item When implementing of the model,  The spatial resolution of the TSRC microfile means that the location where an activity was performed can only be determined at a zone level. Another data source is still needed to identify key points of interest such as hospitals and tourist attractions to predict trip destinations at the TAZ level.
+\item When implementing the model, the spatial resolution of the TSRC microfile means that the location where an activity was performed can only be determined at a zone level. Another data source is still needed to identify key points of interest such as hospitals and tourist attractions to predict trip destinations at the TAZ level.
 \item As a domestic survey, the TSRC doesn't cover the US, meaning a different method would need to be used to identify key attractions across the border.
 \end{itemize}	
 In this section, we describe how the collection and processing of foursquare check-in data was performed in order to build destination utility variables.
@@ -30,13 +29,14 @@ The API does not return check-in counts by date, so it can only be used to gener
 \subsection{Demographic Bias}
 While the use of social networks is becoming more ubiquitous throughout the general population, LSBNs such as foursquare still have a particular user demographic, which should be taken into account when working with social network based data. The data retrieved from the foursquare API does not provide any demographic information that can be used to weight the retrieved data.
 
-In this thesis, the potential impact of bias is minimized, as only the intensity of activity for each category in a zone is measured as a variable. There is also no stratification of these variables by age, gender or education level in the model estimation. Such stratification would cause concerns with demographic bias, for example with older groups of travelers. One concern is that certain venue categories could be under-represented in the data, such as aged care services, or those where a check-in might be taboo such as a place of worship. This is considered by grouping venues into broad categories, which are then considered as model parameters.
+In this thesis, the potential impact of bias is minimized, as only the intensity of activity for each category in a zone is measured as a variable. There is also no stratification of these variables by age, gender or education level in the model estimation. Such stratification would cause concerns with demographic bias, for example with older groups of travelers. One concern is that certain venue categories could be under-represented in the data, such as aged-care services, or those where a check-in might be taboo such as a place of worship. This is considered by grouping venues into broad categories, which are then considered as model parameters.
 	
 \subsection{Methodology}
 To collect the venue data from the Foursquare API, the following procedure was followed:
 \begin{enumerate}
 
-\item A developer account was set up which allowed access to the API. The maximum search area allowed is smaller than most external zones, so a search grid of 1 degree raster cells was generated for the study area. 
+\item A developer account was set up to access the API. 
+\item The maximum search area allowed is smaller than most external zones, so a search grid of 1 degree raster cells was generated for the study area. 
 
 \item Using the activities specified in the TSRC as a reference, a selection of potentially important venue categories was curated (see table~\ref{table:foursquare_categories}).
 
