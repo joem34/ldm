@@ -1,8 +1,9 @@
 \section{Implementation}
 \label{section:implementation}
-The Destination Choice model described in this thesis was designed as a component of a a larger long distance model for the Ministry of Transportation, Ontario. This long distance model is being developed in the JAVA programming language as a traditional 4-step model. 
+The Destination Choice model described in this thesis was designed as a component of a larger long distance model for the Ministry of Transportation, Ontario. This long distance model is being developed in the JAVA programming language as a traditional 4-step model. 
 
-In the trip generation phase, a list of trips without destinations is generated for a synthetic population of households and persons. These trips are then passed into the destination choice model, which assigns a destination for each trip. For each trip the destination choice model is run, returning a predicted destination for that trip. The algorithm works as followed, with step~\ref{item:trip} being performed across the list of trips in parallel.
+In the trip generation phase, a list of trips without destinations is generated for a synthetic population of households and persons. These trips are then passed into the destination choice model, which assigns a destination for each trip. For each trip the destination choice model is run, returning a predicted destination for that trip. The algorithm works as followed, with step~\ref{item:trip} being performed across the list of trips in parallel. Appendix~\ref{appendix:source} provides the java code for the java implementation of the destination choice module. %TODO source code!
+
 \begin{enumerate}
 \item A Destination Choice Model is initialized with the following:
 	\begin{itemize}
@@ -34,13 +35,11 @@ The model was calibrated against the original input data to the estimation
 
 \section{Sensitivity Analysis - Case study of a new Ski Resort}
 
-
-
 %TODO compare models m3 and m5 and thier representation of the impact of the new model?
 
 This section presents a hypothetical application of the developed destination choice model. For any large scale land use planning or development, it is important to model the impacts that such development will have on the transport network. As an example of this, a hypothetical scenario of the development of a large new ski resort is presented. Such resorts not only provide infrastructure for skiing and other snow-based activities, but require the development of multiple new hotels, employee housing, and retail infrastructure. In the winter months, ski resorts can generate significant demands on the transport network, and this needs to be taken account when considering such a development.
 
-In the hypothetical scenario, a new resort is proposed for the highlands area north of Toronto (see figure~\ref{figure:ontario-dem}. The higher elevation ensures good snowfall, and the elevation difference makes for exciting riders for snow sports enthusiasts. Two sites are being considered, one to the west of the range, and one to the east, closer to Ottawa. While this resort can naturally not be the size of mega resorts in British Columbia or Alberta, its development is expected to bring similar numbers of visitors as other resorts in Ontario. Two average sized hotels will also be built at the base of the resort to accommodate guests. In the summer, the resort will attract visitors by providing mountain biking facilities and hiking. Additional housing for 400 new residents will be required to support 300 jobs.
+In the hypothetical scenario, a new resort is proposed for the highlands area north of Toronto (see figure~\ref{figure:ontario-dem}. The higher elevation ensures good snowfall, and the elevation difference makes for exciting riders for snow sports enthusiasts. Two sites are being considered, one to the west of the range, and one to the east, closer to Ottawa. While this resort can naturally not be the size of mega resorts in British Columbia or Alberta, its development is expected to bring similar numbers of visitors as other large resorts in Ontario. Three average sized hotels will also be built at the base of the resort to accommodate guests. In the summer, the resort will attract visitors by providing mountain biking facilities and hiking. Additional housing for 400 new residents will be required to support 300 jobs.
 
 This somewhat contrived scenario assumes that other policy and development considerations, such as site location and transport access have all been dealt with. The design of the scenario presents the opportunity to investigate the sensitivity of the  variables based on the foursquare data. The variables concerned are hotels, skiing and outdoor. The impact of the new development is estimated through adjusting these variables for the zone in which the development will take place. The foursquare POI database developed in section~\ref{section:foursquare} was used to estimate adjustments for each of the categories. Taking all venues in Ontario, the average number of checkins per venue for each search category was calculated. The following adjustments are made for the respective zones, and their values are displayed in table~\ref{table:scenario-inputs}.
 
@@ -67,6 +66,8 @@ This somewhat contrived scenario assumes that other policy and development consi
 \end{tabular}
 \end{table}
 
+The trips from the TSRC data used for estimation were inputted to the scenario, with $n$ copies of each record added to the trip table, where $n$ is the trip weight of the record. 100 iterations of the scenario were performed, with and without the new ski area.
+
 %business & 149.46 &
 %leisure & 508.85 &
 %visit & 719.05 &
@@ -81,6 +82,6 @@ This somewhat contrived scenario assumes that other policy and development consi
 This thesis presents an operational destination choice model for domestic travel to and from Ontario. The U.S.-Ontario border is an important source of incoming trips to Ontario, and external trips that pass through to other parts of Canada. Further work is needed to extend the model to include firstly continental travel to the United States, and then also intercontinental travel. The Canadian International Travel Survey (ITS) provides trip records that can be used to estimate such a model, although it does not include socioeconomic data for travelers. 
 
 %train dest choice log
-For a fully functional transport model, the trip ends of the completely specified trips will have to be allocated to the higher resolution TAZs before route assignment can take place. This can happen before or after mode choice. \textcite{Train09} discusses the issue of geographical aggregation, specifically in regards to destination choice in chapter 3 of \textit{Discrete Choice Methods with Simulation}. 
+For a fully functional transport model, the trip ends of the completely specified trips will have to be allocated to the higher resolution TAZs before route assignment can take place. This can be performed before or after mode choice. \textcite{Train09} discusses the issue of geographical aggregation, specifically in regards to destination choice in chapter 3 of \textit{Discrete Choice Methods with Simulation}, 
 ``to specify a destination choice model that is not sensitive to the level of zonal aggregation, representative utility needs to be specified with parameters inside a log operation."
 As all parameters that actually represent destination utility (population and employment, and foursquare categorical variables) have been transformed with a logarithmic function, The model should be insensitive to the resolution of the zone system, and the estimated coefficients transferable to a an choice set of alternatives based on the TAZs of the larger transport model.
