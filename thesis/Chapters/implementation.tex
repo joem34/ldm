@@ -77,8 +77,10 @@ This somewhat contrived scenario assumes that other policy and development consi
 
 %TODO cite https://www.ontario.ca/data/provincial-digital-elevation-model-version-30
 
-\section{Notes on further work in disaggregating trip ends to TAZs}
+\section{Remaining implementation work}
+This thesis presents an operational destination choice model for domestic travel to and from Ontario. The U.S.-Ontario border is an important source of incoming trips to Ontario, and external trips that pass through to other parts of Canada. Further work is needed to extend the model to include firstly continental travel to the United States, and then also intercontinental travel. The Canadian International Travel Survey (ITS) provides trip records that can be used to estimate such a model, although it does not include socioeconomic data for travelers. 
+
 %train dest choice log
-For a fully functional transport model, the trip ends of the completely specified trips will have to be allocated to the higher resolution TAZs before route assignment can take place. This can happen before or after mode choice. \textcite{Train2009} discusses the issue of geographical aggregation, specifically in regards to destination choice in chapter 3 of \textit{Discrete Choice Methods with Simulation}. 
+For a fully functional transport model, the trip ends of the completely specified trips will have to be allocated to the higher resolution TAZs before route assignment can take place. This can happen before or after mode choice. \textcite{Train09} discusses the issue of geographical aggregation, specifically in regards to destination choice in chapter 3 of \textit{Discrete Choice Methods with Simulation}. 
 ``to specify a destination choice model that is not sensitive to the level of zonal aggregation, representative utility needs to be specified with parameters inside a log operation."
 As all parameters that actually represent destination utility (population and employment, and foursquare categorical variables) have been transformed with a logarithmic function, The model should be insensitive to the resolution of the zone system, and the estimated coefficients transferable to a an choice set of alternatives based on the TAZs of the larger transport model.
