@@ -91,7 +91,7 @@ The design of a destination choice is much more involved than the construction o
 \label{section:estimation}
 Rather than just present a final model, this thesis elaborates on the model development process, covering the important estimation iterations. In \textit{m1}, a simple model based on the gravity model is presented. \textit{m2} and \textit{m3} add further interaction variables between origin and destinations. \textit{m4} and \textit{m5} explore the potential of LSBN data to improve destination choice models when incorporated into the calculation of destination utility. Finally, \textit{m6} makes some adjustments to fit the model to the observed average trip length.
 
-\subsection{Socioeconomic Variables}
+\subsection{Socioeconomic variables}
 For the first model, the same inputs as for the gravity model are used, namely the exponential of distance $e^{-d_{ij}}$, and the combined population $p$ and employment $emp$.
 
 The distance factor for each trip purpose was adjusted by the impedance factor $k$ estimated for the respective gravity model (see chapter~\ref{section:gravity-model}). This approach significantly improves the model, and provides a quick way to calibrate the distance coefficient.
@@ -123,7 +123,7 @@ The employment data is classified by NAICS category, and models were tested that
 The parameters of this model \textit{m1} (see table~\ref{table:m1-coeff}) are encouraging. All the signs are as expected, and differences in the coefficients across trip purposes are evident. A leisure trip is less likely to go towards areas of civic importance than visits or business, and the trip distance is naturally less important for business travelers. For each trip purpose, the basic multinomial logit model already performs better than the gravity model, as evident in the higher correlation and lower RMSE values in table~\ref{table:model_comparisons}. 
 
 
-\subsection{Origin-Destination Interactions}
+\subsection{Origin-Destination interactions}
 In this section, the model is extended to reflect the relationship between the origin and destination that might affect the choice of destination. Model \textit{m2} is specified by the utility function
 \begin{align*}
 u_{ij} = \beta_1~e^{-\alpha \cdot d_{ij}} + \beta_2~civic_j + \beta_3~language_{ij}+ \beta_4~mm_{ij} + \beta_5~rm_{ij}
@@ -203,7 +203,7 @@ The large intra-zonal trip counts occur in small metropolitan zones, while in ru
 	$$
 %TODO explain better the three new variables
 
-The first variable $intrametro_{ij}$ identifies trips within the same zone, where that zone is a metropolitan zone. This allows the model to reflect the propensity of a traveler to leave a metropolitan zone when they travel. The second, $intermetro_{ij}$ is $1$ when the traveler is traveling from one metropolitan zone to another and $0$ otherwise. This may be a common choice for business travelers, but less likely for recreational trips. The third variable, $intrarural_{ij}$ allows the model to consider the intrazonal behavior in larger, rural zones. The inclusion of these variables significantly improves the model results, and as presented in~\ref{table:m3-coeff}, particularly for business travel.
+The first variable $intrametro_{ij}$ identifies trips within the same zone, where that zone is a metropolitan zone. This allows the model to reflect the propensity of a traveler to leave a metropolitan zone when they travel. The second, $intermetro_{ij}$ is $1$ when the traveler is traveling from one metropolitan zone to another and $0$ otherwise. This may be a common choice for business travelers, but less likely for recreational trips. The third variable, $intrarural_{ij}$ allows the model to consider the intra-zonal behavior in larger, rural zones. The inclusion of these variables significantly improves the model results, and as presented in~\ref{table:m3-coeff}, particularly for business travel.
 
 The other zone interaction variables $language_{ij}$  and $rm_{ij}$  are removed in this iteration. They were not suitable in the previous model, and the significance of their coefficients did not improve in this iteration when combined with the new variables $intrametro_{ij}$,  $intrametro_{ij}$ and $intrarural_{ij}$.
 
@@ -242,7 +242,7 @@ In table~\ref{table:model_comparisons}, significant improvements throughout the 
 \end{figure}
 
 
-\subsection{Incorporating LBSN Data}
+\subsection{Incorporating LBSN data}
 
 The traditional socioeconomic variables of a destination don't completely reflect why people travel to a particular destination. People don't travel to a location purely because many people live there, but because there are opportunities to perform certain activities at that location. Population and employment act as proxy variables for some of these opportunities, but not all. This section incorporates data from LSBNs to improve the destination choice model, particularly for leisure trips.  
 
@@ -343,7 +343,7 @@ Overall, this model performs better across all trip purposes than the \textit{m3
 \end{figure}
 
 
-\subsection{Income Strata}
+\subsection{Income strata}
 Socioeconomic factors such as income are important explanatory variables~\parencite{kitamura1997micro}. Since income is a characteristic of the individual, it doesn't vary between alternatives. However the income of the traveler may influence his or her perception of the utility of each alternative. Including income as a variable in the destination choice model requires at a minimum, one separate coefficient for each of the 117 alternatives. Since the income is stored as a ordinal variable, realistically, a dummy variable for each income category would be required. Tried in the model, this resulted in significant coefficients for some zones, but not others, with no appreciable pattern. This approach was discarded due to the lack of overall significance, and large number of coefficients required. 
 
 An alternative approach is to strata the destination choice model by income categories. This approach was tried with numerous permutations. First with the 4 individual categories, secondly, with two categories: low income (1,2) and high income(3,4), and third, with the income categories grouped as {1,2,3} and {4}. Table~\ref{table:income-strata-coeff} shows the parameters of the models for the groupings of {1,2} and {3,4} against the non-strata model. A visual inspection shows that the parameters are mostly consistent between the models. The $distance$ variable does show variation between the two strata, but other variables are mostly consistent across the strata. Where a coefficient is different between the strata, such as $intermetro$ for visit travel for the low income strata, it is no longer significant. In all scenarios, the performance of the models with income strata, according to the $r^2$ and $NRMSE$ metrics, is almost identical compared to the non-strata model (see table~\ref{table:income-strata-results}). Although there are surely model permutations where variables based on income are more significant, based on the lack of difference between the strata coefficients, income was not investigated futher for this destination choice model. 
@@ -375,6 +375,8 @@ $medical_j$ & \multicolumn{1}{r}{0.02} & . & 0.12 & *** &  &  & \multicolumn{1}{
 \centering
 \caption{Income-strata model results}
 \label{table:income-strata-results}
+\begin{adjustbox}{center}
+
 % Table generated by Excel2LaTeX from sheet 'Sheet1'
 \begin{tabular}{lrr}
 \toprule
@@ -396,12 +398,13 @@ Leisure & 0.61 & 0.60 \\
 Visit &  0.59 & 0.59\\
 \bottomrule
 \end{tabular}%
+\end{adjustbox}
 \end{table}
 
 \subsection{Refinement after considering trip length}
-A distribution of the trip lengths produced by the model was used to evaluate the accuracy of the estimated destination choice model. The observed average trip length is different to those in the gravity model, as for the gravity model, the recorded distances from the TSRC were used. For the destination choice model, the length of each trip was calculated using the zonal skim matrix.
+A distribution of the trip lengths produced by the implemented model was used to evaluate the accuracy of the estimated destination choice model. The observed average trip length is different to those in the gravity model, as for the gravity model, the recorded distances from the TSRC were used. For the destination choice model, the length of each trip was calculated using the zonal skim matrix.
 
-Figure~\ref{fig:trip_length_m5} shows an excellent fit to the observed data, however, the average trip length of 214.84~km is low. The general shape of the distribution also shows an overestimation of shorter trips. To compensate for this, the logarithm of distance was added as a parameter. With the second distance term, the average trip distance of the overall predicted model was reduced to 3.1\% of the observed average trip length. Including the logarithm of distance also slightly improves the accuracy across trip purposes, most noticeably for visitation trips. This model is presented as the final estimated model \textit{m6}. With so little difference in the overall average trip length between the observed and predicted models, no further calibration is needed.
+Figure~\ref{fig:trip_length_m5} shows an excellent fit to the observed data, however, the average trip length of 318~km is high. To compensate for this, the logarithm of distance was tried as a parameter. While the inclusion of the logarithm did not affect the mean trip length, it did improve the accuracy of the estimation across trip purposes, most noticeably for visit trips. The $intrametro_{ij}$ parameter for business travel was removed as it was no longer significant. This model is presented as the final estimated model \textit{m6}. 
 
 \begin{figure}[H]
 \centering
@@ -410,8 +413,6 @@ Figure~\ref{fig:trip_length_m5} shows an excellent fit to the observed data, how
 \label{fig:trip_length_m5}
 \end{figure}
 
-
-\begin{comment}
 \begin{table}[H]
 \centering
 \caption{\textit{m6} (final) model coefficients}
@@ -419,25 +420,23 @@ Figure~\ref{fig:trip_length_m5} shows an excellent fit to the observed data, how
 \begin{tabular}{@{}rrlrlrl@{}}
   \toprule
  Parameter & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business} \\ \midrule
-  $e^{-\alpha \cdot d_{ij}}$ \\ 
-  $log(d_{ij})$ \\ 
-  $civic_j$  \\ 
-  $intermetro_{ij}$  \\ 
-  $intrametro_{ij}$ \\   
-  $intrarural_{ij}$ \\ 
-  $hotel_j$ & \\ 
-  $sightseeing_j$  \\ 
-  $niagara_j$ \\ 
-  $outdoors_j$  \\ 
-  $skiing_j$  \\ 
-  $medical_j$  \\ 
+  $e^{-\alpha \cdot d_{ij}}$& 8.95 & *** & 7.36 & *** & 7.75 & *** \\  
+  $log(d_{ij})$ & 0.90 & *** & 0.48 & *** & 0.65 & *** \\  
+  $civic_j  $ & 0.22 & *** & -0.17 & *** & 0.45 & *** \\ 
+  $intermetro_{ij}$ &  &  & -0.76 & *** & 0.62 & *** \\  
+  $intrametro_{ij}$ & -0.96 & *** & -2.38 & *** &  &  \\   
+  $intrarural_{ij}$ & 0.64 & *** & 0.66 & *** & 2.00 & ***  \\
+  $hotel_j$  & 0.10 & *** & 0.26 & *** & 0.15 & *** \\ 
+  $sightseeing_j$  & 0.05 & *** & 0.14 & *** & 0.07 & *** \\   
+  $niagara_j$  &  &  & 0.12 & *** &  &  \\  
+  $outdoors_j$  &  &  & 0.04 & *** &  &  \\ 
+  $skiing_j$ &  &  & 0.10 & *** &  &  \\ 
+  $medical_j$  & 0.08 & *** &  &  &  &  \\  
    \bottomrule
 \end{tabular}
 \end{table}
-\end{comment}
 
-
-\subsection{Estimation Results}
+\subsection{Estimation results}
 Table~\ref{table:model_comparisons} contains various statistical measures that measure the the iterative improvements throughout the model estimation process. An increase in the loglikelyhood indicates an higher probability that the model reflects the reality, assuming that the input data remains the same. $r^2$ is the correlation between the predicted and observed trip counts for each OD pair. Likewise, RMSE, or root mean square error is another measure of the differences between predicted an observed values. In this case, lower is better. Finally, the NRMSE is an alternative measure of the RMSE, normalized by the standard deviation of the observed trip counts. This last measure allows for a better comparison of model performance between trip purposes, as they have different sample sizes in the observed data. 
 
 \begin{table}[H]

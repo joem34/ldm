@@ -44,4 +44,8 @@ select id, pruid, category, count as num_venues, sum as checkins
 from foursquare.zone_category_counts
 where id = 1 and category = 'Ski Area'
 
+select category, sum(count) as venues, sum("sum") as checkins
+ from foursquare.zone_category_counts
+ where pruid > 0
+ group by category
 

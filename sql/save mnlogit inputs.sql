@@ -18,7 +18,7 @@ from tsrc_trip
 
 drop table if exists tsrc_trip_filtered;
 
-select id, refyear, purpose, season, lvl2_orig, lvl2_dest, orcprovt as orig_pr, mddplfl as dest_pr, incomgr2, orig_is_metro, dest_is_metro, wtep
+select id, refyear, purpose, season, lvl2_orig, lvl2_dest, orcprovt as orig_pr, mddplfl as dest_pr, incomgr2, orig_is_metro, dest_is_metro, dist2, wtep
 into tsrc_trip_filtered
 from tsrc_trip
 where (((orcprovt <= 35 and mddplfl >= 35) or (orcprovt >= 35 and mddplfl <= 35)) --eclude external intra province trips,
@@ -27,11 +27,11 @@ where (((orcprovt <= 35 and mddplfl >= 35) or (orcprovt >= 35 and mddplfl <= 35)
       or (orcprovt = 24 and mddplfl = 24 and (lvl2_orig in (85, 117) or lvl2_dest in (85, 117)));
 
 copy (
-select * from tsrc_trip_filtered
+select * from tsrc_trip_filtered where purpose <> 'other'
 ) to 'C:/Users/Joe/canada/data/mnlogit/mnlogit_trips_no_intra_province.csv' WITH CSV HEADER;
 
 copy (
 select *
 from destination_attributes
-) to 'C:/Users/Joe/canada/data/mnlogit/mnlogit_canada_alternatives2.csv' WITH CSV HEADER;
+) to 'C:/Users/Joe/canada/data/mnlogit/mnlogit_canada_alternatives3.csv' WITH CSV HEADER;
 

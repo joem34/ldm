@@ -56,12 +56,14 @@ from canada_production_attraction;
 DROP TABLE IF EXISTS destination_attributes;
 
 SELECT zone_lvl2 as alt, pa.*, z2.metro as alt_is_metro , CAST(z2.pruid = 24 AS INTEGER) speak_french, 
-	COALESCE (fs.arts_entertainment, 0) as fs_arts_entertainment, 
-	COALESCE (fs.hotel, 0) as fs_hotel, 
-	COALESCE (fs.medical, 0) as fs_medical, 
-	COALESCE (fs.outdoor, 0) as fs_outdoor, 
-	COALESCE (fs.services, 0) as fs_services, 
-	COALESCE (fs.ski_area, 0) as fs_skiarea,
+	COALESCE ("Airport", 0) as Airport, 
+	COALESCE ("Hotel", 0) as Hotel, 
+	COALESCE ("Medical", 0) as Medical, 
+	COALESCE ("Nightlife", 0) as Nightlife, 
+	COALESCE ("Outdoors", 0) as Outdoors, 
+	COALESCE ("Sightseeing", 0) as Sightseeing,
+	COALESCE ("Skiing" , 0) as Skiing,
+	case when z2.pruid < 35 then 'east' when z2.pruid = 35 then 'ontario' when z2.pruid > 35 then 'west' end as loc,
 	ST_Area(geography(ST_Transform(z2.geom,4326))) / 1000000 as area_km
 INTO destination_attributes
 from (
@@ -81,5 +83,5 @@ from (
 JOIN level2_zones as z2 on z2.id = pa.zone_lvl2
 left outer JOIN foursquare.zone_checkins_wide as fs on fs.zone_id = pa.zone_lvl2;
 
-select * from destination_attributes; --should be 117 canadian zones
+select * from destination_attributes order by skiing desc; --should be 117 canadian zones
 

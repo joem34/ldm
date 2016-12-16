@@ -7,18 +7,15 @@ In the estimation process, it was found that the output from the calibrated grav
 
 The next iteration improved the estimation of intra-zonal trips in smaller metropolitan zones. It was discovered that to properly account for intra-zonal behavior, separate parameters were needed for rural and metropolitan origins. The coefficients for these two parameters were of opposite sign, logically indicating that intra-zonal long distance travel is more likely in larger rural zones, but unlikely in metropolitan zones that are barely large enough to support an internal long distance trip. The accuracy of the model for leisure trips was noticeably weaker than for the other two models, and it was hypothesized that better modeling of the destination attractiveness for leisure activities would improve the results.
 
-%TODO more detail on actual results?
-
-The LBSN based models demonstrated how venue checkin data from foursquare could be incorporated into a destination choice model. As hypothesized, the foursquare data dramatically improved the estimation of leisure trips. It also performed well for visit and business trips. Even with all other variables excluded except for distance, the model (\textit{m4}) performed comparably to the basic \textit{m1} model. When the foursquare data was combined with the variables from previous iterations, a very agreeable model was produced.
-
+The LBSN based models demonstrated how venue checkin data from foursquare could be incorporated into a destination choice model. As hypothesized, the foursquare data dramatically improved the estimation of leisure trips. It also performed well for visit and business trips. Even with all other variables excluded except for distance, the model (\textit{m4}) performed comparably to the basic \textit{m1} model. When the foursquare data was combined with the variables from previous iterations, a very agreeable model (\textit{m5}) was produced. In the final model \textit{m6}, a second distance term was added to improve the accuracy of the model
 After consideration, income was not included in the parameters. However, based on the literature, income should still be included in other steps in the model, based on the findings in the literature. in trip generation\textcite{limtanakool2006participation} found gender and imcome significant for trip generation, and it is widely recognised that income affects mode choice, through auto ownership \parencite{ben1974some, miller1998urban, raphael2002car}.
 
-%TODO
-Scenario Analysis
+When the model was calibrated to the average trip length, the trip distribution suffered. On closer inspection, the model still overestimates the number of intra-zonal trips within Toronto, and underestimating the inter-zonal trips between large population centers, such as Toronto, Ottawa and Montreal. The car journey from Toronto to Ottawa takes over 4 hours, while flying takes only 55 minutes. The inclusion of feedback from the mode choice model, when available, could potentially improve the estimation of these connections.
 
+The scenario analysis of a new ski resort demonstrated how the use of LSBN data to represent destination attractiveness modeled impacts that would otherwise not have been observable with the model. The sensitivity of each parameter in the scenario is also visible. Despite the high correlation between the foursquare variables at this spatial resolution, the varying impact of different categories is still evident, and shows that parameters may need to be considered in the context of the spatial resolution of the zone system. 
 
 %what your findings might mean
-\section{contributions}
+\section{Contributions}
 This thesis provides multiple contributions to the field. As a completed and calibrated domestic destination choice model, it presents a significant amount of work towards a completed long distance transport model for Ontario. The superior performance of the destination choice models over the gravity model validates the work of others in this area \parencite{Mishra13}, 
 and adds further weight to the argument that such disaggregate methods, despite the additional effort required, result in better transport models \parencite{sbayti2010best, lemp2007aggregate}. \textcite{bhatta2011intrazonal} found that the inclusion of intra-zonal trips is important in model estimation, and the investigations in this paper into origin-destination interactions highlight some novel ways to adjust for these in long distance modeling.
 
@@ -38,4 +35,4 @@ In study on why people use foursquare, \textcite{lindqvist2011m} found that ``pa
 The incorporation of foursquare data into a discrete choice model just touches the surface of what is possible with big data. 
 Many dimensions to the data which were not explored in this thesis,  particularly the temporal aspect. Through public services such as twitter, Panel data can be collected by associating checkins over time with an individual. (CITE) used such a method to identify mobility patterns. In future work utilizing more detailed foursquare data, checkins could be filtered for those performed by residents of Canada, or grouped by season to further improve the modeling of different trip purposes.
 
-\chapter{Conclusions}
+\section{Conclusions}

@@ -22,7 +22,7 @@ density.errors.pre <- density.errors.pre %>%
 all.errors.post <- as.data.frame(fread("C:/Users/Joe/canada/data/mnlogit/runs/model_2016-12-14-100221/model_errors.csv"))
 density.errors.post <- all.errors.post %>% transmute(origin, dest, class, distance = get_dist_v(origin, dest), x, ex)
 density.errors.post <- density.errors.post %>% 
-  #filter(class == "Visit") %>% 
+  filter(class == "Business") %>% 
   mutate (predicted = x/sum(x), observed =ex/sum(ex))
 
 predicted.trips <- density.errors.post
