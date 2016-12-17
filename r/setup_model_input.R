@@ -37,7 +37,7 @@ build_long_trips <- function (a,t) {
     
     dist_exp = exp(-class.k[purpose]*dist),
 
-    dist_log = log(dist+1),
+    dist_log = log(dist),
     
     lang.barrier = (o.lang+d.lang)%%2, #calculate if the origin and dest have different languages
     mm = orig_is_metro * alt_is_metro,
@@ -50,15 +50,15 @@ build_long_trips <- function (a,t) {
     rr = (1-alt_is_metro)*(1-orig_is_metro),
     
     attraction = attraction,
-    civic = log(attraction+1),
+    civic = log(attraction),
 
-    log_airport = log(airport+1),
-    log_hotel = log(hotel+1),
-    log_medical = log(medical+1),
-    log_nightlife = log(nightlife+1),
-    log_outdoors = log(outdoors+1),
-    log_sightseeing = log(sightseeing+1),
-    log_skiing = log(skiing+1),
+    log_airport = log(airport),
+    log_hotel = log(hotel),
+    log_medical = log(medical),
+    log_nightlife = log(nightlife),
+    log_outdoors = log(outdoors),
+    log_sightseeing = log(sightseeing),
+    log_skiing = log(skiing),
     
     mm_inter_no_visit = (purpose != "Visit")*mm_inter,
     mm_intra_no_business = (purpose != "Business")*mm_intra,

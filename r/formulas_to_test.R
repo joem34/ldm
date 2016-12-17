@@ -23,7 +23,7 @@ f <-formula(choice ~ dist_exp + I(log(attraction)) + mm_inter + mm_intra + r_int
 f <- formula( choice ~ dist_exp + I(log(attraction)) + I((purpose != "Visit") *      mm_inter) + mm_intra + r_intra + I((purpose == "Visit") *      log_medical) + log_hotel + I((purpose == "Leisure") * (season ==      "summer") * log_outdoors) + log_sightseeing + I((purpose ==      "Leisure") * (alt == 30) * log_sightseeing) + I((purpose ==      "Leisure") * (season == "winter") * log_skiing) | 0 )
 
 formulas <- c(
-  formula(choice ~ dist_exp + civic + mm_inter_no_visit + mm_intra_no_business + r_intra + visit_log_medical + log_hotel + summer_log_outdoors + log_sightseeing  + niagara + winter_log_skiing | 0),
+#  formula(choice ~ dist_exp + civic + mm_inter_no_visit + mm_intra_no_business + r_intra + visit_log_medical + log_hotel + summer_log_outdoors + log_sightseeing  + niagara + winter_log_skiing | 0),
   formula(choice ~ dist_exp + dist_log  + civic + mm_inter_no_visit + mm_intra_no_business + r_intra + visit_log_medical + log_hotel + log_sightseeing  + niagara + summer_log_outdoors + winter_log_skiing | 0)
   )
 
