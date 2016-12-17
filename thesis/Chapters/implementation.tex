@@ -19,9 +19,9 @@ The algorithm works as followed, with step~\ref{item:trip} being performed acros
 	\item \label{item:denom} calculate the denominator of the logit equation $q = {\sum_{j=1}^{J} e^{u_j}}
 	$
 	\item Calculate the probability of each destination $j$, $P(j) = e^{u_j} / q $
-	\item Choose a destination based on the probabilities using an \textit{EnumeratedDistribution} from the Apache commons math library 
+	\item Choose a destination based on the probabilities using an \textit{EnumeratedIntegerDistribution} from the Apache commons math library 
 	\begin{verbatim}
-	return new EnumeratedDistribution<>(probabilities).sample();
+	return new EnumeratedIntegerDistribution(alternatives, probabilities).sample();
 	\end{verbatim}
 
 	\item store the destination in the trip object
