@@ -30,21 +30,21 @@ The algorithm works as followed, with step~\ref{item:trip} being performed acros
 
 \section{Calibration}
 
-The implemented model was calibrated for each trip purpose against the observed average trip length. Through trial and error, the coefficient of the exponential distance term was multiplied by a factor $k$ to adjust the predicted trip length. The results of the calibration are presented in table~\ref{table:calibration}. Figure~\ref{fig:overall-calibration} shows the results of the calibration for the overall model, as displayed in a trip length distribution. Then end result is acceptable. The two peaks after 3000km, representing connections to British Columbia and Alberta are visible in the predicted trip length distribution. The individual trip length distributions for business, leisure and visit purposes are available in the appendix. 
+The implemented model was calibrated for each trip purpose against the observed average trip length. Through trial and error, the coefficient of the exponential distance term was multiplied by a factor $k$ to adjust the predicted trip length. The results of the calibration are presented in table~\ref{table:calibration}. Figure~\ref{fig:overall-calibration} shows the results of the calibration for the overall model, as displayed in a trip length distribution. Then end result is acceptable. The two peaks after 3,000 km, representing connections to British Columbia and Alberta are visible in the predicted trip length distribution. The individual trip length distributions for business, leisure and visit purposes are available in the appendix. 
 
-%TODO zone 
+
 \begin{table}[H]
 \centering
 \caption{Calibration coefficients and on average trip length}
 \label{table:calibration}
-\begin{tabular}{@{}rrrrr@{}}
+\begin{tabular}{@{}rrrrrr@{}}
   \toprule
  &  & \multicolumn{3}{c}{Average trip length (km)} \\ \midrule
- Trip purpose & $k$ & observed & estimated & calibrated \\ \midrule
-  Business & 1.05 & 377 & 408 & 391 \\ 
-  Leisure & 1.15 & 212 & 264 & 214  \\
-  Visit  & 1.15  & 232 & 213 & 236  \\   \midrule
-  Total  &  & 245 & 318 & 249  \\ 
+ Trip purpose & $k$ & observed & estimated & calibrated & $\Delta$ \\ \midrule
+  Business & 1.05 & 377 & 408 & 391 & 3.6\% \\ 
+  Leisure & 1.15 & 212 & 264 & 214  & 0.9\% \\
+  Visit  & 1.15  & 232 & 213 & 236  & 1.7\%\\   \midrule
+  Total  &  & 245 & 318 & 249 & 1.6\% \\ 
    \bottomrule
 \end{tabular}
 \end{table}
@@ -57,7 +57,7 @@ The implemented model was calibrated for each trip purpose against the observed 
 \end{figure}
 
 
-\section{Scenario Analysis - Case study of a new ski resort}
+\section{Scenario analysis - Case study of a new ski resort}
 \label{scenario-analysis}
 
 This section presents a hypothetical application of the developed destination choice model. For any large scale land use planning or development, it is important to model the impacts that such development will have on the transport network. As an example of this, a hypothetical scenario of the development of a large new ski resort is presented. Such resorts not only provide infrastructure for skiing and other snow-based activities, but require the development of multiple new hotels, employee housing, and retail infrastructure. In the winter months, ski resorts can generate significant demands on the transport network, and this needs to be taken account when considering such a development.
@@ -108,7 +108,7 @@ The trips from the TSRC data used for estimation were inputted to the scenario, 
 
 
 \section{Remaining implementation work}
-This thesis presents an operational destination choice model for domestic travel to and from Ontario. The U.S.-Ontario border is an important source of incoming trips to Ontario, and external trips that pass through to other parts of Canada. Further work is needed to extend the model to include firstly continental travel to the United States, and then also intercontinental travel. The Canadian International Travel Survey (ITS) provides trip records that can be used to estimate such a model, although it does not include socioeconomic data for travelers. 
+This thesis presents an operational destination choice model for domestic travel to and from Ontario. The U.S.-Ontario border is an important source of incoming trips to Ontario and external trips that pass through to other parts of Canada. Further work is needed to extend the model to include firstly continental travel to the United States, and then also intercontinental travel. The Canadian International Travel Survey (ITS) provides trip records that can be used to estimate such a model, although it does not include socioeconomic data for travelers. 
 
 %train dest choice log
 For a fully functional transport model, the trip ends of the completely specified trips will have to be allocated to the higher resolution TAZs before route assignment can take place. This can be performed before or after mode choice. \textcite{Train09} discusses the issue of geographical aggregation, specifically in regards to destination choice in chapter 3 of \textit{Discrete Choice Methods with Simulation}, 
