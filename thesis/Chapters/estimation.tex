@@ -17,25 +17,8 @@ $\alpha$ is the impedance factor, calibrated with the average trip distance.\\
 $d_{ij}$ is the distance between zones $i$, $j$.\\
 
 \section{Model Strata}
-It is common practice to design a transport model that is in reality, a collection of separate models for heterogeneous groups of travelers, and trips. The most common attribute to categorize by is trip purpose. The categories recorded for each trip by the TSRC, our sample of trip records is split into 4 categories, Business, Visit, Leisure and Other, of which only the first three are used. In figure~\ref{table:purpose-counts}, the number of trips for each category by year in the TSRC is shown. A model is then estimated for each trip purpose, and the results of the model strata combined into the final model. Each purpose, when multiple years are combined in one dataset, has a suitably large sample size to support model estimation. 
+It is common practice to design a transport model that is in reality, a collection of separate models for heterogeneous groups of travelers, and trips. The most common attribute to categorize by is trip purpose. The categories recorded for each trip by the TSRC, our sample of trip records is split into 4 categories, Business, Visit, Leisure and Other, of which only the first three are used. In figure~\ref{table:purpose-counts}, the number of trips for each category by year in the TSRC is shown. A model is then estimated for each trip purpose, and the results of the model strata combined into the final model, \textit{m0}. 
 
-\begin{table}[H]
-\centering
-\caption{Sample size by trip purpose}
-\label{table:purpose-counts}
-\begin{tabular}{lrrrrr}
-\toprule
-			& 2011 	& 2012 	& 2013 	& 2014 	& Total \\
-\midrule
-Business 	& 1,798  & 1,640  & 1,449  & 1,341  & 6,228 \\
-Leisure 	& 5,939  & 5,878  & 5,515  & 5,577  & 2,2909 \\
-Visit 		& 9,057  & 8,777  & 7,962  & 7,618  & 3,3414 \\ 
-\midrule
-Total 		& 18,694 & 18,016 & 1,6547 & 16,071 & 6,9328 \\ 
-\bottomrule
-\end{tabular}%
-
-\end{table}
 
 \section{Calibration}
 A separate model was created for each trip purpose, and calibrated to match the expected average trip distance $\bar{d}$, calculated from the trip distances recorded in the TSRC, to within 1\%. The results of the calibration are presented in table~\ref{table:gravity-calibration}. The average observed trip distance is $\bar{d}$, the average predicted trip distance $d$, and the impedance factor $k$. As measurements of model accuracy, the model correlation ($r^2$), root mean square error (RMSE) and normalized root mean square error (NRMSE) are provided.
@@ -84,8 +67,7 @@ The propensity for leisure travelers to visit destinations with tourist attracti
 
 \chapter{Destination Choice Model}
 \label{section:destination-choice}
-%TODO mention calibration?
-The design of a destination choice is much more involved than the construction of a gravity model, since modeler has almost infinite possible permutations of variables at his or her disposal. Divining the best variables is part art, part science. Some variables may be statistically significant, while adding little useful explanatory power to the model. Others may only be significant when paired with certain other variables. In this chapter, the design process of the destination choice model is presented. The estimation and implementation of the models are covered in detail. The completed model is then applied to a simple scenario to gauge the useful of the model, and explore the impact of different parameters. 
+The design of a destination choice is much more involved than the construction of a gravity model, since modeler has almost infinite possible permutations of variables at his or her disposal. Divining the best variables is part art, part science. Some variables may be statistically significant, while adding little useful explanatory power to the model. Others may only be significant when paired with certain other variables. In this chapter, the design process of the destination choice model is presented. The estimation, implementation and calibration of a multinomial logit model are covered in detail. The completed model is then applied to a simple scenario to gauge the useful of the model, and explore the impact of different parameters. 
 
 \section{Estimation}
 \label{section:estimation}
@@ -94,7 +76,7 @@ Rather than just present a final model, this thesis elaborates on the model deve
 \subsection{Socioeconomic variables}
 For the first model, the same inputs as for the gravity model are used, namely the exponential of distance $e^{-d_{ij}}$, and the combined population $p$ and employment $emp$.
 
-The distance factor for each trip purpose was adjusted by the impedance factor $k$ estimated for the respective gravity model (see chapter~\ref{section:gravity-model}). This approach significantly improves the model, and provides a quick way to calibrate the distance coefficient.
+The distance factor for each trip purpose was adjusted by the impedance factor $\alpha$ estimated for the respective gravity model (see chapter~\ref{section:gravity-model}). This approach significantly improves the model, and provides a quick way to calibrate the distance coefficient.
 
 Metropolitan areas are not homogeneous in land use patterns. There exists residential areas and central business districts to which people may choose to travel. However, at the spatial resolution of our zone system these differences are hidden, resulting in a very high correlation between population and employment across the destination choice set of 98.95\%. Therefore as with the gravity model, population and employment are summed together. This value is  then log transformed, to account for the long tail in the distribution (see figure~\ref{fig:pop-emp-density} in the appendix. In order to simplify the further model equations, we assign a new variable for each destination
 $$ civic_j = \log\left( p_j + emp_j \right) $$

@@ -122,17 +122,25 @@ The unique geography of the Canadian provinces greatly restricts the number of e
 \label{fig:exception85}
 \end{figure}
 
-\begin{comment}
-Figure~\ref{fig:distance} illustrates how the distance distribution of the estimated trips fits the observed distribution much better after undesired external trips are removed. In total 69,328 individual trip records remain from the TSRC dataset for model estimation, representing 40,177,841 weighted trips.
+In total 69,328 individual trip records remain from the TSRC dataset for model estimation (see table~\ref{table:purpose-counts}). 
 
-\begin{figure}[H]
+\begin{table}[H]
 \centering
-\includegraphics{est_vs_obs_distance}
-\caption{Estimated vs. observed trip distance}
-\label{fig:distance}
-\end{figure}
+\caption{Sample size by trip purpose}
+\label{table:purpose-counts}
+\begin{tabular}{lrrrrr}
+\toprule
+			& 2011 	& 2012 	& 2013 	& 2014 	& Total \\
+\midrule
+Business 	& 1,798  & 1,640  & 1,449  & 1,341  & 6,228 \\
+Leisure 	& 5,939  & 5,878  & 5,515  & 5,577  & 22,909 \\
+Visit 		& 9,057  & 8,777  & 7,962  & 7,618  & 33,414 \\ 
+\midrule
+Total 		& 18,694 & 18,016 & 1,6547 & 16,071 & 69,328 \\ 
+\bottomrule
+\end{tabular}%
 
-\end{comment}
+\end{table}
 
 \section{Zone system}
 To avoid confusion throughout the rest of this thesis, the reader should be aware that there are two zone systems considered in the following chapter, and at various points throughout this document:
@@ -175,7 +183,7 @@ This third method has another advantage. The a distinction between urban and rur
 
 
 \section{Aggregating zonal data}
-All the data on distances, population and employment was provided at the TAZ level. This data was aggregated to the zone system using the following approach. The TAZs themselves were assigned to the zone which intersected their centroid. Where the centroid of the TAZ didn't intersect any zones, the first intersecting zone was used. When the TAZ did not intersect with any part of the Canadian census boundaries at all, it was assigned manually to the nearest zone using GIS software.
+All the data on distances, population and employment was provided at the TAZ level. This data was aggregated to the zone system using the following approach. The TAZs themselves were assigned to the zone which intersected their centroid. Where the centroid of the TAZ didn't intersect any zones, the first intersecting zone was used. if the TAZ did not intersect with any part of the Canadian census boundaries at all, it was assigned manually to the nearest zone using GIS software.
 
 Socioeconomic variables, namely population and employment, were aggregated from the TAZ level to the zone system using a simple summation.
 

@@ -55,7 +55,7 @@
 \abstract{
 \addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
 
-Disaggregate modeling techniques allow for the creation of much more expressive and powerful transport models than aggregate methods.  One such long-distance model is currently being developed for Ministry of Transportation, Ontario. This thesis presents a multinomial logit model for the destination choice step. The design, estimation and calibration steps are covered in detail and a singly-orientated gravity model is presented as a comparison to show the effectiveness of disaggregate modeling. The challenges of zonal aggregation and intra-zonal trips are also considered. Standard socioeconomic variables like population and employment are not always accurate indicators of destination attractiveness. Areas such as ski resorts are significant attractors of trips, yet have small populations and little employment. Geo-tagged big data from the location based social network, foursquare are used to fill this gap. Venues and their historical checkin counts are collected and used to define measures of destination attractiveness based on common long distance trip activities, such as skiing and staying in a hotel.  A scenario analysis is performed to investigate the effectiveness of this approach. The results show that big data can be successfully used to represent destination attractiveness, and that such an approach is particularly effective for modeling leisure travel.
+Standard socioeconomic variables are not always accurate indicators of destination attractiveness in destination choice models. For example, areas such as ski resorts are significant attractors of long distance trips, yet have small populations and little employment. This thesis presents a destination choice model for long distance travel in Ontario that uses data from the Location based social network, Foursquare to address this issue. Points of interest and their historical checkin counts are collected and processed to define measures of destination attractiveness based on common long distance trip activities. The design, estimation and calibration of the multinomial logit model are covered in detail, and a scenario analysis is performed to evaluate the model. The results show that big data can be successfully used to represent destination attractiveness, and that such an approach is particularly effective for modeling long distance leisure travel. 
 
 
 \clearpage  % Abstract ended, start a new page
@@ -67,7 +67,7 @@ Disaggregate modeling techniques allow for the creation of much more expressive 
 \acknowledgements{
 \addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
 
-Firstly, I would like to express my sincere gratitude to my advisor Prof. Rolf Moeckel, for his encouragement, knowledge and advice. Secondly, thank you to Ana Moreno and Carlos Llorca who also provided advice throughout the project. Rick Donnelly and the team at WSP Parsons Brinckerhoff must also be recognized for their always timely assistance supplying data on which this thesis depends. Finally, I would like to thank my family and friends around the world for their constant support.
+Firstly, I would like to express my sincere gratitude to my supervisor Prof. Rolf Moeckel, for his encouragement, knowledge and advice. Secondly, thank you to Ana Moreno and Carlos Llorca who also provided advice throughout the project. Rick Donnelly and the team at WSP Parsons Brinckerhoff must also be recognized for their always timely assistance supplying data on which this thesis depends. Finally, I would like to thank my family and friends around the world for their constant support.
 
 }
 \clearpage  % End of the Acknowledgements
@@ -96,18 +96,18 @@ Firstly, I would like to express my sincere gratitude to my advisor Prof. Rolf M
 {
 AIC	& Akaike Information Criterion \\
 API	& Application Programming Interface \\
-CD	& Census Divsion \\
-CMA	& Census Metropolitain Agglomeration \\
+CD	& Census Division \\
+CMA	& Census Metropolitan Agglomeration \\
 EE	& External Trip \\
 EI	& Incoming Trip \\
-GIS	& Geopgrahical Information System \\
+GIS	& Geographical Information System \\
 IE	& Outgoing Trip \\
 II	& Internal Trip \\
 ITS	& International Travel Survey \\
 JSON	 & JavaSript Object Notation \\
 LBSN	 & Location Based Social Network \\
 LL	& Loglikelyhood \\
-MNL	& Multinomial logit \\
+MNL	& Multinomial logit (model)\\
 MTO	& Ministry of Transportation, Ontario \\
 NAICS	& North American Industry Classification System \\
 NRMSE	& Normalized Root Mean Square Error \\
