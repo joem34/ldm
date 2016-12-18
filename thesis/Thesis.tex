@@ -50,58 +50,13 @@
 
 \pagestyle{fancy}  % Finally, use the "fancy" page style to implement the FancyHdr headers
 
-%% ----------------------------------------------------------------
-% Declaration Page required for the Thesis, your institution may give you a different text to place here
-\Declaration{
-
-\addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
-
-I, Joseph Molloy, declare that this thesis titled, 'Development of a Destination Choice Model for Ontario' and the work presented in it are my own. I confirm that:
-
-\begin{itemize} 
-\item[\tiny{$\blacksquare$}] This work was done wholly or mainly while in candidature for a research degree at this University.
- 
-\item[\tiny{$\blacksquare$}] Where any part of this thesis has previously been submitted for a degree or any other qualification at this University or any other institution, this has been clearly stated.
- 
-\item[\tiny{$\blacksquare$}] Where I have consulted the published work of others, this is always clearly attributed.
- 
-\item[\tiny{$\blacksquare$}] Where I have quoted from the work of others, the source is always given. With the exception of such quotations, this thesis is entirely my own work.
- 
-\item[\tiny{$\blacksquare$}] I have acknowledged all main sources of help.
- 
-\item[\tiny{$\blacksquare$}] Where the thesis is based on work done by myself jointly with others, I have made clear exactly what was done by others and what I have contributed myself.
-\\
-\end{itemize}
- 
- 
-Signed:\\
-\rule[1em]{25em}{0.5pt}  % This prints a line for the signature
- 
-Date:\\
-\rule[1em]{25em}{0.5pt}  % This prints a line to write the date
-}
-\clearpage  % Declaration ended, now start a new page
-
-%% ----------------------------------------------------------------
-
 % The Abstract Page
 \addtotoc{Abstract}  % Add the "Abstract" page entry to the Contents
 \abstract{
 \addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
 
-It is estimated that around 100 million long distance trips are performed every year that interact with Ontario, totally over 45 billion kilometers traveled. 
+Disaggregate modeling techniques allow for the creation of much more expressive and powerful transport models than aggregate methods.  One such long-distance model is currently being developed for Ministry of Transportation, Ontario. This thesis presents a multinomial logit model for the destination choice step. The design, estimation and calibration steps are covered in detail and a singly-orientated gravity model is presented as a comparison to show the effectiveness of disaggregate modeling. The challenges of zonal aggregation and intra-zonal trips are also considered. Standard socioeconomic variables like population and employment are not always accurate indicators of destination attractiveness. Areas such as ski resorts are significant attractors of trips, yet have small populations and little employment. Geo-tagged big data from the location based social network, foursquare are used to fill this gap. Venues and their historical checkin counts are collected and used to define measures of destination attractiveness based on common long distance trip activities, such as skiing and staying in a hotel.  A scenario analysis is performed to investigate the effectiveness of this approach. The results show that big data can be successfully used to represent destination attractiveness, and that such an approach is particularly effective for modeling leisure travel.
 
-As part of a larger long distance model for Ontario, this thesis presents the design, estimation and calibration of a multinomial logit model for long distance destination choice. 
-
-
-
-A methodology to collect millions of checkins from foursquare was developed. This data was then used to define measures destination attractiveness. 
-
-A scenario analysis is performed to investigate the effectiveness of this approach. 
-
-The results show that big data can be successfully used to represent destination attractiveness, and that it significantly improves the destination choice model for leisure travel.
-
-}
 
 \clearpage  % Abstract ended, start a new page
 %% ----------------------------------------------------------------
@@ -139,8 +94,28 @@ Firstly, I would like to express my sincere gratitude to my advisor Prof. Rolf M
 \lhead{\emph{Abbreviations}}  % Set the left side page header to "Abbreviations"
 \listofsymbols{ll}  % Include a list of Abbreviations (a table of two columns)
 {
-% \textbf{Acronym} & \textbf{W}hat (it) \textbf{S}tands \textbf{F}or \\
-\textbf{LAH} & \textbf{L}ist \textbf{A}bbreviations \textbf{H}ere \\
+AIC	& Akaike Information Criterion \\
+API	& Application Programming Interface \\
+CD	& Census Divsion \\
+CMA	& Census Metropolitain Agglomeration \\
+EE	& External Trip \\
+EI	& Incoming Trip \\
+GIS	& Geopgrahical Information System \\
+IE	& Outgoing Trip \\
+II	& Internal Trip \\
+ITS	& International Travel Survey \\
+JSON	 & JavaSript Object Notation \\
+LBSN	 & Location Based Social Network \\
+LL	& Loglikelyhood \\
+MNL	& Multinomial logit \\
+MTO	& Ministry of Transportation, Ontario \\
+NAICS	& North American Industry Classification System \\
+NRMSE	& Normalized Root Mean Square Error \\
+OD	& Origin-Destination \\
+POI	& Point of Interest \\
+RMSE 	& Root Mean Squared Error \\
+TAZ	& Traffic Analysis Zone \\
+TSRC	 &  Travel Survey of Residents of Canada \\
 
 }
 
