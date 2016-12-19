@@ -30,8 +30,7 @@ The algorithm works as followed, with step~\ref{item:trip} being performed acros
 
 \section{Calibration}
 
-The implemented model was calibrated for each trip purpose against the observed average trip length. Through trial and error, the coefficient of the exponential distance term was multiplied by a factor $k$ to adjust the predicted trip length. The results of the calibration are presented in table~\ref{table:calibration}. Figure~\ref{fig:overall-calibration} shows the results of the calibration for the overall model, as displayed in a trip length distribution. Then end result is acceptable. The two peaks after 3,000 km, representing connections to British Columbia and Alberta are visible in the predicted trip length distribution. The individual trip length distributions for business, leisure and visit purposes are available in the appendix. 
-
+The implemented model was calibrated for each trip purpose against the observed average trip length. Through trial and error, the coefficient of the exponential distance term was multiplied by a factor $k$ to adjust the predicted trip length. The results of the calibration are presented in table~\ref{table:calibration}. Figure~\ref{fig:overall-calibration} shows the results of the calibration for the overall model, as displayed in a trip length distribution. The two peaks after 3,000 km, representing connections to British Columbia and Alberta are visible in the predicted trip length distribution, although they are underestimated. 
 
 \begin{table}[H]
 \centering
@@ -43,7 +42,7 @@ The implemented model was calibrated for each trip purpose against the observed 
  Trip purpose & $k$ & observed & estimated & calibrated & $\Delta$ \\ \midrule
   Business & 1.05 & 377 & 408 & 391 & 3.6\% \\ 
   Leisure & 1.15 & 212 & 264 & 214  & 0.9\% \\
-  Visit  & 1.15  & 232 & 213 & 236  & 1.7\%\\   \midrule
+  Visit  & 1.15  & 232 & 316 & 236  & 1.7\%\\   \midrule
   Total  &  & 245 & 318 & 249 & 1.6\% \\ 
    \bottomrule
 \end{tabular}
@@ -56,6 +55,14 @@ The implemented model was calibrated for each trip purpose against the observed 
 \label{fig:overall-calibration}
 \end{figure}
 
+Trip lengths from 300 - 1000 km are also underestimated. While calibration was required to match the overall trip length, it did so at the expense of the overestimation of shorter trips. The individual trip length distributions for business, leisure and visit purposes are available in the appendix. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{calibration/m6_calibrated_zoom}
+\caption{Trip length distribution of model \textit{m6} after calibration (0-750km}
+\label{fig:overall-calibration}
+\end{figure}
 
 \section{Scenario analysis - Case study of a new ski resort}
 \label{scenario-analysis}
@@ -84,7 +91,7 @@ This somewhat contrived scenario assumes that other policy and development consi
 %TODO zone 
 \begin{table}[H]
 \centering
-\caption{Inputs for sensitivity analysis scenario}
+\caption{Inputs for scenario analysis}
 \label{table:scenario-inputs}
 \begin{tabular}{@{}rlll@{}}
   \toprule
@@ -97,7 +104,7 @@ This somewhat contrived scenario assumes that other policy and development consi
 \end{tabular}
 \end{table}
 
-The trips from the TSRC data used for estimation were inputted to the scenario, with $n/(365*4)$ copies of each record added to the trip table, where $n$ is the trip weight of the record. The weighted TSRC data represents the total trips over 4 years, and for simplicity, the weights are scaled to give the approximate number of daily trips. 20 iterations of the scenario were performed to account for the stochastic nature of destination choice. Figure~\ref{fig:scenario-results} shows the increase in incoming trips to Dufferin due to the new ski resort. The impacts of each input is presented from left to right, with the most right column being to total impact of the combined parameters. The table of results is available in the appendix in figure~\ref{table:scenario-results}. The results show that the parameters each behave reasonably. In particular the attractive effect for leisure travel is well modeled. Without the foursquare based parameters, the number of leisure trips would actually decrease with the addition of a new ski resort, due to the negative coefficient of the $civic$ variable in model \textit{m3} for leisure travel. This would clearly not be realistic, and this simply scenario gives a good example of why better representations of destination attractiveness are important, particularly for leisure travel.
+The trips from the TSRC data used for estimation were inputted to the scenario, with $w/(365*4)$ copies of each record added to the trip table, where $w$ is the trip weight of the record. The weighted TSRC data represents the total trips over 4 years, and for simplicity, the weights are scaled to give the approximate number of daily trips. 20 iterations of the scenario were performed to account for the stochastic nature of destination choice. Figure~\ref{fig:scenario-results} shows the increase in incoming trips to Dufferin due to the new ski resort. The impacts of each input is presented from left to right, with the most right column being to total impact of the combined parameters. The table of results is available in the appendix in figure~\ref{table:scenario-results}. The results show that the parameters each behave reasonably. In particular the attractive effect for leisure travel is well modeled. Without the foursquare based parameters, the number of leisure trips would actually decrease with the addition of a new ski resort, due to the negative coefficient of the $civic$ variable in model \textit{m3} for leisure travel. This would clearly not be realistic, and this simply scenario gives a good example of why better representations of destination attractiveness are important, particularly for leisure travel.
 
 \begin{figure}[H]
 \centering
