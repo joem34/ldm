@@ -71,13 +71,13 @@ In the hypothetical scenario, a new resort is proposed for the highlands area no
 \label{fig:scenario-map}
 \end{figure}
 
-This somewhat contrived scenario assumes that other policy and development considerations, such as site location and transport access have all been dealt with. The design of the scenario presents the opportunity to investigate the sensitivity of the  variables based on the foursquare data. The variables concerned are hotels, skiing and outdoor. The impact of the new development is estimated through adjusting these variables for the zone in which the development will take place. The foursquare POI database developed in section~\ref{section:foursquare} was used to estimate adjustments for each of the categories. Taking all venues in Ontario, the average number of checkins per venue for each search category was calculated. The following adjustments are made for the respective zones, and their values are displayed in table~\ref{table:scenario-inputs}.
+This somewhat contrived scenario assumes that other policy and development considerations, such as site location and transport access have all been dealt with. The design of the scenario presents the opportunity to investigate the sensitivity of the  variables based on the foursquare data. The variables concerned are hotels, skiing and outdoor. The impact of the new development is estimated through adjusting these variables for the zone in which the development will take place. The foursquare POI database developed in section~\ref{section:foursquare} was used to estimate adjustments for each of the categories. Taking all venues in Ontario, the average number of check-ins per venue for each search category was calculated. The following adjustments are made for the respective zones, and their values are displayed in table~\ref{table:scenario-inputs}.
 
 \begin{minipage}{\textwidth}
 \begin{itemize}
-\item Skiing: The average number of checkins for ski areas
-\item Hotel: Twice the average number of checkins for hotels
-\item Outdoor: The average number of checkins per outdoor venue
+\item Skiing: The average number of check-ins for ski areas
+\item Hotel: Twice the average number of check-ins for hotels
+\item Outdoor: The average number of check-ins per outdoor venue
 \end{itemize}
 \end{minipage}
 
@@ -97,7 +97,7 @@ This somewhat contrived scenario assumes that other policy and development consi
 \end{tabular}
 \end{table}
 
-The trips from the TSRC data used for estimation were inputted to the scenario, with $n/(365*4)$ copies of each record added to the trip table, where $n$ is the trip weight of the record. The weighted TSRC data represents the total trips over 4 years, and for simplicity, the weights are scaled to give the approximate number of daily trips. 20 iterations of the scenario were performed to account for the stochastic nature of destination choice. Figure~\ref{fig:scenario-results} shows the increase in incoming trips to Dufferin due to the new ski resort. The impacts of each input is presented from left to right, with the most right column being to total impact of the combined parameters. 
+The trips from the TSRC data used for estimation were inputted to the scenario, with $n/(365*4)$ copies of each record added to the trip table, where $n$ is the trip weight of the record. The weighted TSRC data represents the total trips over 4 years, and for simplicity, the weights are scaled to give the approximate number of daily trips. 20 iterations of the scenario were performed to account for the stochastic nature of destination choice. Figure~\ref{fig:scenario-results} shows the increase in incoming trips to Dufferin due to the new ski resort. The impacts of each input is presented from left to right, with the most right column being to total impact of the combined parameters. The table of results is available in the appendix in figure~\ref{table:scenario-results}. The results show that the parameters each behave reasonably. In particular the attractive effect for leisure travel is well modeled. Without the foursquare based parameters, the number of leisure trips would actually decrease with the addition of a new ski resort, due to the negative coefficient of the $civic$ variable in model \textit{m3} for leisure travel. This would clearly not be realistic, and this simply scenario gives a good example of why better representations of destination attractiveness are important, particularly for leisure travel.
 
 \begin{figure}[H]
 \centering
@@ -108,7 +108,7 @@ The trips from the TSRC data used for estimation were inputted to the scenario, 
 
 
 \section{Remaining implementation work}
-This thesis presents an operational destination choice model for domestic travel to and from Ontario. The U.S.-Ontario border is an important source of incoming trips to Ontario and external trips that pass through to other parts of Canada. Further work is needed to extend the model to include firstly continental travel to the United States, and then also intercontinental travel. The Canadian International Travel Survey (ITS) provides trip records that can be used to estimate such a model, although it does not include socioeconomic data for travelers. 
+This thesis presents an operational destination choice model for domestic travel to and from Ontario. The U.S.-Ontario border is an important source of incoming trips to Ontario and external trips that pass through to other parts of Canada. Further work is needed to extend the model to include continental travel to the United States, and then also intercontinental travel. The Canadian International Travel Survey (ITS) provides trip records that can be used to estimate such a model, although it does not include socioeconomic data for travelers. 
 
 %train dest choice log
 For a fully functional transport model, the trip ends of the completely specified trips will have to be allocated to the higher resolution TAZs before route assignment can take place. This can be performed before or after mode choice. \textcite{Train09} discusses the issue of geographical aggregation, specifically in regards to destination choice in chapter 3 of \textit{Discrete Choice Methods with Simulation}, 

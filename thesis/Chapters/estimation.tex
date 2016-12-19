@@ -67,7 +67,13 @@ The propensity for leisure travelers to visit destinations with tourist attracti
 
 \chapter{Destination Choice Model}
 \label{section:destination-choice}
-The design of a destination choice is much more involved than the construction of a gravity model, since modeler has almost infinite possible combinations of variables at his or her disposal. Divining the best variables is part art, part science. Some variables may be statistically significant, while adding little useful explanatory power to the model. Others may only be significant when paired with certain other variables. In this chapter, the design process of the destination choice model is presented. The estimation, implementation and calibration of a multinomial logit model are covered in detail. The completed model is then applied to a simple scenario to gauge the usefulness of the model, and explore the impact of different parameters. 
+The design of a destination choice is much more involved than the construction of a gravity model, since modeler has almost infinite possible combinations of variables at his or her disposal. Divining the best variables is part art, part science. Some variables may be statistically significant, while adding little useful explanatory power to the model. Others may only be significant when paired with certain other variables. In this chapter, the design process of the destination choice model is presented. The estimation, implementation and calibration of a multinomial logit (MNL) model are covered in detail. The completed model is then applied to a simple scenario to gauge the usefulness of the model, and explore the impact of different parameters. 
+
+The MNL model is one of the simplier discrete choice models, where the unobserved errors between alternatives are not correlated and assumed to fit a Gumbel distribution. The representative utility of each alternative is specified as linear in the parameters: $V_{nj} = \beta 'x_{nj}$ where $x_{ni}$ is a vector of observed variables relating to alternative $j$ \parencite{Train09}. The probability that a certain alternative $i$ will be selected by person $n$ is 
+
+$$ P_{ni} =  \frac{\exp^{\beta'x_{ni}}}{\sum_j \beta'x_{nj}} $$
+
+The correct value of these $\beta '$ need to be estimated to give a utility function $V_{nj}$ that best fits the observed data. This performed using a maximum likelyhood estimation through R \textit{mnlogit} package. This package is covered in more detail in section~\ref{section:lit-review}. 
 
 \section{Estimation}
 \label{section:estimation}
@@ -243,10 +249,10 @@ The collection and processing of LBSN data from foursquare was covered in sectio
 \end{multicols}
 
 
-Different MNL models utilizing the foursquare data were created, to explore the suitability of different categories, and whether they had different explanatory effects for different trip purposes. For each destination, two metrics were available for representing destination attractiveness; the number of venues, and the total number of checkins across all venues.
-It was found that the best approach involved taking the natural log of the check-in count for each category. This gave the highest level of significance, as it corrected for the long right-hand tail present in the checkin counts for each category.
+Different MNL models utilizing the foursquare data were created, to explore the suitability of different categories, and whether they had different explanatory effects for different trip purposes. For each destination, two metrics were available for representing destination attractiveness; the number of venues, and the total number of check-ins across all venues.
+It was found that the best approach involved taking the natural log of the check-in count for each category. This gave the highest level of significance, as it corrected for the long right-hand tail present in the check-in counts for each category.
 
-Certain categories were found to be significant for particular trip purposes. For example, the outdoor category was only significant for leisure trips, and the medical category was only significant for visit trips. As would be reasonably expected, the number of hotel checkins was a significant variable across all trip purposes for long distance travel.
+Certain categories were found to be significant for particular trip purposes. For example, the outdoor category was only significant for leisure trips, and the medical category was only significant for visit trips. As would be reasonably expected, the number of hotel check-ins was a significant variable across all trip purposes for long distance travel.
 
 After exploring different combinations of the foursquare categories as parameters in the model, a model was settled on that was simple, yet powerful, using the most effective categories. The following categories were included in the model; hotels, sightseeing, medical, outdoors and skiing.
 
