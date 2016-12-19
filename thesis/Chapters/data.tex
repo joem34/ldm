@@ -42,7 +42,7 @@ After the 2011 redesign, respondents are asked about same-day trips that ended i
 The person-trip weight, used to estimate trip volume, is then calculated by accommodating for identical trips, declared and reported trips, missing data and non-response. These weights are corrected for outliers and recall bias during the creation of the microdata. In calculating the person-trip weight, the person weight is also multiplied by the number of identical trips that this trip represents. The person-trip weight (WTEP) can be used against all socioeconomic characteristics, as well all trip and visit variables, excluding expenditures. Trip weight (WTTP) is then calculated by dividing the trip-person weight by the number of household members that went on the trip. the WTTP is only used to calculate expenditures, and as such is not relevant to the destination choice model design. 
 
 \subsection{Microfile format}
-The results from the TSRC are provided as yearly collections, separated into individual files for persons, trips and visits. The survey results are provided as fixed with delimited .dat files. A code book and data dictionaries are provided to decode the values stored in each line. The schema for encoded variables such as province are consistent across files and years (i.e. Ontario is always coded as 35), meaning that once read from the correct position on a line, values don't need to be decoded before being compared with each other. 
+The results from the TSRC are provided as yearly collections, separated into individual files for persons, trips and visits. The survey results are provided as fixed with delimited .dat files. A code book and data dictionaries are provided to decode the values stored in each line. The schema for encoded variables such as province are consistent across files and years (i.e. Ontario is always coded as 35), meaning that once read from the correct position on a line, values do not need to be decoded before being compared with each other. 
 
 Each person record is associated with one or more trips. Not all persons recorded in the person microdata necessarily have a trip recorded for a particular time period, as the survey records the travel behavior of both travelers and non-travelers.
 
@@ -104,7 +104,7 @@ The TSRC trip files provide trip records not just for Ontario, but for all of Ca
 \item Trips that cross Ontario - External (EE)
 \end{itemize}
 
-Any trips that didn't fit one of these categories are excluded from the trip dataset used to estimate the destination choice model. External trips must be selectively filtered to remove trips that do not cross Ontario. Excluding such external trips is important to make sure that the estimated model reflects the behavior of travel in Ontario, which could be different to the behaviors in other provinces. 
+Any trips that did not fit one of these categories are excluded from the trip dataset used to estimate the destination choice model. External trips must be selectively filtered to remove trips that do not cross Ontario. Excluding such external trips is important to make sure that the estimated model reflects the behavior of travel in Ontario, which could be different to the behaviors in other provinces. 
 
 \begin{figure}[H]
 \centering
@@ -183,7 +183,7 @@ This third method has another advantage. The a distinction between urban and rur
 
 
 \section{Aggregating zonal data}
-All the data on distances, population and employment was provided at the TAZ level. This data was aggregated to the zone system using the following approach. The TAZs themselves were assigned to the zone which intersected their centroid. Where the centroid of the TAZ didn't intersect any zones, the first intersecting zone was used. if the TAZ did not intersect with any part of the Canadian census boundaries at all, it was assigned manually to the nearest zone using GIS software.
+All the data on distances, population and employment was provided at the TAZ level. This data was aggregated to the zone system using the following approach. The TAZs themselves were assigned to the zone which intersected their centroid. Where the centroid of the TAZ did not intersect any zones, the first intersecting zone was used. if the TAZ did not intersect with any part of the Canadian census boundaries at all, it was assigned manually to the nearest zone using GIS software.
 
 Socioeconomic variables, namely population and employment, were aggregated from the TAZ level to the zone system using a simple summation.
 
