@@ -15,25 +15,25 @@ The survey is performed as a voluntary supplement to the compulsory Labour Force
 \subsection{Data}
 \label{section:tsrcdata}
 \subsubsection{Spatial resolution}
-All spatial data points, namely those for home location, trip origins and destinations and stopovers are provided in the microdata at three resolutions, Province or Territory, Census Division, and Census Metropolitan Agglomeration (CMA). Canada is made up of ten provinces and three territories, the largest of which is Ontario, the focus of this thesis. 
+All spatial data points, namely those for home location, trip origins and destinations and stopovers are provided in the microdata at three resolutions: Province or Territory, Census Division, and Census Metropolitan Agglomeration (CMA). Canada is made up of ten provinces and three territories, the largest of which is Ontario, the focus of this thesis. 
 
 Census Divisions are the next largest geographical area in Canada. Census Divisions represent groups of neighboring municipalities combined to aid regional planning and the provision of common services. After the provinces and territories, they are the most stable spatial unit. They were last modified for the 2011 census, and therefore are consistent between each TSRC dataset since the revised version was introduced. In most provinces and territories, these census divisions are defined in legislation, however in Newfoundland and Labrador, Manitoba, Saskatchewan, Alberta, Yukon, Northwest Territories and Nunavut, provincial or territorial law does not provide for these administrative geographic areas. In these cases, the census divisions are allocated by Statistics Canada.
 
 Census sub-divisions are the next smallest geographical area, representing individual municipalities. These are recorded as part of the survey, however are not available in the TSRC microdata. The finest level of aggregation available is that of the Census Metropolitan Areas (CMA) and Census Agglomerations (CA). CMAs and CAs represent certain clustered areas of population around an urban core. More specifically, a CMA is defined as an area having a total population of at least 100,000, with half of those living in a core urban area. CAs, which related to CMAs but require a core population of only 10,000, are not recorded in the TSRC data. 
 
-Since CMAs do not topographically cover the whole Canadian study area, but only identify particular dense urban areas, census divisions are the most detailed resolution available for consistent use when working with the TSRC data. Although CMAs are only recorded for 51.5\% of trip origins and 48.3\% of trip destinations, they can be used to improve the resolution of the zone system for the destination choice model (see section \ref{section:zoning}).
+Since CMAs do not topographically cover the whole Canadian study area, but only identify particular dense urban areas, census divisions are the most detailed resolution available for consistent use when working with the TSRC data. Although CMAs are only recorded for 51.5\% of trip origins and 48.3\% of trip destinations, they can be used to improve the resolution of the zone system for the destination choice model (see Section \ref{section:zoning}).
 
 \subsubsection{Error detection and imputation}
-The computer-assisted nature of the survey allows for real-time error detection and consistency checking during the interview process. `Don’t Know’ and `Refused’ are also valid options for many questions, to prevent false answers been recorded. Sanity checks against extreme values are also performed, and the coding of geographical areas is mostly performed automatically.
+The computer-assisted nature of the survey allows for real-time error detection and consistency checking during the interview process. ``Don’t Know" and ``Refused" are also valid options for many questions, to prevent false answers been recorded. Sanity checks against extreme values are also performed, and the coding of geographical areas is mostly performed automatically.
 
 Two forms of imputation are performed for the survey, for trip details and expenditure amounts respectively. Since the survey only allows 15 minutes for the recording of trip details, the details of non-selected trips are imputed from other trips recorded for that resident. This imputation process is multi-staged, and is performed per respondent. A donor pool of trips is selected that are similar to the non-selected trip. A distance function is then used to select the closest donor-trip to the recipient, and the detailed variables (activities, expenditures, etc) are copied over to the recipient trip.
 
 \subsubsection{Weighting}
 The weighting of records is particularly important when working with survey data that represents a larger population. Weightings allow a researcher to scale up the results of a sample to build an accurate representation of population, taking into account under- and over- represented groups within the survey. Four weightings are provided for the TSRC, with two relating to trip variables:
-•	full-sample person weights
-•	first-month person weights
-•	person-trip weights
-•	trip weights
+•	Full-sample person weights
+•	First-month person weights
+•	Person-trip weights
+•	Trip weights
 
 As the TSRC sample is based on the LFS survey, person weights are applied from the LFS and re-calibrated to reflect sub-sampling, non-response, and known control groups. 
 
@@ -113,7 +113,7 @@ Any trips that did not fit one of these categories are excluded from the trip da
 \label{fig:bridge}
 \end{figure}
 
-The unique geography of the Canadian provinces greatly restricts the number of external origin-destination pairs that need to be considered when excluding unwanted external trips. Ontario acts as land bridge between the eastern and western parts of Canada, see figure~\ref{fig:bridge}, dividing the external zones into two groups, east and west. Trips originating in the east and arriving in west have to pass through Ontario, and vice-versa. For trips within a group, this is not true. Hence all trips that do not go between east and west can be removed. There are two zones which are the exception to this, zones 85 and 117 in western Quebec. Journeys between these zones and other zones in Quebec may pass through Ontario. For example, figure~\ref{fig:exception85} illustrates a journey from Gatieau, Quebec to Montreal Airport. a car journey takes around 2 hours when passing through Ontario, and 2 hours and 30 minutes otherwise. It is hence likely that travelers will chose the route passing through Ontario. Trips between these two exception zones and all other zones in Quebec are therefore retained. 
+The unique geography of the Canadian provinces greatly restricts the number of external origin-destination pairs that need to be considered when excluding unwanted external trips. Ontario acts as land bridge between the eastern and western parts of Canada, see Figure~\ref{fig:bridge}, dividing the external zones into two groups, east and west. Trips originating in the east and arriving in west have to pass through Ontario, and vice-versa. For trips within a group, this is not true. Hence all trips that do not go between east and west can be removed. There are two zones which are the exception to this, zones 85 and 117 in western Quebec. Journeys between these zones and other zones in Quebec may pass through Ontario. For example, Figure~\ref{fig:exception85} illustrates a journey from Gatieau, Quebec to Montreal Airport. a car journey takes around 2 hours when passing through Ontario, and 2 hours and 30 minutes otherwise. It is hence likely that travelers will chose the route passing through Ontario. Trips between these two exception zones and all other zones in Quebec are therefore retained. 
 
 \begin{figure}[H]
 \centering
@@ -122,7 +122,7 @@ The unique geography of the Canadian provinces greatly restricts the number of e
 \label{fig:exception85}
 \end{figure}
 
-In total 69,328 individual trip records remain from the TSRC dataset for model estimation (see table~\ref{table:purpose-counts}). 
+In total 69,328 individual trip records remain from the TSRC dataset for model estimation (see Table~\ref{table:purpose-counts}). 
 
 \begin{table}[H]
 \centering
@@ -157,12 +157,12 @@ The Internal TAZs within Ontario were allocated by the team at Parsons Brinckerh
 
 %TODO include original ontario TAZs as figure
 
-Unfortunately, the TSRC trip origins and destinations are only recorded at the resolution of CMAs and CDs, which are much broader than the raster based TAZs created for Ontario. A zone system is designed based on the TSRC spatial resolution for the design and estimation of the destination choice model. The allocation of trips origins and destinations to TAZs will be performed at a later stage in the transport model. This allocation is discussed further in section~\ref{section:implementation}.
+Unfortunately, the TSRC trip origins and destinations are only recorded at the resolution of CMAs and CDs, which are much broader than the raster based TAZs created for Ontario. A zone system is designed based on the TSRC spatial resolution for the design and estimation of the destination choice model. The allocation of trips origins and destinations to TAZs will be performed at a later stage in the transport model. This allocation is discussed further in Section~\ref{section:implementation}.
 
 
 \subsection{Defining a zone system for Ontario based on the TSRC data}
 \label{section:zoning}
-As discussed in \ref{section:tsrcdata}, provinces and census divisions cover the national study area completely. Hence as a first step, the zones are defined by the census divisions within Ontario, of which there are 49. However, the TAZs are much smaller than their encompassing CDs, even in rural areas. When the zone system is defined purely using the Census Divisions within Ontario, over 50\% of Census Divisions have more than 75 TAZs, with a large spread of values (see figure~\ref{fig:zoning}. 
+Provinces and census divisions cover the national study area completely. Hence as a first step, the zones are defined by the census divisions within Ontario, of which there are 49. However, the TAZs are much smaller than their encompassing CDs, even in rural areas. When the zone system is defined purely using the Census Divisions within Ontario, over 50\% of Census Divisions have more than 75 TAZs, with a large spread of values (see Figure~\ref{fig:zoning}. 
 
 Although CMAs are defined only for selected urban areas of Canada, they can be considered alongside the CDs when allocating zones to improve the spatial resolution of the zone system. The concept of a CMA aligns closely with the objective behind the gradual raster cell size of the provided zone system for Ontario. CMAs identify areas of denser population around an urban core that may be of particular significance to geographers and modelers. By including CMAs as zones in the aggregated zoning model, the number of zones is increased to 57. This will also aid the disaggregation of trip origins and destinations to TAZs in urban areas. 
 

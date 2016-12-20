@@ -6,7 +6,7 @@ setwd("C:/Users/joe")
 f2 <- h5file("canada/data/mnlogit/combined_zones_distance.omx")
 tt <- f2["data/distance"]
 cd_tt <- tt[]
-
+close(f2)
 get_dist_v <- Vectorize(function(o,d) { cd_tt[o, d] })
 
 selected = "uisness"
@@ -24,11 +24,11 @@ observed.trips <- as.data.frame(fread("canada/data/mnlogit/mnlogit_trips_no_intr
     
   ) 
 
-observed.trips.filtered = observed.trips %>% filter (trip.purpose == 'Business') %>% mutate (weight = wtep/sum(wtep))
+observed.trips.filtered = observed.trips #%>% filter (trip.purpose == 'Business') %>% mutate (weight = wtep/sum(wtep))
 #observed.trips.filtered = observed.trips %>% filter (distance > 40) %>% mutate (weight = wtep/sum(wtep))
 
 #model run
-predicted.trips <- as.data.frame(fread("C:/models/mto/output/scenario.csv")) %>% 
+predicted.trips <- as.data.frame(fread("C:/models/mto/output/scenario-m6.csv")) %>% 
   filter (international == 'false') %>% 
   transmute (
     trip.purpose = tripPurpose,
@@ -36,7 +36,7 @@ predicted.trips <- as.data.frame(fread("C:/models/mto/output/scenario.csv")) %>%
     dest = tripDestCombinedZone,
     distance = get_dist_v(origin, dest)
     
-  )  %>% filter (trip.purpose == 'business')
+  ) # %>% filter (trip.purpose == 'business')
 
 observed.trips.filtered %>% group_by(trip.purpose) %>% summarize(weighted.mean(distance, wtep))
 predicted.trips %>% group_by(trip.purpose)  %>% summarize(mean(distance))
@@ -56,19 +56,22 @@ ggplot() +
   theme_bw() +
   xlab ("distance") +
   #scale_x_log10() +
-  #xlim(c(0,200)) +
+  xlim(c(0,750)) +
   scale_colour_manual(name = "mean trip length (km)",
                       labels = c(observed.label, predicted.label),
                       values = c("darkgrey", "black")
   ) +   
   scale_linetype_manual(name = "mean trip length (km)",
                         labels = c(observed.label, predicted.label),
-                        values = c("solid", "solid")) 
+                        values = c("solid", "solid"))  +
+  annotate("text", x = 200, y = 0.0038, label = "Ottawa - Montreal", angle = 90, hjust = 0)+
+  annotate("text", x = 420, y = 0.0013, label = "Toronto - Ottawa", angle = 90, hjust = 0)+
+  annotate("text", x = 542, y = 0.0012, label = "Toronto - Montreal", angle = 90, hjust = 0)
 
 
 
 
-ggsave(file="canada/thesis\\Figures/calibration/m6_calibrated_business.png", width = 10, height = 5)
+ggsave(file="canada/thesis\\Figures/calibration/m6_calibrated_zoom.png", width = 10, height = 5)
 
 mean(predicted.trips$distance)
 weighted.mean(observed.trips$distance, observed.trips$wtep)
