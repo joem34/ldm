@@ -406,21 +406,22 @@ Figure~\ref{fig:trip_length_m5} shows an excellent fit to the observed data, how
 \begin{tabular}{@{}rrlrlrl@{}}
   \toprule
  Parameter & \multicolumn{2}{c}{Visit} & \multicolumn{2}{c}{Leisure} & \multicolumn{2}{c}{Business} \\ \midrule
-  $e^{-\alpha \cdot d_{ij}}$& 8.95 & *** & 7.36 & *** & 7.75 & *** \\  
-  $log(d_{ij})$ & 0.90 & *** & 0.48 & *** & 0.65 & *** \\  
-  $civic_j  $ & 0.22 & *** & -0.17 & *** & 0.45 & *** \\ 
-  $intermetro_{ij}$ &  &  & -0.76 & *** & 0.62 & *** \\  
-  $intrametro_{ij}$ & -0.96 & *** & -2.38 & *** &  &  \\   
-  $intrarural_{ij}$ & 0.64 & *** & 0.66 & *** & 2.00 & ***  \\
-  $hotel_j$  & 0.10 & *** & 0.26 & *** & 0.15 & *** \\ 
-  $sightseeing_j$  & 0.05 & *** & 0.14 & *** & 0.07 & *** \\   
-  $niagara_j$  &  &  & 0.12 & *** &  &  \\  
-  $outdoors_j$  &  &  & 0.04 & *** &  &  \\ 
+  $e^{-\alpha \cdot d_{ij}}$& 8.91 & *** & 7.33 & *** & 7.79 & *** \\
+  $log(d_{ij})$ & 0.90 & *** & 0.48 & *** & 0.66 & *** \\ 
+  $civic_j  $ & 0.22 & *** & -0.17 & *** & 0.45 & *** \\  
+  $intermetro_{ij}$  &  &  & -0.76 & *** & 0.62 & *** \\ 
+  $intrametro_{ij}$  & -1.00 & *** & -2.40 & *** &  &  \\   
+  $intrarural_{ij}$ & 0.63 & *** & 0.65 & *** & 2.00 & *** \\ 
+  $hotel_j$  & 0.10 & *** & 0.27 & *** & 0.15 & *** \\  
+  $sightseeing_j$  & 0.05 & *** & 0.14 & *** & 0.08 & *** \\ 
+  $niagara_j$  &  &  & 0.12 & *** &  &  \\ 
+  $outdoors_j$ &  &  & 0.04 & *** &  &  \\ 
   $skiing_j$ &  &  & 0.10 & *** &  &  \\ 
-  $medical_j$  & 0.08 & *** &  &  &  &  \\  
+  $medical_j$   & 0.09 & *** &  &  &  &  \\ 
    \bottomrule
 \end{tabular}
 \end{table}
+
 
 \subsection{Estimation results}
 Table~\ref{table:model_comparisons} contains various statistical measures that measure the the iterative improvements throughout the model estimation process. An increase in the loglikelyhood indicates an higher probability that the model reflects the reality, assuming that the input data remains the same. $r^2$ is the correlation between the predicted and observed trip counts for each OD pair. Likewise, RMSE, or root mean square error is another measure of the differences between predicted an observed values. In this case, lower is better. Finally, the NRMSE is an alternative measure of the RMSE, normalized by the standard deviation of the observed trip counts. This last measure allows for a better comparison of model performance between trip purposes, as they have different sample sizes in the observed data. 
